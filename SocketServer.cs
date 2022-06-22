@@ -7,179 +7,124 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 
-public class SocketServer : MonoBehaviour 
-{
-    private Thread waitingForConnectionsThread;
-    private Thread handleConnectionThread;
-
+public class SocketServer : MonoBehaviour {
+    System.Threading.Thread SocketThread;
     volatile bool keepReading = false;
     public GameObject cube;
 
-    // can be changed in unity inspector
-    public int portToListen = 60000;
 
-    private Socket listener;
-    private Socket handler;
-
-    private IPEndPoint localEndPoint;
-
-    protected void StartServer() 
-    {
-        CreateServerListener();
-        BindToLocalEndPoint();
-
-        waitingForConnectionsThread = new Thread(WaitingForConnections);
-        waitingForConnectionsThread.IsBackground = true;
-        waitingForConnectionsThread.Start();
+    // Use this for initialization
+    void Start() {
+        Application.runInBackground = true;
+        startServer();
     }
 
-    private string GetIPAddress() 
-    {
+    void startServer() {
+        SocketThread = new System.Threading.Thread(networkCode);
+        SocketThread.IsBackground = true;
+        SocketThread.Start();
+    }
+
+
+
+    private string getIPAddress() {
         IPHostEntry host;
         string localIP = "127.0.0.1";
         host = Dns.GetHostEntry(Dns.GetHostName());
-
-        foreach (IPAddress ip in host.AddressList) 
-        {
-            if (ip.AddressFamily == AddressFamily.InterNetwork) 
-            {
+        foreach (IPAddress ip in host.AddressList) {
+            if (ip.AddressFamily == AddressFamily.InterNetwork) {
                 localIP = ip.ToString();
             }
-        }
 
+        }
         return localIP;
     }
 
-    private void WaitingForConnections() 
-    {
-        try 
-        {
-            while (true) 
-            {
-                ListenToClient();
 
-                keepReading = true;
+    Socket listener;
+    Socket handler;
 
-                Debug.Log("Waiting for Connection");
+    void networkCode() {
+        string data;
 
-                // Program is suspended while waiting for an incoming connection.
-                handler = listener.Accept();
+        // Data buffer for incoming data.
+        byte[] bytes = new Byte[1024];
 
-                Debug.Log("Client Connected");
-
-                //create thread to handle request
-                //SocketThread = new Thread(NetworkCode(handler));
-                handleConnectionThread = new Thread(() => RequestHandler(handler));
-                handleConnectionThread.IsBackground = true;
-                handleConnectionThread.Start();
-            }
-        } 
-        catch (Exception e) 
-        {
-            Debug.Log(e.ToString());
-        }
-    }
-
-    void RequestHandler(Socket handler) 
-    {  
-        string data = null;        
-        byte[] bytes = new Byte[1024]; // Data buffer for incoming data.
-
-        try 
-        {
-            // An incoming connection needs to be processed.
-            while (keepReading) {                    
-                bytes = new byte[1024];
-                int bytesRec = handler.Receive(bytes);
-                Debug.Log("Received from Server");
-                    
-
-                if (bytesRec <= 0) {
-                    keepReading = false;
-                    handler.Disconnect(true);
-                    break;
-                }
-
-                data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                if (data.IndexOf("<EOF>") > -1) {
-                    break;
-                }
-            }   
-        } 
-        catch (Exception e) 
-        {
-            Debug.Log(e.ToString());
-        }
-    }
-
-    protected void CreateServerListener() 
-    {
         // host running the application.
-        Debug.Log("Ip " + GetIPAddress().ToString());
-        IPAddress[] ipArray = Dns.GetHostAddresses(GetIPAddress());
-        IPEndPoint localEndPoint = new IPEndPoint(ipArray[0], portToListen);
+        //Debug.Log("Ip " + getIPAddress().ToString());
+        //IPAddress[] ipArray = Dns.GetHostAddresses(getIPAddress());
+        //IPEndPoint localEndPoint = new IPEndPoint(ipArray[0], 9025);
+
+        //IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
+        //IPAddress ipAddress = ipHostInfo.AddressList[0];
+        IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, 60000);
+
+        //Debug.Log(ipHostInfo.AddressList[0].ToString());
+        //Debug.Log(ipAddress);
 
         // Create a TCP/IP socket.
-        listener = new Socket(ipArray[0].AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        this.localEndPoint = localEndPoint;
-    }
+        // Bind the socket to the local endpoint and 
+        // listen for incoming connections.
 
-    private void BindToLocalEndPoint() {
         try {
             listener.Bind(localEndPoint);
-        } catch (SocketException se) {
-            Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
-        } catch (ObjectDisposedException ode) {
-            Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
-        } catch (ArgumentNullException ane) {
-            Debug.Log("The local endpoint is null.\n\n" + ane.ToString());
-        }
-    }
-
-    private void ListenToClient() {
-        try {
             listener.Listen(10);
-        } catch (SocketException se) {
-            Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
-        } catch (ObjectDisposedException ode) {
-            Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
-        } catch (ArgumentNullException ane) {
-            Debug.Log("The local endpoint is null.\n\n" + ane.ToString());
+
+            // Start listening for connections.
+            while (true) {
+                keepReading = true;
+
+                // Program is suspended while waiting for an incoming connection.
+                Debug.Log("Waiting for Connection");     //It works
+
+                handler = listener.Accept();
+                Debug.Log("Client Connected");     //It doesn't work
+                data = null;
+
+                // An incoming connection needs to be processed.
+                while (keepReading) {
+                    bytes = new byte[1024];
+                    int bytesRec = handler.Receive(bytes);
+                    Debug.Log("Received from Server");
+
+                    if (bytesRec <= 0) {
+                        keepReading = false;
+                        handler.Disconnect(true);
+                        break;
+                    }
+
+                    data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                    if (data.IndexOf("<EOF>") > -1) {
+                        break;
+                    }
+
+                    System.Threading.Thread.Sleep(1);
+                }
+
+                System.Threading.Thread.Sleep(1);
+            }
+        } catch (Exception e) {
+            Debug.Log(e.ToString());
         }
     }
 
-
-    protected void StopServer() 
-    {
+    void stopServer() {
         keepReading = false;
 
-        if (handler != null && handler.Connected) 
-        {            
-            // there's no need of shutdown and disconnect a listener socket!
-            //listener.Shutdown(SocketShutdown.Both);
-            //listener.Disconnect(false);
-            listener.Close();
-            
-            handler.Shutdown(SocketShutdown.Both);
-            handler.Disconnect(false);
-            handler.Close();
-
-            Debug.Log("Disconnected!");
+        //stop thread
+        if (SocketThread != null) {
+            SocketThread.Abort();
         }
 
-        //stop thread
-        if (waitingForConnectionsThread != null) 
-        {
-            Debug.Log("abort");
-            waitingForConnectionsThread.Abort();
-            handleConnectionThread.Abort();
-        }        
+        if (handler != null && handler.Connected) {
+            handler.Disconnect(false);
+            Debug.Log("Disconnected!");
+        }
     }
 
-    void OnApplicationQuit() 
-    {
-        StopServer();
+    void OnDisable() {
+        stopServer();
     }
 }
-
