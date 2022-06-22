@@ -237,9 +237,6 @@ public class SocketServer : MonoBehaviour {
                 Debug.Log("Received from Client");
                 log += "Received from client \n";
 
-                Debug.Log("Received bytes from client: " + bytesRec);
-                Debug.Log("Message from client: " + Encoding.UTF8.GetString(bytes, 0, bytes.Length));
-
                 if (bytesRec <= 0) {
                     keepReading = false;
                     handler.Disconnect(true);
@@ -252,8 +249,21 @@ public class SocketServer : MonoBehaviour {
                 if (data.IndexOf("<EOF>") > -1) {
                     break;
                 }
+
+                Debug.Log("Received bytes from client: " + bytesRec);
+                Debug.Log("Message from client: " + data);
+
+                // Echo the data back to the client.  
+                byte[] msg = Encoding.ASCII.GetBytes(data);
+
+                handler.Send(msg);
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+                keepReading = false;
             }
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             Debug.Log(e.ToString());
         }
     }
