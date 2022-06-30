@@ -25,7 +25,8 @@ public static class SimpleMeshSerializer {
     /// </summary>
     /// <param name="meshes">List of Mesh objects to be serialized.</param>
     /// <returns>Binary representation of the Mesh objects.</returns>
-    public static byte[] Serialize(IEnumerable<Mesh> meshes) {
+    public static byte[] Serialize(IEnumerable<Mesh> meshes) 
+    {
         byte[] data = null;
 
         using (MemoryStream stream = new MemoryStream()) {
@@ -43,12 +44,17 @@ public static class SimpleMeshSerializer {
         return data;
     }
 
+    public static byte[] Serialize(Mesh mesh) 
+    {
+        return Serialize(new List<Mesh>() { mesh } );
+    }
+
     /// <summary>
     /// Deserializes a list of Mesh objects from the provided byte array.
     /// </summary>
     /// <param name="data">Binary data to be deserialized into a list of Mesh objects.</param>
     /// <returns>List of Mesh objects.</returns>
-    public static IEnumerable<Mesh> Deserialize(byte[] data) {
+    public static IEnumerable<Mesh> DeserializeMultiple(byte[] data) {
         List<Mesh> meshes = new List<Mesh>();
 
         using (MemoryStream stream = new MemoryStream(data)) {
@@ -60,6 +66,11 @@ public static class SimpleMeshSerializer {
         }
 
         return meshes;
+    }
+
+    public static Mesh Deserialize(byte[] data)
+    {
+        return ((List<Mesh>)DeserializeMultiple(data))[0];
     }
 
     /// <summary>

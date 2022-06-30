@@ -5,14 +5,16 @@ using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft;
 using UnityEngine.UI;
+using System.Xml.Serialization;
+using System.IO;
 
 public class SocketClientMain : SocketClient 
 {
     public float[] array = new float[4];
     public bool connectionSucceeded = false;
-    public GameObject cube;
+    
 
-    public float[] hand_right = new float[60];
+    public float[] hand_right = new float[3];
 
     void Start() 
     {
@@ -22,21 +24,23 @@ public class SocketClientMain : SocketClient
 
         if(connectionSucceeded)
             cube.GetComponent<Renderer>().material.color = new Color(0, 204, 102);
-    }
 
-    // Update is called once per frame
-    void Update() 
-    {
-        //ogni tot chiamo server request 
         if (connectionSucceeded) {
             StartCoroutine(SendToServer());
         }
     }
 
+    // Update is called once per frame
+    void Update() 
+    {        
+        
+
+        
+    }
+
     IEnumerator SendToServer() 
     {
-        float[] prediction = SendToPython(hand_right);
-        int a = (int)prediction[0];
+        SendOnSocket(cube);
 
         Debug.Log("inviati i dati a server " + gameObject.name);
 
