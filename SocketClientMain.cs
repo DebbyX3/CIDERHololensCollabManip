@@ -20,14 +20,14 @@ public class SocketClientMain : SocketClient
     {
         //apro connessione
         Debug.Log("Eseguo conn a server " + gameObject.name);
-        connectionSucceeded = ConnectToServer();
+        //connectionSucceeded = ConnectToServer();
 
         if(connectionSucceeded)
             cube.GetComponent<Renderer>().material.color = new Color(0, 204, 102);
 
-        if (connectionSucceeded) {
+        //if (connectionSucceeded) {
             StartCoroutine(SendToServer());
-        }
+        //}
     }
 
     // Update is called once per frame

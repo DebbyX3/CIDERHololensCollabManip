@@ -33,44 +33,21 @@ public class SocketClient : MonoBehaviour
 
     protected void SendOnSocket(GameObject gObj) 
     {
-        if (!client.Connected) 
-        {
-            Debug.LogError("Connection Failed");
-        }
-
-        List<Mesh> meshesToSerialize = new List<Mesh>();
-        List<Mesh> deserializedMeshes = new List<Mesh>();
+        //if (!client.Connected) 
+        //{
+            //Debug.LogError("Connection Failed");
+        //}
 
         MeshFilter viewedModelFilter = (MeshFilter)cube.GetComponent("MeshFilter");
         Mesh viewedModel = viewedModelFilter.mesh;
 
-        //byte[] data = MeshSerializer.Serialize(viewedModel);
+        byte[] data = SimpleMeshSerializer.Serialize(viewedModel);
 
-        meshesToSerialize.Add(viewedModel);
+        //client.Send(data);
 
-        byte[] data = SimpleMeshSerializer.Serialize(meshesToSerialize);
+        byte[] datatrans = TransformSerializer.Serialize((Transform)cube.GetComponent("Transform"));
 
-
-        client.Send(data);
-
-        //deserializedMeshes = (List<Mesh>)SimpleMeshSerializer.Deserialize(data);
-        //sphere.GetComponent<MeshFilter>().mesh = deserializedMeshes[0];
-
-
-
-
-        //byte[] msg = Encoding.ASCII.GetBytes("a");
-        //client.Send(msg);
-
-        /*
-        //allocate and receive bytes
-        byte[] bytes = new byte[4000];
-        int idxUsedBytes = client.Receive(bytes);
-
-        //convert bytes to floats
-        floatsReceived = new float[idxUsedBytes / 4];
-        Buffer.BlockCopy(bytes, 0, floatsReceived, 0, idxUsedBytes);
-        */
+        Debug.Log(datatrans);
     }
 
     /// <summary> 

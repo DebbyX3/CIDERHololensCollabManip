@@ -14,11 +14,11 @@ public class SocketServerMain : SocketServer {
 
     void Update() {
         
-        //MeshMessage item;
+        Message item;
 
         if (!messages.IsEmpty) {
 
-            messages.TryDequeue(out Message item);
+            messages.TryDequeue(out item);
 
             if (item is MeshMessage meshMessage) 
             {
