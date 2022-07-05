@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Microsoft.MixedReality.Toolkit.UI;
 
 public class provaPrefab : MonoBehaviour
 {
@@ -20,9 +21,14 @@ public class provaPrefab : MonoBehaviour
             Debug.Log(string.Format("Key = {0}, Value = {1}", kvp.Key, kvp.Value));
         }
 
+
+
         //GUIDList.GetGObjFromGuid()
 
     }
+
+
+
 
     // Update is called once per frame
     void Update()
