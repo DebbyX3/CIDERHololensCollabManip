@@ -30,14 +30,6 @@ public class SocketClientMain : SocketClient
         //}
     }
 
-    // Update is called once per frame
-    void Update() 
-    {        
-        
-
-        
-    }
-
     IEnumerator SendToServer() 
     {
         SendOnSocket(cube);
