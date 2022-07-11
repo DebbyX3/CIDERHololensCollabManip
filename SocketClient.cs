@@ -4,7 +4,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 
-public class SocketClient // prima derivada da monobehiavour
+public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
 {
     public string ipToSend = "0.0.0.0"; //to be changed in the Unity Inspector
     public int portToSend = 60000;
@@ -12,7 +12,6 @@ public class SocketClient // prima derivada da monobehiavour
     public GameObject sphere;
 
     private Socket client;
-
     private static readonly SocketClient instance = new SocketClient();
 
     // Explicit static constructor to tell C# compiler
@@ -20,7 +19,7 @@ public class SocketClient // prima derivada da monobehiavour
     static SocketClient() {
     }
 
-    private SocketClient() {
+    protected SocketClient() {
     }
 
     public static SocketClient Instance {
@@ -58,13 +57,18 @@ public class SocketClient // prima derivada da monobehiavour
         Debug.Log(datatrans);
     }
 
-    public void SendNewObject(Guid guid, Transform transform) 
-    {
-        byte[] guidByte = Encoding.UTF8.GetBytes(guid.ToString());
-        byte[] transformByte = TransformSerializer.Serialize(transform);
+    public void SendNewObject(GameObject gameObject) {
+        
+        GameObjMessage msg = new GameObjMessage(new MessageInfo(gameObject.GetComponent<GuidForGObj>().Guid, gameObject.transform));
+        byte[] groda = msg.Serialize();
 
-        client.Send(guidByte);
-        client.Send(transformByte);
+        //client.Send(groda);
+
+        GameObjMessage newMsg = GameObjMessage.Deserialize(groda);
+        Debug.Log("guid " + newMsg.getObj().GameObjectGuid);
+        Debug.Log("pos " + newMsg.getObj().Transform.Position);
+        Debug.Log("rot " + newMsg.getObj().Transform.Rotation);
+        Debug.Log("scale " + newMsg.getObj().Transform.Scale);
 
         //todo: sistemare il fatto che faccio due send
         // ne voglio fare solo una! posso usare il formato MESSAGE già usato per la coda di msg, così se invio un msg lo posso subito mettere in coda senza troppi parsig o problemi alla ricezione

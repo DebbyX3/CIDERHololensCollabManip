@@ -24,6 +24,7 @@ public struct SerializableTransform {
     }
 }
 
+[Serializable]
 public static class TransformSerializer {
     public static byte[] Serialize(IEnumerable<Transform> transforms) {
         byte[] data = null;
@@ -43,8 +44,30 @@ public static class TransformSerializer {
         return data;
     }
 
+    public static byte[] Serialize(IEnumerable<SerializableTransform> transforms) {
+        byte[] data = null;
+
+        using (MemoryStream stream = new MemoryStream()) {
+            using (BinaryWriter writer = new BinaryWriter(stream)) {
+                foreach (SerializableTransform transform in transforms) {
+                    WriteTransform(writer, transform);
+                }
+
+                stream.Position = 0;
+                data = new byte[stream.Length];
+                stream.Read(data, 0, data.Length);
+            }
+        }
+
+        return data;
+    }
+
     public static byte[] Serialize(Transform transform) {
         return Serialize(new List<Transform>() { transform });
+    }
+
+    public static byte[] Serialize(SerializableTransform transform) {
+        return Serialize(new List<SerializableTransform>() { transform });
     }
 
     private static void WriteTransform(BinaryWriter writer, Transform transform) {
@@ -54,6 +77,15 @@ public static class TransformSerializer {
         WritePosition(writer, transform.position);
         WriteRotation(writer, transform.rotation);
         WriteScale(writer, transform.lossyScale);
+    }
+
+    private static void WriteTransform(BinaryWriter writer, SerializableTransform transform) {
+        SysDiag.Debug.Assert(writer != null);
+
+        // Write the transform data.
+        WritePosition(writer, transform.Position);
+        WriteRotation(writer, transform.Rotation);
+        WriteScale(writer, transform.Scale);
     }
 
     private static void WritePosition(BinaryWriter writer, Vector3 position) {

@@ -1,14 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
+[Serializable]
 public abstract class Message
 {
-    protected KeyValuePair<int, object> message;
+    protected KeyValuePair<Guid, object> message;
 
-    public Message(int id, Object obj)
+    public Message(Guid id, System.Object obj)
     {
-        message = new KeyValuePair<int, object>(id, obj);
+        message = new KeyValuePair<Guid, object>(id, obj);
+    }
+
+    public Message(String id, System.Object obj) {
+        message = new KeyValuePair<Guid, object>(Guid.Parse(id), obj);
+    }
+
+    public Message(System.Object obj) {
+        message = new KeyValuePair<Guid, object>(Guid.NewGuid(), obj);
     }
 
     public abstract void ExecuteMessage();
@@ -17,7 +27,11 @@ public abstract class Message
         return message.Value;
     }
 
-    public int getId() {
+    public Guid getId() {
         return message.Key;
+    }
+
+    public String getIdString() {
+        return message.Key.ToString();
     }
 }

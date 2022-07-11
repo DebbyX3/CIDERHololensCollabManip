@@ -122,7 +122,7 @@ public class SocketServer : MonoBehaviour {
                     ///
 
                     deserializedMesh = SimpleMeshSerializer.Deserialize(groda);
-                    messages.Enqueue(new MeshMessage(0, deserializedMesh));
+                    messages.Enqueue(new MeshMessage(deserializedMesh));
                 });                
 
                 // Echo the data back to the client.  

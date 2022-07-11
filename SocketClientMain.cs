@@ -10,16 +10,12 @@ using System.IO;
 
 public class SocketClientMain : SocketClient 
 {
-    public float[] array = new float[4];
     public bool connectionSucceeded = false;
-    
-
-    public float[] hand_right = new float[3];
 
     void Start() 
     {
         //apro connessione
-        Debug.Log("Eseguo conn a server " + gameObject.name);
+        Debug.Log("Eseguo conn a server");
         //connectionSucceeded = ConnectToServer();
 
         if(connectionSucceeded)
@@ -32,9 +28,10 @@ public class SocketClientMain : SocketClient
 
     IEnumerator SendToServer() 
     {
-        SendOnSocket(cube);
+        //SendOnSocket(cube);
+        SendNewObject(cube);
 
-        Debug.Log("inviati i dati a server " + gameObject.name);
+        Debug.Log("inviati i dati a server");
 
         yield return null;
     }

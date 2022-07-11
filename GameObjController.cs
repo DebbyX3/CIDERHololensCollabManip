@@ -11,6 +11,7 @@ public class GameObjController : MonoBehaviour
 
         //TODO: groda
         //controlla che il client sia connesso prima tipo
-        SocketClient.Instance.SendNewObject(guid, gameObject.transform)
+        //
+        //SocketClient.Instance.SendNewObject(gameObject);
     }
 }
