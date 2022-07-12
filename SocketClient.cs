@@ -63,6 +63,7 @@ public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
         byte[] groda = msg.Serialize();
 
         //client.Send(groda);
+        Debug.Log("hi");
 
         GameObjMessage newMsg = GameObjMessage.Deserialize(groda);
         Debug.Log("guid " + newMsg.getObj().GameObjectGuid);

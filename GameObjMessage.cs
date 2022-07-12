@@ -5,6 +5,7 @@ using System;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using SysDiag = System.Diagnostics;
+using System.Runtime.Serialization;
 
 [Serializable]
 public struct MessageInfo {
@@ -62,7 +63,7 @@ public struct MessageInfo {
 //---------------
 
 [Serializable]
-public class GameObjMessage : Message {
+public class GameObjMessage : Message{
 
     public GameObjMessage(Guid id, MessageInfo info) : base(id, info) { }
     public GameObjMessage(MessageInfo info) : base(info) { }
@@ -73,52 +74,28 @@ public class GameObjMessage : Message {
 
     }
 
-    public byte[] Serialize() {
-        byte[] data = null;
+    public byte[] Serialize() 
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
 
-        using (MemoryStream stream = new MemoryStream()) {
-            using (BinaryWriter writer = new BinaryWriter(stream)) {
-                SysDiag.Debug.Assert(writer != null);
+        using (MemoryStream stream = new MemoryStream()) {            
 
-                writer.Write(getIdString());
-                writer.Write(getObj().Serialize());
-
-                stream.Position = 0;
-                data = new byte[stream.Length];
-                stream.Read(data, 0, data.Length);
-            }
-        }
-        
-        return data;
+            formatter.Serialize(stream, this);
+            return stream.ToArray();
+        }        
     }
 
     public static GameObjMessage Deserialize(byte[] data) 
     {
-        Guid guid;
-        MessageInfo info;
+        BinaryFormatter formatter = new BinaryFormatter();
+        GameObjMessage msg;
 
         using (MemoryStream stream = new MemoryStream(data)) 
         {
-            using (BinaryReader reader = new BinaryReader(stream)) 
-            {
-                guid = Guid.Parse(reader.ReadString());
-
-                byte[] left = new byte[stream.Length];
-                int readBytes = stream.Read(left, (int)stream.Position, (int)(stream.Length - stream.Position));
-                byte[] leftCropped = new byte[readBytes];
-
-                Debug.Log(Array.LastIndexOf(left, (byte)0));
-
-                Array.Copy(left, stream.Length - readBytes, leftCropped, 0, readBytes);
-
-                Debug.Log(leftCropped);
-
-                info = MessageInfo.Deserialize(left);
-
-            }
+            msg = (GameObjMessage)formatter.Deserialize(stream);
         }
 
-        return new GameObjMessage(guid, info);
+        return msg;
     }
 
     public new MessageInfo getObj() {

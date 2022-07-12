@@ -6,20 +6,50 @@ using SysDiag = System.Diagnostics;
 
 //https://stackoverflow.com/questions/39345820/easy-way-to-write-and-read-some-transform-to-a-text-file-in-unity3d
 [Serializable]
+public struct SerializebleVector {
+    public float x, y, z, w;
+
+    public SerializebleVector(float x, float y, float z, float w = 0f) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
+    }
+
+    public static explicit operator SerializebleVector(Quaternion a) {
+        return new SerializebleVector(a.x, a.y, a.z, a.w);
+    }
+
+    public static implicit operator SerializebleVector(Vector3 a) {
+        return new SerializebleVector(a.x, a.y, a.z);
+    }
+
+}
+
+[Serializable]
 public struct SerializableTransform {
+    /*
     public Vector3 Position { get; private set; }
     public Quaternion Rotation { get; private set; }
     public Vector3 Scale { get; private set; }
+    */
+
+    //-----
+
+    public SerializebleVector Position { get; private set; }
+    public SerializebleVector Rotation { get; private set; }
+    public SerializebleVector Scale { get; private set; }
+
 
     public SerializableTransform(Transform tr) {
         Position = tr.position;
-        Rotation = tr.rotation;
+        Rotation = (SerializebleVector) tr.rotation;
         Scale = tr.lossyScale;
     }
 
     public SerializableTransform(Vector3 position, Quaternion rotation, Vector3 scale) {
         this.Position = position;
-        this.Rotation = rotation;
+        this.Rotation = (SerializebleVector) rotation;
         this.Scale = scale;
     }
 }
@@ -75,7 +105,7 @@ public static class TransformSerializer {
 
         // Write the transform data.
         WritePosition(writer, transform.position);
-        WriteRotation(writer, transform.rotation);
+        WriteRotation(writer, (SerializebleVector) transform.rotation);
         WriteScale(writer, transform.lossyScale);
     }
 
@@ -88,7 +118,7 @@ public static class TransformSerializer {
         WriteScale(writer, transform.Scale);
     }
 
-    private static void WritePosition(BinaryWriter writer, Vector3 position) {
+    private static void WritePosition(BinaryWriter writer, SerializebleVector position) {
         SysDiag.Debug.Assert(writer != null);
 
         writer.Write(position.x);
@@ -96,7 +126,7 @@ public static class TransformSerializer {
         writer.Write(position.z);
     }
 
-    private static void WriteRotation(BinaryWriter writer, Quaternion rotation) {
+    private static void WriteRotation(BinaryWriter writer, SerializebleVector rotation) {
         SysDiag.Debug.Assert(writer != null);
 
         writer.Write(rotation.x);
@@ -105,7 +135,7 @@ public static class TransformSerializer {
         writer.Write(rotation.w);
     }
 
-    private static void WriteScale(BinaryWriter writer, Vector3 scale) {
+    private static void WriteScale(BinaryWriter writer, SerializebleVector scale) {
         SysDiag.Debug.Assert(writer != null);
 
         writer.Write(scale.x);
@@ -176,10 +206,12 @@ public static class TransformSerializer {
 
     //da mettere in un'altra classe probabilmente
     //https://answers.unity.com/questions/1296012/best-way-to-set-game-object-transforms.html
-    public static void LoadTransform(this Transform originalTransform, SerializableTransform deserializedTransform) {
-        originalTransform.position = deserializedTransform.Position;
-        originalTransform.rotation = deserializedTransform.Rotation;
-        originalTransform.localScale = deserializedTransform.Scale;
+    public static void LoadTransform(this Transform originalTransform, SerializableTransform deserializedTransform) 
+    {
+        //boh??
+        originalTransform.position = new Vector3(deserializedTransform.Position.x, deserializedTransform.Position.y, deserializedTransform.Position.z);
+        originalTransform.rotation = new Quaternion(deserializedTransform.Rotation.x, deserializedTransform.Rotation.y, deserializedTransform.Rotation.z, deserializedTransform.Rotation.w); 
+        originalTransform.localScale = new Vector3(deserializedTransform.Scale.x, deserializedTransform.Scale.y, deserializedTransform.Scale.z);
     }
 
 }
