@@ -57,21 +57,24 @@ public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
         Debug.Log(datatrans);
     }
 
-    public void SendNewObject(GameObject gameObject) {
-        
-        GameObjMessage msg = new GameObjMessage(new MessageInfo(gameObject.GetComponent<GuidForGObj>().Guid, gameObject.transform));
+    public void SendNewObject(GameObject gameObject) 
+    {  
+        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gameObject.GetComponent<GuidForGObj>().Guid, gameObject.transform), MessageType.GameObjMessage);
         byte[] groda = msg.Serialize();
 
         //client.Send(groda);
-        Debug.Log("hi");
 
-        GameObjMessage newMsg = GameObjMessage.Deserialize(groda);
-        Debug.Log("guid " + newMsg.getObj().GameObjectGuid);
-        Debug.Log("pos " + newMsg.getObj().Transform.Position);
-        Debug.Log("rot " + newMsg.getObj().Transform.Rotation);
-        Debug.Log("scale " + newMsg.getObj().Transform.Scale);
+        Message newMsg = Message.Deserialize(groda);
 
-        //todo: sistemare il fatto che faccio due send
-        // ne voglio fare solo una! posso usare il formato MESSAGE già usato per la coda di msg, così se invio un msg lo posso subito mettere in coda senza troppi parsig o problemi alla ricezione
+        var gro = (newMsg.MessageType).Equals(MessageType.GameObjMessage);
+
+        if ( (newMsg is GameObjMessage message) && message.MessageType.Equals(MessageType.GameObjMessage) )
+        {
+            Debug.Log("guid " + message.getMsgInfo().GameObjectGuid);
+            Debug.Log("pos " + message.getMsgInfo().Transform.Position.ToString());
+            Debug.Log("rot " + message.getMsgInfo().Transform.Rotation.ToString());
+            Debug.Log("scale " + message.getMsgInfo().Transform.Scale.ToString());
+        }
+        
     }
 }

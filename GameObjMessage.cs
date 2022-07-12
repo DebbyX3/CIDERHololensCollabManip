@@ -8,20 +8,21 @@ using SysDiag = System.Diagnostics;
 using System.Runtime.Serialization;
 
 [Serializable]
-public struct MessageInfo {
+public struct GameObjMessageInfo {
     public Guid GameObjectGuid { get; private set; }
     public SerializableTransform Transform { get; private set; }
 
-    public MessageInfo(Guid gameObjectGuid, SerializableTransform transform) {
+    public GameObjMessageInfo(Guid gameObjectGuid, SerializableTransform transform) {
         this.GameObjectGuid = gameObjectGuid;
         this.Transform = transform;
     }
 
-    public MessageInfo(Guid gameObjectGuid, Transform transform) {
+    public GameObjMessageInfo(Guid gameObjectGuid, Transform transform) {
         this.GameObjectGuid = gameObjectGuid;
         this.Transform = new SerializableTransform(transform.position, transform.rotation, transform.lossyScale);
     }
 
+    /*
     public byte[] Serialize() {
         byte[] data = null;
 
@@ -40,7 +41,9 @@ public struct MessageInfo {
 
         return data;
     }
+    */
 
+    /*
     public static MessageInfo Deserialize(byte[] data) {
         Guid guid;
         SerializableTransform transform;
@@ -58,6 +61,7 @@ public struct MessageInfo {
 
         return new MessageInfo(guid, transform);
     }
+    */
 }
 
 //---------------
@@ -65,40 +69,25 @@ public struct MessageInfo {
 [Serializable]
 public class GameObjMessage : Message{
 
-    public GameObjMessage(Guid id, MessageInfo info) : base(id, info) { }
-    public GameObjMessage(MessageInfo info) : base(info) { }
-    public GameObjMessage(String id, MessageInfo info) : base(id, info) { }
+    public GameObjMessage(Guid id, GameObjMessageInfo info, MessageType messageType) : base(id, info, messageType) { }
+    public GameObjMessage(GameObjMessageInfo info, MessageType messageType) : base(info, messageType) { }
+    public GameObjMessage(String id, GameObjMessageInfo info, MessageType messageType) : base(id, info, messageType) { }
 
     public override void ExecuteMessage() 
-    {    
-
-    }
-
-    public byte[] Serialize() 
     {
-        BinaryFormatter formatter = new BinaryFormatter();
+        //if the scene contains the object
+        if (GUIDList.List.ContainsKey(getMsgInfo().GameObjectGuid) ) {
+            provaPrefab.groda();
 
-        using (MemoryStream stream = new MemoryStream()) {            
-
-            formatter.Serialize(stream, this);
-            return stream.ToArray();
-        }        
-    }
-
-    public static GameObjMessage Deserialize(byte[] data) 
-    {
-        BinaryFormatter formatter = new BinaryFormatter();
-        GameObjMessage msg;
-
-        using (MemoryStream stream = new MemoryStream(data)) 
+        } 
+        else //if the scene does NOT contain the object
         {
-            msg = (GameObjMessage)formatter.Deserialize(stream);
+            //then create it - TODO
         }
 
-        return msg;
     }
 
-    public new MessageInfo getObj() {
-        return (MessageInfo)message.Value;
+    public GameObjMessageInfo getMsgInfo() {
+        return (GameObjMessageInfo) Info;
     }
 }

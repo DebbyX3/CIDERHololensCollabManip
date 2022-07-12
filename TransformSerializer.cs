@@ -24,6 +24,10 @@ public struct SerializebleVector {
         return new SerializebleVector(a.x, a.y, a.z);
     }
 
+    public string ToString() {
+        return "x = " + x + "\ny = " + y + "\nz = " + z + "\nw = " + w;
+    }
+
 }
 
 [Serializable]

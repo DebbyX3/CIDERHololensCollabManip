@@ -5,17 +5,17 @@ using System;
 
 public class MeshMessage : Message 
 {
-    public MeshMessage(Guid id, Mesh mesh) : base(id, mesh) { }
-    public MeshMessage(Mesh mesh) : base(mesh) { }
-    public MeshMessage(String id, Mesh mesh) : base(id, mesh) { }
+    public MeshMessage(Guid id, Mesh mesh, MessageType messageType) : base(id, mesh, messageType) { }
+    public MeshMessage(Mesh mesh, MessageType messageType) : base(mesh, messageType) { }
+    public MeshMessage(String id, Mesh mesh, MessageType messageType) : base(id, mesh, messageType) { }
 
     public override void ExecuteMessage() 
     {
         //something!
     }
 
-    public new Mesh getObj() 
+    public Mesh getMsgInfo() 
     {
-        return (Mesh) message.Value;
+        return (Mesh) Info;
     }
 }

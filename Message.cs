@@ -2,36 +2,68 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+
+public enum MessageType : int {
+    BaseMessage,
+    GameObjMessage,
+    MeshMessage
+}
 
 [Serializable]
 public abstract class Message
 {
-    protected KeyValuePair<Guid, object> message;
+    public Guid Id { get; private set; }
+    public object Info { get; private set; }
+    public MessageType MessageType { get; private set; } = MessageType.BaseMessage;
 
-    public Message(Guid id, System.Object obj)
+    public Message(Guid id, System.Object info, MessageType messageType)
     {
-        message = new KeyValuePair<Guid, object>(id, obj);
+        this.Id = id;
+        this.Info = info;
+        this.MessageType = messageType;
     }
 
-    public Message(String id, System.Object obj) {
-        message = new KeyValuePair<Guid, object>(Guid.Parse(id), obj);
+    public Message(String id, System.Object info, MessageType messageType) 
+    {
+        this.Id = Guid.Parse(id);
+        this.Info = info;
+        this.MessageType = messageType;
     }
 
-    public Message(System.Object obj) {
-        message = new KeyValuePair<Guid, object>(Guid.NewGuid(), obj);
+    public Message(System.Object info, MessageType messageType) 
+    {
+        this.Id = Guid.NewGuid();
+        this.Info = info;
+        this.MessageType = messageType;
     }
 
     public abstract void ExecuteMessage();
 
-    public object getObj() {
-        return message.Value;
-    }
-
-    public Guid getId() {
-        return message.Key;
-    }
-
     public String getIdString() {
-        return message.Key.ToString();
+        return Id.ToString();
+    }
+
+
+    public byte[] Serialize() {
+        BinaryFormatter formatter = new BinaryFormatter();
+
+        using (MemoryStream stream = new MemoryStream()) {
+
+            formatter.Serialize(stream, this);
+            return stream.ToArray();
+        }
+    }
+
+    public static Message Deserialize(byte[] data) {
+        BinaryFormatter formatter = new BinaryFormatter();
+        Message msg;
+
+        using (MemoryStream stream = new MemoryStream(data)) {
+            msg = (Message)formatter.Deserialize(stream);        
+        }
+
+        return msg;
     }
 }

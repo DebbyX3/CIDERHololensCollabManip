@@ -29,4 +29,7 @@ public class provaPrefab : MonoBehaviour
         //GUIDList.GetGObjFromGuid()
 
     }
+
+    public static void groda() { 
+    }
 }

@@ -22,7 +22,7 @@ public class SocketServerMain : SocketServer {
 
             if (item is MeshMessage meshMessage) 
             {
-                sphere.GetComponent<MeshFilter>().mesh = meshMessage.getObj();
+                sphere.GetComponent<MeshFilter>().mesh = meshMessage.getMsgInfo();
             }
 
             
