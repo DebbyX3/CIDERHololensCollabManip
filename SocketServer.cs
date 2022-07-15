@@ -31,7 +31,8 @@ public class SocketServer : MonoBehaviour {
     public ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
 
     void Awake() {
-        UnityThread.initUnityThread();
+        //classe per inviare un comando da eseguire nel main thread, per ora non la uso ma funziona
+        //UnityThread.initUnityThread();
     }
 
     protected void StartServer() {

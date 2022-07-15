@@ -11,77 +11,41 @@ using System.Runtime.Serialization;
 public struct GameObjMessageInfo {
     public Guid GameObjectGuid { get; private set; }
     public SerializableTransform Transform { get; private set; }
+    public string PrefabName { get; private set; }
 
-    public GameObjMessageInfo(Guid gameObjectGuid, SerializableTransform transform) {
+    public GameObjMessageInfo(Guid gameObjectGuid, SerializableTransform transform, string prefabName) {
         this.GameObjectGuid = gameObjectGuid;
         this.Transform = transform;
+        this.PrefabName = prefabName;
     }
 
-    public GameObjMessageInfo(Guid gameObjectGuid, Transform transform) {
+    public GameObjMessageInfo(Guid gameObjectGuid, Transform transform, string prefabName) {
         this.GameObjectGuid = gameObjectGuid;
         this.Transform = new SerializableTransform(transform.position, transform.rotation, transform.lossyScale);
+        this.PrefabName = prefabName;
     }
-
-    /*
-    public byte[] Serialize() {
-        byte[] data = null;
-
-        using (MemoryStream stream = new MemoryStream()) {
-            using (BinaryWriter writer = new BinaryWriter(stream)) {
-                SysDiag.Debug.Assert(writer != null);
-
-                writer.Write(GameObjectGuid.ToString());
-                writer.Write(TransformSerializer.Serialize(Transform));
-
-                stream.Position = 0;
-                data = new byte[stream.Length];
-                stream.Read(data, 0, data.Length);
-            }
-        }
-
-        return data;
-    }
-    */
-
-    /*
-    public static MessageInfo Deserialize(byte[] data) {
-        Guid guid;
-        SerializableTransform transform;
-
-        using (MemoryStream stream = new MemoryStream(data)) {
-            using (BinaryReader reader = new BinaryReader(stream)) {
-                guid = Guid.Parse(reader.ReadString());
-
-                byte[] left = new byte[stream.Length - stream.Position]; //???
-                stream.Read(left, (int)stream.Position, (int)stream.Length);
-
-                transform = TransformSerializer.Deserialize(left);       
-            }
-        }
-
-        return new MessageInfo(guid, transform);
-    }
-    */
 }
 
 //---------------
 
 [Serializable]
-public class GameObjMessage : Message{
+public class GameObjMessage : Message {
 
-    public GameObjMessage(Guid id, GameObjMessageInfo info, MessageType messageType) : base(id, info, messageType) { }
-    public GameObjMessage(GameObjMessageInfo info, MessageType messageType) : base(info, messageType) { }
-    public GameObjMessage(String id, GameObjMessageInfo info, MessageType messageType) : base(id, info, messageType) { }
+    public GameObjMessage(Guid id, GameObjMessageInfo info) : base(id, info, MessageType.GameObjMessage) { }
+    public GameObjMessage(GameObjMessageInfo info) : base(info, MessageType.GameObjMessage) { }
+    public GameObjMessage(string id, GameObjMessageInfo info) : base(id, info, MessageType.GameObjMessage) { }
 
     public override void ExecuteMessage() 
     {
         //if the scene contains the object
-        if (GUIDList.List.ContainsKey(getMsgInfo().GameObjectGuid) ) {
-            //provaPrefab.groda();
+        if (GUIDList.ContainsGuid(getMsgInfo().GameObjectGuid)) 
+        {
+            PrefabHandler.UpdateObject(getMsgInfo().GameObjectGuid, getMsgInfo().Transform);
         } 
         else //if the scene does NOT contain the object
         {
-            //then create it - TODO
+            //Create it
+            PrefabHandler.CreateNewObject(getMsgInfo().PrefabName, getMsgInfo().Transform);
         }
 
         Debug.Log("hei, sto eseguendo il messaggio che ha inviato gObjMsg!!!");

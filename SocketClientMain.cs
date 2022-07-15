@@ -16,24 +16,25 @@ public class SocketClientMain : SocketClient
     {
         //apro connessione
         Debug.Log("Eseguo conn a server");
-        //connectionSucceeded = ConnectToServer();
+        connectionSucceeded = ConnectToServer();
 
         if(connectionSucceeded)
             cube.GetComponent<Renderer>().material.color = new Color(0, 204, 102);
 
         //if (connectionSucceeded) {
-            StartCoroutine(SendToServer());
+        //StartCoroutine(SendToServer());
+        //SendToServer();
         //}
     }
 
-    IEnumerator SendToServer() 
+    void SendToServer() 
     {
         //SendOnSocket(cube);
         SendObject(cube);
 
         Debug.Log("inviati i dati a server");
 
-        yield return null;
+        //yield return null;
     }
     
 }

@@ -24,7 +24,7 @@ public struct SerializebleVector {
         return new SerializebleVector(a.x, a.y, a.z);
     }
 
-    public string ToString() {
+    public override string ToString() {
         return "x = " + x + "\ny = " + y + "\nz = " + z + "\nw = " + w;
     }
 
@@ -32,13 +32,6 @@ public struct SerializebleVector {
 
 [Serializable]
 public struct SerializableTransform {
-    /*
-    public Vector3 Position { get; private set; }
-    public Quaternion Rotation { get; private set; }
-    public Vector3 Scale { get; private set; }
-    */
-
-    //-----
 
     public SerializebleVector Position { get; private set; }
     public SerializebleVector Rotation { get; private set; }

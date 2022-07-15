@@ -11,7 +11,7 @@ public static class GUIDList
     /// <summary>
     /// A list that contains the pairs <GUID, GameObject>
     /// </summary>
-    public static Dictionary<Guid, GameObject> List { get; } = new Dictionary<Guid, GameObject>();
+    private static Dictionary<Guid, GameObject> List { get; } = new Dictionary<Guid, GameObject>();
 
     /// <summary>
     /// Add the pair <GUID, GameObject> to the static list - where GUID is the key, GameObject is the value
@@ -54,4 +54,13 @@ public static class GUIDList
 
         return gObj;
     }
+
+    public static bool ContainsGuid(Guid guid) {
+        return List.ContainsKey(guid);
+    }
+
+    public static bool ContainsGuid(String guid) {
+        return List.ContainsKey(Guid.Parse(guid));
+    }
+
 }

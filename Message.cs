@@ -8,7 +8,8 @@ using System.IO;
 public enum MessageType : int {
     BaseMessage,
     GameObjMessage,
-    MeshMessage
+    MeshMessage,
+    StateMessage
 }
 
 [Serializable]
@@ -39,12 +40,9 @@ public abstract class Message
         this.MessageType = messageType;
     }
 
-    public abstract void ExecuteMessage();
-
     public String getIdString() {
         return Id.ToString();
     }
-
 
     public byte[] Serialize() {
         BinaryFormatter formatter = new BinaryFormatter();
@@ -66,4 +64,6 @@ public abstract class Message
 
         return msg;
     }
+
+    public abstract void ExecuteMessage();
 }

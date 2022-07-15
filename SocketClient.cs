@@ -12,7 +12,7 @@ public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
     public GameObject sphere;
 
     private Socket client;
-    private static readonly SocketClient instance = new SocketClient();
+    //private static readonly SocketClient instance = new SocketClient();
 
     // Explicit static constructor to tell C# compiler
     // not to mark type as beforefieldinit
@@ -22,17 +22,18 @@ public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
     protected SocketClient() {
     }
 
-    public static SocketClient Instance {
+    /*public static SocketClient Instance {
         get {
             return instance;
         }
     }
+    */
 
     protected bool ConnectToServer() 
     {
         client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        client.Connect(ipToSend, portToSend);
+        //client.Connect(ipToSend, portToSend);
 
         if (!client.Connected) 
         {
@@ -43,23 +44,11 @@ public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
         return true;
     }
 
-    protected void SendOnSocket(GameObject gObj) 
-    {
-        //if (!client.Connected) 
-        //{
-            //Debug.LogError("Connection Failed");
-        //}        
-
-
-        byte[] datatrans = TransformSerializer.Serialize((Transform)cube.GetComponent("Transform"));
-        client.Send(datatrans);
-
-        Debug.Log(datatrans);
-    }
-
     public void SendObject(GameObject gameObject) 
-    {  
-        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gameObject.GetComponent<GuidForGObj>().Guid, gameObject.transform), MessageType.GameObjMessage);
+    {
+        GameObjController controller = gameObject.GetComponent<GameObjController>();
+
+        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName));
         byte[] serializedMsg = msg.Serialize();
 
         client.Send(serializedMsg);
