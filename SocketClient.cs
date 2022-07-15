@@ -57,24 +57,11 @@ public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
         Debug.Log(datatrans);
     }
 
-    public void SendNewObject(GameObject gameObject) 
+    public void SendObject(GameObject gameObject) 
     {  
         GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gameObject.GetComponent<GuidForGObj>().Guid, gameObject.transform), MessageType.GameObjMessage);
-        byte[] groda = msg.Serialize();
+        byte[] serializedMsg = msg.Serialize();
 
-        //client.Send(groda);
-
-        Message newMsg = Message.Deserialize(groda);
-
-        var gro = (newMsg.MessageType).Equals(MessageType.GameObjMessage);
-
-        if ( (newMsg is GameObjMessage message) && message.MessageType.Equals(MessageType.GameObjMessage) )
-        {
-            Debug.Log("guid " + message.getMsgInfo().GameObjectGuid);
-            Debug.Log("pos " + message.getMsgInfo().Transform.Position.ToString());
-            Debug.Log("rot " + message.getMsgInfo().Transform.Rotation.ToString());
-            Debug.Log("scale " + message.getMsgInfo().Transform.Scale.ToString());
-        }
-        
+        client.Send(serializedMsg);
     }
 }

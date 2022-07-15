@@ -29,7 +29,7 @@ public class SocketClientMain : SocketClient
     IEnumerator SendToServer() 
     {
         //SendOnSocket(cube);
-        SendNewObject(cube);
+        SendObject(cube);
 
         Debug.Log("inviati i dati a server");
 

@@ -30,6 +30,4 @@ public class provaPrefab : MonoBehaviour
 
     }
 
-    public static void groda() { 
-    }
 }

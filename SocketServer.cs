@@ -48,8 +48,6 @@ public class SocketServer : MonoBehaviour {
             logText.text += log;
             log = "";
         }
-
-        Debug.Log("Groda");
     }
 
 
@@ -88,11 +86,10 @@ public class SocketServer : MonoBehaviour {
         try {
             // An incoming connection needs to be processed.
             while (keepReading) {
-                bytes = new byte[1024];
+                bytes = new byte[100000];
                 bytesRec = handler.Receive(bytes);
 
-                Debug.Log("Received from Client");
-                log += "Received from client \n";
+                Debug.Log("Received from Client " + bytesRec + "bytes");
 
                 if (bytesRec <= 0) {
                     keepReading = false;
@@ -101,29 +98,27 @@ public class SocketServer : MonoBehaviour {
                     break;
                 }
 
-                data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
-
                 if (data.IndexOf("<EOF>") > -1) {
                     break;
                 }
 
-                Debug.Log("Received bytes from client: " + bytesRec);
-                Debug.Log("Message from client: " + data);
+                Message newMsg = Message.Deserialize(bytes);
+                messages.Enqueue(newMsg);
 
-                Mesh deserializedMesh;
+                //UnityThread.executeInUpdate(() =>
+                //{
 
-                UnityThread.executeInUpdate(() =>
-                {
-                    /// solo per prova, non va in server ma in client al max
-                    MeshFilter viewedModelFilter = (MeshFilter)cube.GetComponent("MeshFilter");
-                    Mesh viewedModel = viewedModelFilter.mesh;
+                /// solo per prova, non va in server ma in client al max
+                /*MeshFilter viewedModelFilter = (MeshFilter)cube.GetComponent("MeshFilter");
+                Mesh viewedModel = viewedModelFilter.mesh;
 
-                    byte[] groda = SimpleMeshSerializer.Serialize(viewedModel);
-                    ///
+                byte[] groda = SimpleMeshSerializer.Serialize(viewedModel);
+                ///
 
-                    deserializedMesh = SimpleMeshSerializer.Deserialize(groda);
-                    messages.Enqueue(new MeshMessage(deserializedMesh, MessageType.MeshMessage));
-                });                
+                deserializedMesh = SimpleMeshSerializer.Deserialize(groda);*/
+
+
+                //});                
 
                 // Echo the data back to the client.  
                 byte[] msg = Encoding.ASCII.GetBytes(data);

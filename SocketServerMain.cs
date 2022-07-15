@@ -16,16 +16,20 @@ public class SocketServerMain : SocketServer {
         
         Message item;
 
-        if (!messages.IsEmpty) {
-
+        if (!messages.IsEmpty) 
+        {
             messages.TryDequeue(out item);
+            item.ExecuteMessage();
 
-            if (item is MeshMessage meshMessage) 
+            if ((item is GameObjMessage message) && message.MessageType.Equals(MessageType.GameObjMessage))
             {
-                sphere.GetComponent<MeshFilter>().mesh = meshMessage.getMsgInfo();
-            }
+                Debug.Log("guid " + message.getMsgInfo().GameObjectGuid);
+                Debug.Log("pos " + message.getMsgInfo().Transform.Position.ToString());
+                Debug.Log("rot " + message.getMsgInfo().Transform.Rotation.ToString());
+                Debug.Log("scale " + message.getMsgInfo().Transform.Scale.ToString());
 
-            
+                //message.ExecuteMessage();
+            }
         }
     }
 }

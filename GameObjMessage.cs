@@ -77,14 +77,14 @@ public class GameObjMessage : Message{
     {
         //if the scene contains the object
         if (GUIDList.List.ContainsKey(getMsgInfo().GameObjectGuid) ) {
-            provaPrefab.groda();
-
+            //provaPrefab.groda();
         } 
         else //if the scene does NOT contain the object
         {
             //then create it - TODO
         }
 
+        Debug.Log("hei, sto eseguendo il messaggio che ha inviato gObjMsg!!!");
     }
 
     public GameObjMessageInfo getMsgInfo() {
