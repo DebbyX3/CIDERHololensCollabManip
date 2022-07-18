@@ -21,20 +21,19 @@ public class SocketClientMain : SocketClient
         if(connectionSucceeded)
             cube.GetComponent<Renderer>().material.color = new Color(0, 204, 102);
 
-        //if (connectionSucceeded) {
-        //StartCoroutine(SendToServer());
-        //SendToServer();
-        //}
+        if (connectionSucceeded) {
+            //StartCoroutine(SendToServer());
+
+            SendToServer();
+        }
+
+        StartCoroutine(cor());
     }
 
-    void SendToServer() 
-    {
-        //SendOnSocket(cube);
-        SendObject(cube);
-
-        Debug.Log("inviati i dati a server");
-
-        //yield return null;
+    IEnumerator cor() {
+        while (true) {
+            SendObject(cube);
+            yield return new WaitForSeconds(0.1f);
+        }
     }
-    
 }

@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Collections;
 
 public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
 {
@@ -33,7 +34,7 @@ public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
     {
         client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        //client.Connect(ipToSend, portToSend);
+        client.Connect(ipToSend, portToSend);
 
         if (!client.Connected) 
         {
@@ -42,6 +43,13 @@ public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
         }
 
         return true;
+    }
+
+    public void SendToServer() {
+        var newObj = PrefabHandler.CreateNewObject("cube", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.one));
+        SendObject(newObj);
+
+        Debug.Log("inviati i dati a server");
     }
 
     public void SendObject(GameObject gameObject) 

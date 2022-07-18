@@ -22,6 +22,10 @@ public static class GUIDList
         List.Add(Guid.Parse(guid), gObj);
     }
 
+    public static void RemoveFromList(Guid guid) {
+        List.Remove(guid);
+    }
+
     /// <summary>
     /// Add the pair <GUID, GameObject> to the static list - where GUID is the key, GameObject is the value
     /// </summary>

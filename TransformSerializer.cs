@@ -33,9 +33,9 @@ public struct SerializebleVector {
 [Serializable]
 public struct SerializableTransform {
 
-    public SerializebleVector Position { get; private set; }
-    public SerializebleVector Rotation { get; private set; }
-    public SerializebleVector Scale { get; private set; }
+    public SerializebleVector Position { get; set; }
+    public SerializebleVector Rotation { get; set; }
+    public SerializebleVector Scale { get; set; }
 
 
     public SerializableTransform(Transform tr) {

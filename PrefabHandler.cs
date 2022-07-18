@@ -10,12 +10,10 @@ public class PrefabHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CreateNewObject("cube", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.one));
-
-
+        //GameObject nuovo = CreateNewObject("cube", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.one));        
     }
 
-    public static void CreateNewObject(string prefabName, SerializableTransform transform)
+    public static GameObject CreateNewObject(string prefabName, SerializableTransform transform)
     {
         SerializebleVector position = transform.Position;
         SerializebleVector rotation = transform.Rotation;
@@ -27,11 +25,12 @@ public class PrefabHandler : MonoBehaviour
         GameObject newObj = Instantiate(Resources.Load<GameObject>(prefabName), pos, rot);
         newObj.GetComponent<GameObjController>().setPrefabName(prefabName);
 
-        /*
-        GameObject button1 = Instantiate(Resources.Load<GameObject>("PressableButtonHoloLens2"), pos, Quaternion.identity);
+        GameObject button1 = Instantiate(Resources.Load<GameObject>("PressableButtonHoloLens2"), Vector3.zero, Quaternion.identity);
         Interactable interactable = button1.GetComponent<Interactable>();
-        interactable.OnClick.AddListener(() => newObj.GetComponent<GameObjController>().SendGObj());
-        */
+
+        interactable.OnClick.AddListener(() => newObj.GetComponent<GameObjController>().UpdateObj());
+
+        return newObj;
     }
 
     public static void UpdateObject(Guid guid, SerializableTransform transform) 
