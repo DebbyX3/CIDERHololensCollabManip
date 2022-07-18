@@ -31,8 +31,7 @@ public class SocketServer : MonoBehaviour {
     public ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
 
     void Awake() {
-        //classe per inviare un comando da eseguire nel main thread, per ora non la uso ma funziona
-        //UnityThread.initUnityThread();
+        UnityThread.initUnityThread();
     }
 
     protected void StartServer() {
@@ -95,11 +94,7 @@ public class SocketServer : MonoBehaviour {
                 if (bytesRec <= 0) {
                     keepReading = false;
                     handler.Disconnect(true);
-                    Debug.Log("Disconnected while waiting for more messages");
-                    break;
-                }
-
-                if (data.IndexOf("<EOF>") > -1) {
+                    Debug.Log("Disconnected because received 0 bytes");
                     break;
                 }
 
@@ -109,7 +104,7 @@ public class SocketServer : MonoBehaviour {
                 //UnityThread.executeInUpdate(() =>
                 //{
 
-                /// solo per prova, non va in server ma in client al max
+                /// solo per prova
                 /*MeshFilter viewedModelFilter = (MeshFilter)cube.GetComponent("MeshFilter");
                 Mesh viewedModel = viewedModelFilter.mesh;
 
@@ -122,17 +117,18 @@ public class SocketServer : MonoBehaviour {
                 //});                
 
                 // Echo the data back to the client.  
-                byte[] msg = Encoding.ASCII.GetBytes(data);
+                //byte[] msg = Encoding.ASCII.GetBytes(data);
 
-                handler.Send(msg);
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
-                keepReading = false;
-
+                //handler.Send(msg);                
             }
-        } catch (Exception e) {
-            Debug.Log(e.ToString());
+
+            handler.Shutdown(SocketShutdown.Both);
+            handler.Close();
+            keepReading = false;
         }
+        catch (Exception e) {
+            Debug.Log(e.ToString());
+        }        
     }
 
     protected void CreateServerListener() {
