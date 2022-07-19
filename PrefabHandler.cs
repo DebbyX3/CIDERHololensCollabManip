@@ -13,8 +13,16 @@ public class PrefabHandler : MonoBehaviour
         //GameObject nuovo = CreateNewObject("cube", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.one));        
     }
 
-    public static GameObject CreateNewObject(string prefabName, SerializableTransform transform)
+    // need this method because sometimes i want to spawn an object with a certain GUID
+    public static GameObject CreateNewObject(Guid guid, string prefabName, SerializableTransform transform)
     {
+        GameObject newObj = CreateNewObject(prefabName, transform);
+        newObj.GetComponent<GameObjController>().setGuid(guid);
+
+        return newObj;
+    }
+
+    public static GameObject CreateNewObject(string prefabName, SerializableTransform transform) {
         SerializebleVector position = transform.Position;
         SerializebleVector rotation = transform.Rotation;
         SerializebleVector scale = transform.Scale;

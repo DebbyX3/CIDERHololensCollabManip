@@ -6,7 +6,7 @@ using UnityEngine;
 public class GameObjController : MonoBehaviour
 {
     public Guid Guid { get; private set; }
-    public string PrefabName { get; private set; } = "cube"; // solo per debug, poi l'assegnamento si toglie TODO magari ricordati di toglierlo
+    public string PrefabName { get; private set; } = "cube"; // solo per debug, poi l'assegnamento si toglie. TODO magari ricordati di toglierlo polla!!!
 
     private void Awake() {
         // Generate new guid
