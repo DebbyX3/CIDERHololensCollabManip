@@ -37,8 +37,7 @@ public class GameObjController : MonoBehaviour
 
     public void SendGObj() 
     {
-        //TODO: controlla che il client sia connesso prima?
-        //SocketClient.Instance.SendNewObject(gameObject);
+        
     }
 
     public void UpdateObj() {

@@ -9,8 +9,7 @@ using System.Threading;
 using UnityEngine;
 using TMPro;
 
-public class SocketServer : MonoBehaviour 
-{
+public class SocketServer : MonoBehaviour {
     private volatile bool connectionEstablished = false;
     private volatile bool keepReading = false;
 
@@ -27,19 +26,16 @@ public class SocketServer : MonoBehaviour
     public GameObject sphere;
 
     // can be changed in unity inspector
-    public int portToListen = 60000;    
+    public int portToListen = 60000;
 
     public TMP_Text logText;
-
-    protected ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
 
     void Awake() {
         // da togliere probabilmente, non lo uso 
         //UnityThread.initUnityThread();
     }
 
-    protected void StartServer() 
-    {
+    protected void StartServer() {
         CreateServerListener();
         BindToLocalEndPoint();
 
@@ -48,8 +44,7 @@ public class SocketServer : MonoBehaviour
         waitingForConnectionsThread.Start();
     }
 
-    private void Update() 
-    {
+    private void Update() {
         /*
         if (!log.Equals("")) {
             logText.text += log;
@@ -76,79 +71,16 @@ public class SocketServer : MonoBehaviour
                 connectionEstablished = true;
 
                 //create thread to handle request
-                handleIncomingRequest = new Thread(() => RequestHandler());
+                handleIncomingRequest = new Thread(() => NetworkHandler.Receive(handler, connectionEstablished));
                 handleIncomingRequest.IsBackground = true;
                 handleIncomingRequest.Start();
-
-                //proviamo
-                //crea thread per gestire i msg da mandare!
-                /*handleOutgoingRequest = new Thread(() => SendHandler(handler));
-                handleOutgoingRequest.IsBackground = true;
-                handleOutgoingRequest.Start();*/
             }
         } catch (Exception e) {
             Debug.Log(e.ToString());
         }
     }
 
-    void RequestHandler() 
-    {
-        byte[] bytes = new Byte[1024]; // Data buffer for incoming data.
-        int bytesRec = 0;
-
-        try {
-            // An incoming connection needs to be processed.
-            while (keepReading && connectionEstablished) {
-                bytes = new byte[100000];
-                bytesRec = handler.Receive(bytes);
-
-                Debug.Log("Received from Client " + bytesRec + "bytes");
-
-                if (bytesRec <= 0) {
-                    keepReading = false;
-                    handler.Disconnect(true);
-                    Debug.Log("Disconnected because received 0 bytes");
-                    break;
-                }
-
-                // put new message in the concurrent queue, to be fetched later
-                Message newMsg = Message.Deserialize(bytes);
-                messages.Enqueue(newMsg); 
-            }
-
-            handler.Shutdown(SocketShutdown.Both);
-            handler.Close();
-            keepReading = false;
-            connectionEstablished = false;
-        }
-        catch (Exception e) {
-            Debug.Log(e.ToString());
-        }        
-    }
-
-    void SendHandler()
-    {
-        try
-        {
-            if (connectionEstablished)
-            {
-                GameObject newObj = PrefabHandler.CreateNewObject("cube", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.one));
-                GameObjController controller = newObj.GetComponent<GameObjController>();
-                GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, newObj.transform, controller.PrefabName));
-
-                byte[] serializedMsg = msg.Serialize();
-
-                handler.Send(serializedMsg);
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e.ToString());
-        }
-    }
-
-    protected void CreateServerListener() 
-    {
+    protected void CreateServerListener() {
         // IP on where the server should listen to incoming connections/requests
         IPAddress ipAddress = IPAddress.Any;
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 60000);

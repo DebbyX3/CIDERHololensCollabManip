@@ -10,24 +10,22 @@ using System.IO;
 
 public class SocketClientMain : SocketClient 
 {
-    public bool connectionSucceeded = false;
+    public bool connectionEstablished = false;
 
     void Start() 
     {
         //apro connessione
         Debug.Log("Eseguo conn a server");
-        connectionSucceeded = ConnectToServer();
+        connectionEstablished = ConnectToServer();            
 
-        if(connectionSucceeded)
+        if (connectionEstablished) 
+        {
+
+
             cube.GetComponent<Renderer>().material.color = new Color(0, 204, 102);
-
-        if (connectionSucceeded) {
-            //StartCoroutine(SendToServer());
-
             SendToServer();
-        }
-
-        StartCoroutine(cor());
+            StartCoroutine(cor());
+        }        
     }
 
     IEnumerator cor() {

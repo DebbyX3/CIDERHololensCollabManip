@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
 
-public class SocketServerMain : SocketServer {
-
+public class SocketServerMain : SocketServer 
+{
     void Start() {
         //open connection
         Debug.Log("Eseguo conn con " + gameObject.name);
@@ -12,16 +12,14 @@ public class SocketServerMain : SocketServer {
     }
 
     void Update() {
-        
+
         Message item;
 
-        if (!messages.IsEmpty) 
-        {
-            messages.TryDequeue(out item);
+        if (!NetworkHandler.messages.IsEmpty) {
+            NetworkHandler.messages.TryDequeue(out item);
             item.ExecuteMessage();
 
-            if ((item is GameObjMessage message) && message.MessageType.Equals(MessageType.GameObjMessage))
-            {
+            if ((item is GameObjMessage message) && message.MessageType.Equals(MessageType.GameObjMessage)) {
                 Debug.Log("guid " + message.getMsgInfo().GameObjectGuid);
                 Debug.Log("pos " + message.getMsgInfo().Transform.Position.ToString());
                 Debug.Log("rot " + message.getMsgInfo().Transform.Rotation.ToString());

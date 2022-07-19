@@ -5,7 +5,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Collections;
 
-public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
+public class SocketClient: MonoBehaviour
 {
     public string ipToSend = "0.0.0.0"; //to be changed in the Unity Inspector
     public int portToSend = 60000;
@@ -13,22 +13,6 @@ public class SocketClient: MonoBehaviour // prima derivava da monobehiavour
     public GameObject sphere;
 
     private Socket client;
-    //private static readonly SocketClient instance = new SocketClient();
-
-    // Explicit static constructor to tell C# compiler
-    // not to mark type as beforefieldinit
-    static SocketClient() {
-    }
-
-    protected SocketClient() {
-    }
-
-    /*public static SocketClient Instance {
-        get {
-            return instance;
-        }
-    }
-    */
 
     protected bool ConnectToServer() 
     {
