@@ -4,7 +4,6 @@ using UnityEngine;
 using System.Threading;
 
 public class SocketServerMain : SocketServer {
-    public bool connessioneRiuscita = false;
 
     void Start() {
         //open connection

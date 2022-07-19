@@ -9,33 +9,37 @@ using System.Threading;
 using UnityEngine;
 using TMPro;
 
-public class SocketServer : MonoBehaviour {
+public class SocketServer : MonoBehaviour 
+{
+    private volatile bool connectionEstablished = false;
+    private volatile bool keepReading = false;
+
     private Thread waitingForConnectionsThread;
-    private Thread handleConnectionThread;
-
-    volatile bool keepReading = false;
-    public GameObject cube;
-    public GameObject sphere;
-
-    // can be changed in unity inspector
-    public int portToListen = 60000;
+    private Thread handleIncomingRequest;
+    private Thread handleOutgoingRequest;
 
     private Socket listener;
     private Socket handler;
 
     private IPEndPoint localEndPoint;
 
-    public TMP_Text logText;
-    private string log = "";
+    public GameObject cube;
+    public GameObject sphere;
 
-    public ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
+    // can be changed in unity inspector
+    public int portToListen = 60000;    
+
+    public TMP_Text logText;
+
+    protected ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
 
     void Awake() {
-        //classe per inviare un comando da eseguire nel main thread, per ora non la uso ma funziona
+        // da togliere probabilmente, non lo uso 
         //UnityThread.initUnityThread();
     }
 
-    protected void StartServer() {
+    protected void StartServer() 
+    {
         CreateServerListener();
         BindToLocalEndPoint();
 
@@ -44,13 +48,15 @@ public class SocketServer : MonoBehaviour {
         waitingForConnectionsThread.Start();
     }
 
-    private void Update() {
+    private void Update() 
+    {
+        /*
         if (!log.Equals("")) {
             logText.text += log;
             log = "";
         }
+        */
     }
-
 
     private void WaitingForConnections() {
         try {
@@ -60,33 +66,39 @@ public class SocketServer : MonoBehaviour {
                 keepReading = true;
 
                 Debug.Log("Waiting for Connection");
-                log += "Waiting for Connection \n";
 
-                // Program is suspended while waiting for an incoming connection.
+                // Program is suspended while waiting for an incoming connection
+                // (not a problem because we are in a different thread than the main one)
                 handler = listener.Accept();
 
                 Debug.Log("Client Connected");
-                log += "Client Connected \n";
+
+                connectionEstablished = true;
 
                 //create thread to handle request
-                //SocketThread = new Thread(NetworkCode(handler));
-                handleConnectionThread = new Thread(() => RequestHandler(handler));
-                handleConnectionThread.IsBackground = true;
-                handleConnectionThread.Start();
+                handleIncomingRequest = new Thread(() => RequestHandler());
+                handleIncomingRequest.IsBackground = true;
+                handleIncomingRequest.Start();
+
+                //proviamo
+                //crea thread per gestire i msg da mandare!
+                /*handleOutgoingRequest = new Thread(() => SendHandler(handler));
+                handleOutgoingRequest.IsBackground = true;
+                handleOutgoingRequest.Start();*/
             }
         } catch (Exception e) {
             Debug.Log(e.ToString());
         }
     }
 
-    void RequestHandler(Socket handler) {
-        string data = null;
+    void RequestHandler() 
+    {
         byte[] bytes = new Byte[1024]; // Data buffer for incoming data.
         int bytesRec = 0;
 
         try {
             // An incoming connection needs to be processed.
-            while (keepReading) {
+            while (keepReading && connectionEstablished) {
                 bytes = new byte[100000];
                 bytesRec = handler.Receive(bytes);
 
@@ -95,56 +107,55 @@ public class SocketServer : MonoBehaviour {
                 if (bytesRec <= 0) {
                     keepReading = false;
                     handler.Disconnect(true);
-                    Debug.Log("Disconnected while waiting for more messages");
+                    Debug.Log("Disconnected because received 0 bytes");
                     break;
                 }
 
-                if (data.IndexOf("<EOF>") > -1) {
-                    break;
-                }
-
+                // put new message in the concurrent queue, to be fetched later
                 Message newMsg = Message.Deserialize(bytes);
-                messages.Enqueue(newMsg);
-
-                //UnityThread.executeInUpdate(() =>
-                //{
-
-                /// solo per prova, non va in server ma in client al max
-                /*MeshFilter viewedModelFilter = (MeshFilter)cube.GetComponent("MeshFilter");
-                Mesh viewedModel = viewedModelFilter.mesh;
-
-                byte[] groda = SimpleMeshSerializer.Serialize(viewedModel);
-                ///
-
-                deserializedMesh = SimpleMeshSerializer.Deserialize(groda);*/
-
-
-                //});                
-
-                // Echo the data back to the client.  
-                //byte[] msg = Encoding.ASCII.GetBytes(data);
-
-                //handler.Send(msg);                
+                messages.Enqueue(newMsg); 
             }
 
             handler.Shutdown(SocketShutdown.Both);
             handler.Close();
             keepReading = false;
+            connectionEstablished = false;
+        }
+        catch (Exception e) {
+            Debug.Log(e.ToString());
+        }        
+    }
 
-        } catch (Exception e) {
+    void SendHandler()
+    {
+        try
+        {
+            if (connectionEstablished)
+            {
+                GameObject newObj = PrefabHandler.CreateNewObject("cube", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.one));
+                GameObjController controller = newObj.GetComponent<GameObjController>();
+                GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, newObj.transform, controller.PrefabName));
+
+                byte[] serializedMsg = msg.Serialize();
+
+                handler.Send(serializedMsg);
+            }
+        }
+        catch (Exception e)
+        {
             Debug.Log(e.ToString());
         }
     }
 
-    protected void CreateServerListener() {
-        // host running the application.
+    protected void CreateServerListener() 
+    {
+        // IP on where the server should listen to incoming connections/requests
         IPAddress ipAddress = IPAddress.Any;
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 60000);
 
         Debug.Log(ipAddress);
-        log += ipAddress + "\n";
 
-        // Create a TCP/IP socket.
+        // Create a TCP/IP socket
         listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         this.localEndPoint = localEndPoint;
@@ -164,7 +175,7 @@ public class SocketServer : MonoBehaviour {
 
     private void ListenToClient() {
         try {
-            listener.Listen(10);
+            listener.Listen(10); //max 10 connections
         } catch (SocketException se) {
             Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
         } catch (ObjectDisposedException ode) {
@@ -189,16 +200,14 @@ public class SocketServer : MonoBehaviour {
             handler.Close();
 
             Debug.Log("Disconnected!");
-            log += "Disconnected! \n";
         }
 
         //stop thread
         if (waitingForConnectionsThread != null) {
             Debug.Log("abort");
-            log += "abort \n";
 
             waitingForConnectionsThread.Abort();
-            handleConnectionThread.Abort();
+            handleIncomingRequest.Abort();
         }
     }
 
