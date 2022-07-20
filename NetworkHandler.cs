@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Security;
+using TMPro;
 using UnityEngine;
 
 //per inviare un roba con send, indipendentemente che sia un client o un server, potrei accendere un thread che
@@ -19,15 +20,23 @@ using UnityEngine;
 
 public class NetworkHandler : MonoBehaviour
 {
-    public static ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
+    public static ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>(); 
+    public TMP_Text logText = new TextMeshProUGUI();
+    private static string log;
 
     void Update()         
-    { 
+    {
+        if (!log.Equals("")) {
+            logText.text = logText.text + "\n" + log;
+            log = "";
+        }
+
         if (!messages.IsEmpty) 
         {
             messages.TryDequeue(out Message item);
             item.ExecuteMessage();
 
+            /*
             if ((item is GameObjMessage message) && message.MessageType.Equals(MessageType.GameObjMessage)) {
                 Debug.Log("guid " + message.getMsgInfo().GameObjectGuid);
                 Debug.Log("pos " + message.getMsgInfo().Transform.Position.ToString());
@@ -36,6 +45,7 @@ public class NetworkHandler : MonoBehaviour
 
                 //message.ExecuteMessage();
             }
+            */
         }
     }
 
@@ -49,12 +59,15 @@ public class NetworkHandler : MonoBehaviour
             } 
             catch (SocketException se) {
                 Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
+                PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
             } 
             catch (ObjectDisposedException ode) {
                 Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
+                PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
             } 
             catch (ArgumentNullException ane) {
                 Debug.Log("Data to be sent is null.\n\n" + ane.ToString());
+                PrintMessages("Data to be sent is null.\n\n" + ane.ToString());
             }
         }
     }
@@ -63,7 +76,7 @@ public class NetworkHandler : MonoBehaviour
     public static void Receive(Socket handler, bool connectionEstablished) 
     {
         bool keepReading = true; // not sure, in SocketServer era attributo della classe, non so bene come mai, da rivedere!
-        byte[] bytes = new Byte[1024]; // Data buffer for incoming data.
+        byte[] bytes; // Data buffer for incoming data.
         int bytesRec = 0;
 
         try {
@@ -73,13 +86,15 @@ public class NetworkHandler : MonoBehaviour
                 bytes = new byte[100000];
                 bytesRec = handler.Receive(bytes);
 
-                Debug.Log("Received" + bytesRec + "bytes");
+                Debug.Log("Received " + bytesRec + "bytes");
+                PrintMessages("Received " + bytesRec + "bytes");
 
                 if (bytesRec <= 0) 
                 {
                     keepReading = false;
                     handler.Disconnect(true);
                     Debug.Log("Disconnected because 0 bytes were received");
+                    PrintMessages("Disconnected because 0 bytes were received");
                     break;
                 }
 
@@ -95,16 +110,25 @@ public class NetworkHandler : MonoBehaviour
         } 
         catch (SocketException se) {
             Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
+            PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
         } 
         catch (ObjectDisposedException ode) {
             Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
+            PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
         } 
         catch (SecurityException see) {
             Debug.Log("A caller in the call stack does not have the required permissions.\n\n" + see.ToString());
+            PrintMessages("A caller in the call stack does not have the required permissions.\n\n" + see.ToString());
         } 
         catch (Exception e) 
         {
             Debug.Log(e.ToString());
+            PrintMessages(e.ToString());
         }
+    }
+
+    public static void PrintMessages(string message) 
+    {
+        log += message;
     }
 }

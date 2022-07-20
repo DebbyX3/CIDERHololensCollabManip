@@ -24,8 +24,6 @@ public class SocketServer : MonoBehaviour
     // can be changed in unity inspector
     public int portToListen = 60000;
 
-    public TMP_Text logText;
-
     protected void StartServer() 
     {
         CreateServerListener();
@@ -45,12 +43,14 @@ public class SocketServer : MonoBehaviour
                 keepReading = true;
 
                 Debug.Log("Waiting for Connection");
+                NetworkHandler.PrintMessages("Waiting for Connection");
 
                 // Program is suspended while waiting for an incoming connection
                 // (not a problem because we are in a different thread than the main one)
                 handler = listener.Accept();
 
                 Debug.Log("Client Connected");
+                NetworkHandler.PrintMessages("Client connected");
 
                 connectionEstablished = true;
 
@@ -61,6 +61,7 @@ public class SocketServer : MonoBehaviour
             }
         } catch (Exception e) {
             Debug.Log(e.ToString());
+            NetworkHandler.PrintMessages(e.ToString());
         }
     }
 
@@ -80,6 +81,7 @@ public class SocketServer : MonoBehaviour
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 60000);
 
         Debug.Log(ipAddress);
+        NetworkHandler.PrintMessages(ipAddress.ToString());
 
         // Create a TCP/IP socket
         listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -94,10 +96,13 @@ public class SocketServer : MonoBehaviour
             listener.Bind(localEndPoint);
         } catch (SocketException se) {
             Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
+            NetworkHandler.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
         } catch (ObjectDisposedException ode) {
             Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
+            NetworkHandler.PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
         } catch (ArgumentNullException ane) {
             Debug.Log("The local endpoint is null.\n\n" + ane.ToString());
+            NetworkHandler.PrintMessages("The local endpoint is null.\n\n" + ane.ToString());
         }
     }
 
@@ -108,10 +113,13 @@ public class SocketServer : MonoBehaviour
             listener.Listen(10); //max 10 connections
         } catch (SocketException se) {
             Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
+            NetworkHandler.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
         } catch (ObjectDisposedException ode) {
             Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
+            NetworkHandler.PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
         } catch (ArgumentNullException ane) {
             Debug.Log("The local endpoint is null.\n\n" + ane.ToString());
+            NetworkHandler.PrintMessages("The local endpoint is null.\n\n" + ane.ToString());
         }
     }
 
@@ -128,15 +136,19 @@ public class SocketServer : MonoBehaviour
             handler.Close();
 
             Debug.Log("Disconnected!");
+            NetworkHandler.PrintMessages("Disconnected!");
         }
 
         //stop thread
-        if (waitingForConnectionsThread != null) {
-            Debug.Log("Abort threads");
-
+        if (waitingForConnectionsThread != null) {            
             waitingForConnectionsThread.Abort();
+        }
+        if (handleIncomingRequestThread != null) {
             handleIncomingRequestThread.Abort();
         }
+
+        Debug.Log("Abort threads");
+        NetworkHandler.PrintMessages("Abort threads");
     }
 
     void OnDisable() 

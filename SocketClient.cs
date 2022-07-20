@@ -25,6 +25,7 @@ public class SocketClient: MonoBehaviour
 
         if (!client.Connected) {
             Debug.LogError("Connection Failed");
+            NetworkHandler.PrintMessages("Connection Failed");
             return false;
         }
 
