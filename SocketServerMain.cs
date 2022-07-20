@@ -1,22 +1,24 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Threading;
 
 public class SocketServerMain : SocketServer 
 {
-    void Start() {
+    void Start() 
+    {
         //open connection
-        Debug.Log("Eseguo conn con " + gameObject.name);
+        Debug.Log("Server: open connection");
         StartServer();
+
+        SendObject(cube);
     }
 
-    void Update() {
 
-        Message item;
 
+    void Update() 
+    {
+        //ora tutto questo lo fa NetworkHandler!
+        /*
         if (!NetworkHandler.messages.IsEmpty) {
-            NetworkHandler.messages.TryDequeue(out item);
+            NetworkHandler.messages.TryDequeue(out Message item);
             item.ExecuteMessage();
 
             if ((item is GameObjMessage message) && message.MessageType.Equals(MessageType.GameObjMessage)) {
@@ -28,5 +30,6 @@ public class SocketServerMain : SocketServer
                 //message.ExecuteMessage();
             }
         }
+        */
     }
 }

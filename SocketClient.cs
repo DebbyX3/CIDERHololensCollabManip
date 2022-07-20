@@ -1,39 +1,34 @@
 using UnityEngine;
 using System.Net.Sockets;
-using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections;
+using System.Threading;
 
 public class SocketClient: MonoBehaviour
 {
     public string ipToSend = "0.0.0.0"; //to be changed in the Unity Inspector
     public int portToSend = 60000;
     public GameObject cube;
-    public GameObject sphere;
 
     private Socket client;
+    private Thread handleIncomingRequestThread;
 
-    protected bool ConnectToServer() 
+    protected volatile bool connectionEstablished = false;
+
+    protected bool StartClient() 
     {
         client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
         client.Connect(ipToSend, portToSend);
 
-        if (!client.Connected) 
-        {
+        //create thread to handle request
+        handleIncomingRequestThread = new Thread(() => NetworkHandler.Receive(client, connectionEstablished));
+        handleIncomingRequestThread.IsBackground = true;
+        handleIncomingRequestThread.Start();
+
+        if (!client.Connected) {
             Debug.LogError("Connection Failed");
             return false;
         }
 
         return true;
-    }
-
-    public void SendToServer() {
-        var newObj = PrefabHandler.CreateNewObject("cube", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.one));
-        SendObject(newObj);
-
-        Debug.Log("inviati i dati a server");
     }
 
     public void SendObject(GameObject gameObject) 
@@ -43,6 +38,6 @@ public class SocketClient: MonoBehaviour
         GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName));
         byte[] serializedMsg = msg.Serialize();
 
-        client.Send(serializedMsg);
+        NetworkHandler.Send(client, serializedMsg, connectionEstablished);
     }
 }

@@ -17,7 +17,7 @@ public class PrefabHandler : MonoBehaviour
     public static GameObject CreateNewObject(Guid guid, string prefabName, SerializableTransform transform)
     {
         GameObject newObj = CreateNewObject(prefabName, transform);
-        newObj.GetComponent<GameObjController>().setGuid(guid);
+        newObj.GetComponent<GameObjController>().SetGuid(guid);
 
         return newObj;
     }
@@ -31,7 +31,7 @@ public class PrefabHandler : MonoBehaviour
         Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
         GameObject newObj = Instantiate(Resources.Load<GameObject>(prefabName), pos, rot);
-        newObj.GetComponent<GameObjController>().setPrefabName(prefabName);
+        newObj.GetComponent<GameObjController>().SetPrefabName(prefabName);
 
         GameObject button1 = Instantiate(Resources.Load<GameObject>("PressableButtonHoloLens2"), Vector3.zero, Quaternion.identity);
         Interactable interactable = button1.GetComponent<Interactable>();

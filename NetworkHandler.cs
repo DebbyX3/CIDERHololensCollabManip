@@ -1,8 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Security;
 using UnityEngine;
 
 //per inviare un roba con send, indipendentemente che sia un client o un server, potrei accendere un thread che
@@ -24,11 +23,9 @@ public class NetworkHandler : MonoBehaviour
 
     void Update()         
     { 
-        Message item;
-
         if (!messages.IsEmpty) 
         {
-            messages.TryDequeue(out item);
+            messages.TryDequeue(out Message item);
             item.ExecuteMessage();
 
             if ((item is GameObjMessage message) && message.MessageType.Equals(MessageType.GameObjMessage)) {
@@ -95,6 +92,15 @@ public class NetworkHandler : MonoBehaviour
             handler.Close();
             keepReading = false;
             connectionEstablished = false;
+        } 
+        catch (SocketException se) {
+            Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
+        } 
+        catch (ObjectDisposedException ode) {
+            Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
+        } 
+        catch (SecurityException see) {
+            Debug.Log("A caller in the call stack does not have the required permissions.\n\n" + see.ToString());
         } 
         catch (Exception e) 
         {

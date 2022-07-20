@@ -1,21 +1,18 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-//using System.Runtime.InteropServices;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using UnityEngine;
 using TMPro;
 
-public class SocketServer : MonoBehaviour {
-    private volatile bool connectionEstablished = false;
+public class SocketServer : MonoBehaviour 
+{
+    protected volatile bool connectionEstablished = false;
+
     private volatile bool keepReading = false;
 
     private Thread waitingForConnectionsThread;
-    private Thread handleIncomingRequest;
-    private Thread handleOutgoingRequest;
+    private Thread handleIncomingRequestThread;
 
     private Socket listener;
     private Socket handler;
@@ -23,19 +20,14 @@ public class SocketServer : MonoBehaviour {
     private IPEndPoint localEndPoint;
 
     public GameObject cube;
-    public GameObject sphere;
 
     // can be changed in unity inspector
     public int portToListen = 60000;
 
     public TMP_Text logText;
 
-    void Awake() {
-        // da togliere probabilmente, non lo uso 
-        //UnityThread.initUnityThread();
-    }
-
-    protected void StartServer() {
+    protected void StartServer() 
+    {
         CreateServerListener();
         BindToLocalEndPoint();
 
@@ -44,16 +36,8 @@ public class SocketServer : MonoBehaviour {
         waitingForConnectionsThread.Start();
     }
 
-    private void Update() {
-        /*
-        if (!log.Equals("")) {
-            logText.text += log;
-            log = "";
-        }
-        */
-    }
-
-    private void WaitingForConnections() {
+    private void WaitingForConnections() 
+    {
         try {
             while (true) {
                 ListenToClient();
@@ -71,16 +55,26 @@ public class SocketServer : MonoBehaviour {
                 connectionEstablished = true;
 
                 //create thread to handle request
-                handleIncomingRequest = new Thread(() => NetworkHandler.Receive(handler, connectionEstablished));
-                handleIncomingRequest.IsBackground = true;
-                handleIncomingRequest.Start();
+                handleIncomingRequestThread = new Thread(() => NetworkHandler.Receive(handler, connectionEstablished));
+                handleIncomingRequestThread.IsBackground = true;
+                handleIncomingRequestThread.Start();
             }
         } catch (Exception e) {
             Debug.Log(e.ToString());
         }
     }
 
-    protected void CreateServerListener() {
+    public void SendObject(GameObject gameObject) {
+        GameObjController controller = gameObject.GetComponent<GameObjController>();
+
+        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName));
+        byte[] serializedMsg = msg.Serialize();
+
+        NetworkHandler.Send(handler, serializedMsg, connectionEstablished);
+    }
+
+    protected void CreateServerListener() 
+    {
         // IP on where the server should listen to incoming connections/requests
         IPAddress ipAddress = IPAddress.Any;
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 60000);
@@ -93,7 +87,9 @@ public class SocketServer : MonoBehaviour {
         this.localEndPoint = localEndPoint;
     }
 
-    private void BindToLocalEndPoint() {
+    // not sure, but i think bind does not block
+    private void BindToLocalEndPoint() 
+    {
         try {
             listener.Bind(localEndPoint);
         } catch (SocketException se) {
@@ -105,7 +101,9 @@ public class SocketServer : MonoBehaviour {
         }
     }
 
-    private void ListenToClient() {
+    // listen does NOT block!
+    private void ListenToClient() 
+    {
         try {
             listener.Listen(10); //max 10 connections
         } catch (SocketException se) {
@@ -117,14 +115,12 @@ public class SocketServer : MonoBehaviour {
         }
     }
 
-
-    protected void StopServer() {
+    protected void StopServer() 
+    {
         keepReading = false;
 
         if (handler != null && handler.Connected) {
-            // there's no need of shutdown and disconnect a listener socket!
-            //listener.Shutdown(SocketShutdown.Both);
-            //listener.Disconnect(false);
+            // there's no need of shutdown and disconnect a listener socket
             listener.Close();
 
             handler.Shutdown(SocketShutdown.Both);
@@ -136,14 +132,15 @@ public class SocketServer : MonoBehaviour {
 
         //stop thread
         if (waitingForConnectionsThread != null) {
-            Debug.Log("abort");
+            Debug.Log("Abort threads");
 
             waitingForConnectionsThread.Abort();
-            handleIncomingRequest.Abort();
+            handleIncomingRequestThread.Abort();
         }
     }
 
-    void OnDisable() {
+    void OnDisable() 
+    {
         StopServer();
     }
 }

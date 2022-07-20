@@ -16,15 +16,15 @@ public class GameObjController : MonoBehaviour
         GUIDList.AddToList(Guid, gameObject);
     }
 
-    public string getGuidString() {
+    public string GetGuidString() {
         return Guid.ToString();
     }
 
-    public void setPrefabName(string prefabName) {
+    public void SetPrefabName(string prefabName) {
         this.PrefabName = prefabName;
     }
 
-    public void setGuid(Guid guid) {
+    public void SetGuid(Guid guid) {
         Guid oldGuid = this.Guid;
         this.Guid = guid;
 
