@@ -5,13 +5,15 @@ public class SocketServerMain : SocketServer {
 
     bool avviato = false;
 
-    void Start() {
+    void Start() 
+    {
         //open connection
         Debug.Log("Server: open connection");
         StartServer();
     }
 
-    void Update() {
+    void Update() 
+    {
         if (connectionEstablished && avviato == false) {
             avviato = true;
             StartCoroutine(Cor());

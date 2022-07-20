@@ -9,8 +9,6 @@ public class SocketServer : MonoBehaviour
 {
     protected volatile bool connectionEstablished = false;
 
-    private volatile bool keepReading = false;
-
     private Thread waitingForConnectionsThread;
     private Thread handleIncomingRequestThread;
 
@@ -39,8 +37,6 @@ public class SocketServer : MonoBehaviour
         try {
             while (true) {
                 ListenToClient();
-
-                keepReading = true;
 
                 Debug.Log("Waiting for Connection");
                 NetworkHandler.PrintMessages("Waiting for Connection");
@@ -125,8 +121,6 @@ public class SocketServer : MonoBehaviour
 
     protected void StopServer() 
     {
-        keepReading = false;
-
         if (handler != null && handler.Connected) {
             // there's no need of shutdown and disconnect a listener socket
             listener.Close();

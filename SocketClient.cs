@@ -41,4 +41,29 @@ public class SocketClient: MonoBehaviour
 
         NetworkHandler.Send(client, serializedMsg, connectionEstablished);
     }
+
+    protected void StopClient()
+    {
+        if (client != null) 
+        {
+            client.Shutdown(SocketShutdown.Both);
+            client.Disconnect(false);
+            client.Close();
+
+            Debug.Log("Disconnected!");
+            NetworkHandler.PrintMessages("Disconnected!");
+        }
+
+        //stop thread
+        if (handleIncomingRequestThread != null) {
+            handleIncomingRequestThread.Abort();
+        }
+
+        Debug.Log("Abort threads");
+        NetworkHandler.PrintMessages("Abort threads");
+    }
+
+    void OnDisable() {
+        StopClient();
+    }
 }
