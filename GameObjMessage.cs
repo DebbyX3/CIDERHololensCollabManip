@@ -47,8 +47,6 @@ public class GameObjMessage : Message {
             //Create it
             PrefabHandler.CreateNewObject(getMsgInfo().GameObjectGuid, getMsgInfo().PrefabName, getMsgInfo().Transform);
         }
-
-        Debug.Log("hei, sto eseguendo il messaggio che ha inviato gObjMsg!!!");
     }
 
     public GameObjMessageInfo getMsgInfo() {

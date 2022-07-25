@@ -27,7 +27,6 @@ public struct SerializebleVector {
     public override string ToString() {
         return "x = " + x + "\ny = " + y + "\nz = " + z + "\nw = " + w;
     }
-
 }
 
 [Serializable]

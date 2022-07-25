@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Threading;
 using TMPro;
@@ -30,7 +31,7 @@ public class NetworkHandler : MonoBehaviour
     void Update()         
     {
         if (!log.Equals("")) {
-            logText.text = logText.text + "\n" + log;
+            logText.text = logText.text + log;
             log = "";
         }
 
@@ -93,34 +94,52 @@ public class NetworkHandler : MonoBehaviour
                 Debug.Log("Received " + bytesRec + "bytes");
                 PrintMessages("Received " + bytesRec + "bytes");
 
-                if (bytesRec <= 0) {
+                if (bytesRec <= 0) 
+                {
                     keepReading = false;
                     handler.Disconnect(true);
+
                     Debug.Log("Disconnected because 0 bytes were received");
                     PrintMessages("Disconnected because 0 bytes were received");
                     break;
                 }
 
                 // put new message in the concurrent queue, to be fetched later
-                Message newMsg = Message.Deserialize(bytes);
-                messages.Enqueue(newMsg);
+                try {
+                    Message newMsg = Message.Deserialize(bytes);
+                    messages.Enqueue(newMsg);
+                } 
+                catch (SerializationException sere) {
+                    Debug.Log("The input stream is not a valid binary format.\n\n" + sere.ToString());
+                    PrintMessages("The input stream is not a valid binary format.\n\n" + sere.ToString());
+
+                    //DO NOT assign false to keepReading, because we WANT to keep reading here!
+                }
             } 
             catch (SocketException se) {
                 Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
                 PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
+
+                keepReading = false;
             } 
             catch (ObjectDisposedException ode) {
                 Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
                 PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
+
+                keepReading = false;
             } 
             catch (SecurityException see) {
                 Debug.Log("A caller in the call stack does not have the required permissions.\n\n" + see.ToString());
                 PrintMessages("A caller in the call stack does not have the required permissions.\n\n" + see.ToString());
+
+                keepReading = false;
             } 
             catch (ThreadAbortException tae) {
                 Debug.Log("Receiving thread aborted.\n\n" + tae.ToString());
                 PrintMessages("Receiving thread aborted.\n\n" + tae.ToString());
-            }
+
+                keepReading = false;
+            }            
             catch (Exception e) {
                 Debug.Log(e.ToString());
                 PrintMessages(e.ToString());
@@ -136,6 +155,6 @@ public class NetworkHandler : MonoBehaviour
 
     public static void PrintMessages(string message) 
     {
-        log += message;
+        log += message + "\n";
     }
 }

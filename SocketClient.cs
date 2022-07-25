@@ -46,9 +46,14 @@ public class SocketClient: MonoBehaviour
     {
         if (client != null) 
         {
-            client.Shutdown(SocketShutdown.Both);
-            client.Disconnect(false);
-            client.Close();
+            try 
+            {
+                client.Shutdown(SocketShutdown.Both);
+                client.Disconnect(false);
+            } 
+            finally {
+                client.Close();
+            }                      
 
             Debug.Log("Disconnected!");
             NetworkHandler.PrintMessages("Disconnected!");
