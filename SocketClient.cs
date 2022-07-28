@@ -32,11 +32,13 @@ public class SocketClient: MonoBehaviour
         return true;
     }
 
+    //nota: questo metodo è identico a SendObject di SocketServer, cambia solo che passo l'handler di socket diverso (giustamente)!
+    //Da capire se delegarlo a network? boh? (penso di no)
     public void SendObject(GameObject gameObject) 
     {
         GameObjController controller = gameObject.GetComponent<GameObjController>();
 
-        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName));
+        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName, CommitType.ForcedCommit));
         byte[] serializedMsg = msg.Serialize();
 
         NetworkHandler.Send(client, serializedMsg, connectionEstablished);

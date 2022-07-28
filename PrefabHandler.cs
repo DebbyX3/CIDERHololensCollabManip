@@ -43,7 +43,7 @@ public class PrefabHandler : MonoBehaviour
 
     public static void UpdateObject(Guid guid, SerializableTransform transform) 
     {        
-        GameObject obj = GUIDList.GetGObjFromGuid(guid);
+        GameObject obj = GUIDKeeper.GetGObjFromGuid(guid);
         TransformSerializer.LoadTransform(obj.transform, transform);
     }
 }

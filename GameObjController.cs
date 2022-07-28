@@ -10,12 +10,24 @@ public class GameObjController : MonoBehaviour
     public string PrefabName { get; private set; } = "cube"; // solo per debug, poi l'assegnamento si toglie. TODO magari ricordati di toglierlo polla!!!
     public SerializableTransform Transform;
 
+    public UnityEvent saveGlobalState;
+    public UnityEvent saveLocalState;
+
     private void Awake() {
         // Generate new guid
         Guid = Guid.NewGuid();
 
         // Add guid and attached gameobject in list
-        GUIDList.AddToList(Guid, gameObject);
+        GUIDKeeper.AddToList(Guid, gameObject);
+
+        if (saveGlobalState == null)
+            saveGlobalState = new UnityEvent();
+
+        if (saveLocalState == null)
+            saveLocalState = new UnityEvent();
+
+        saveGlobalState.AddListener(() => CaretakerProva.SaveGlobalState(this));
+        saveLocalState.AddListener(() => CaretakerProva.SaveLocalState(this));
     }
 
     void Update() 
@@ -56,11 +68,11 @@ public class GameObjController : MonoBehaviour
         Guid oldGuid = this.Guid;
         this.Guid = guid;
 
-        if(GUIDList.ContainsGuid(guid)) {
-            GUIDList.RemoveFromList(oldGuid);
+        if(GUIDKeeper.ContainsGuid(guid)) {
+            GUIDKeeper.RemoveFromList(oldGuid);
         }
 
-        GUIDList.AddToList(Guid, gameObject);
+        GUIDKeeper.AddToList(Guid, gameObject);
     }
 
     public void SendGObj() 
@@ -78,18 +90,24 @@ public class GameObjController : MonoBehaviour
         PrefabHandler.UpdateObject(Guid, tr);
     }
 
-    /* PROVA MEMENTO DA QUA IN GIù! */
-    public MementoProva Save() {
-        return new MementoProva(this.Guid.ToString());
+    public Memento Save() {
+        return new Memento(Guid, PrefabName, Transform);
     }
 
+
+
+
+
+    /* PROVA MEMENTO DA QUA IN GIù! 
+    
+
     // Restores the Originator's state from a memento object.
-    public void Restore(MementoProva memento) {
-        if (!(memento is MementoProva)) {
+    public void Restore(Memento memento) {
+        if (!(memento is Memento)) {
             throw new Exception("Unknown memento class " + memento.ToString());
         }
 
         this.Guid = memento.GetState();
         Console.Write($"Originator: My state has changed to: {Guid}");
-    }
+    }*/
 }

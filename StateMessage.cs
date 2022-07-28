@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System;
 
 public enum UserState : int {
-    EditingInLocalScene,
-    Waiting
+    InLocalScene,
+    InGlobalScsene,
+    WaitingConnection
 }
 
 [Serializable]

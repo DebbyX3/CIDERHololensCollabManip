@@ -7,22 +7,41 @@ using System.IO;
 using SysDiag = System.Diagnostics;
 using System.Runtime.Serialization;
 
+public enum CommitType : int {
+    ForcedCommit,
+    RequestCommit
+}
+
+// TODO: forse aggiungere un campo enum per indicare il tipo di commit? forse?
 [Serializable]
 public struct GameObjMessageInfo {
     public Guid GameObjectGuid { get; private set; }
     public SerializableTransform Transform { get; private set; }
     public string PrefabName { get; private set; }
+    public CommitType CommitType { get; private set; }
 
-    public GameObjMessageInfo(Guid gameObjectGuid, SerializableTransform transform, string prefabName) {
+    // ma al posto di fare un costruttore così astruso perchè non passo direttamente gameobjcontroller?
+    // ma se invece GameObjMessageInfo contenesse direttamente il controller? non è + facile? mhm MI SA DI SI!! MA è SERIALIZZABILE??? PENSO DI SI?
+
+
+    public GameObjMessageInfo(Guid gameObjectGuid, SerializableTransform transform, string prefabName, CommitType commitType) {
         this.GameObjectGuid = gameObjectGuid;
         this.Transform = transform;
         this.PrefabName = prefabName;
+        this.CommitType = commitType;
+    }
+    public GameObjMessageInfo(GameObjController gObj, CommitType commitType) {
+        GameObjectGuid = gObj.Guid;
+        Transform = gObj.Transform;
+        PrefabName = gObj.PrefabName;
+        this.CommitType = commitType;
     }
 
-    public GameObjMessageInfo(Guid gameObjectGuid, Transform transform, string prefabName) {
+    public GameObjMessageInfo(Guid gameObjectGuid, Transform transform, string prefabName, CommitType commitType) {
         this.GameObjectGuid = gameObjectGuid;
         this.Transform = new SerializableTransform(transform.position, transform.rotation, transform.lossyScale);
         this.PrefabName = prefabName;
+        this.CommitType = commitType;
     }
 }
 
@@ -38,7 +57,7 @@ public class GameObjMessage : Message {
     public override void ExecuteMessage() 
     {
         //if the scene contains the object
-        if (GUIDList.ContainsGuid(getMsgInfo().GameObjectGuid)) 
+        if (GUIDKeeper.ContainsGuid(getMsgInfo().GameObjectGuid)) 
         {
             PrefabHandler.UpdateObject(getMsgInfo().GameObjectGuid, getMsgInfo().Transform);
         } 

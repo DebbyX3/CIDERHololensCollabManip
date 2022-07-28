@@ -48,6 +48,10 @@ public struct SerializableTransform {
         this.Rotation = (SerializebleVector) rotation;
         this.Scale = scale;
     }
+
+    public override string ToString() {
+        return $"Position {Position}, Rotation {Rotation}, Scale {Scale}";
+    }
 }
 
 [Serializable]

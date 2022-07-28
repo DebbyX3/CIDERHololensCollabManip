@@ -1,36 +1,55 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Index;
-using System.Range;
 
-public class CaretakerProva : MonoBehaviour
+// mi posso permettere di usare un dizionario e non una lista perchè non mi server uno storico dell'oggetto,
+//visto che la 'storia' sarebbe 
+//forse non serve tutta la classe static? boh
+public static class CaretakerProva
 {
-    private List<MementoProva> _mementos = new List<MementoProva>();
+    //keeps mementos of global scene
+    private static Dictionary<Guid, Memento> globalListMementos { get; } = new Dictionary<Guid, Memento>();
 
-    private GameObjController _originator = null;
+    //keeps mementos of local scene
+    private static Dictionary<Guid, Memento> localListMementos { get; } = new Dictionary<Guid, Memento>();
 
-    public CaretakerProva(GameObjController originator) {
-        this._originator = originator;
+    // o forse solo un metodo dove passo l'enum globale/locale? boh
+    public static void SaveGlobalState(GameObjController gObj) {
+        //salva
+        if (globalListMementos.ContainsKey(gObj.Guid)) {
+            globalListMementos[gObj.Guid] = gObj.Save();
+        } 
+        else {
+            globalListMementos.Add(gObj.Guid, gObj.Save());
+        }
     }
 
+    public static void SaveLocalState(GameObjController gObj) {
+        //salva
+    }
+
+
+    /*
     public void Backup() {
         Debug.Log("\nCaretaker: Saving Originator (GObj)'s state...");
-        this._mementos.Add(this._originator.Save());
+        this.globalListMementos.Add(this.Originator.Save());
     }
 
     public void Undo() {
-        if (this._mementos.Count == 0) {
+        if (this.globalListMementos.Count == 0) {
             return;
         }
 
-        var memento = _mementos[_mementos.Count-1]; // get last element!
-        this._mementos.Remove(memento);
+        var memento = globalListMementos[globalListMementos.Count-1]; // get last element!
+        
+        // ma non lo devo rimuovere! mi sa che devo ripensare al salvataggio mhm
+        //this.mementos.Remove(memento);
 
-        Console.WriteLine("Caretaker: Restoring state to: " + memento.GetName());
+        Debug.Log("Caretaker: Restoring state to: " + memento.GetName());
 
         try {
-            this._originator.Restore(memento);
+            this.Originator.Restore(memento);
         } catch (Exception) {
             this.Undo();
         }
@@ -39,9 +58,8 @@ public class CaretakerProva : MonoBehaviour
     public void ShowHistory() {
         Console.WriteLine("Caretaker: Here's the list of mementos:");
 
-        foreach (var memento in this._mementos) {
-            Console.WriteLine(memento.GetName());
+        foreach (var memento in this.globalListMementos) {
+            Debug.Log(memento.GetName());
         }
-    }
-    
+    }*/
 }
