@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum ObjectLocation : int {
-    OnlyLocalLayer,
-    OnlyGlobalLayer,
-    BothLocalGlobal // non so se ha senso, forse basta mettere due enum:
+public enum Location : int {
+    LocalLayer,
+    GlobalLayer
+    //BothLocalGlobal // non so se ha senso, forse basta mettere due enum:
                     // uno per local e uno per global, poi se esiste local
                     // allora metto local e le sue cose, se esiste global
                     // metto global e le sue cose. quando faccio switch scena
@@ -28,7 +28,7 @@ public class Memento
 
     // memento info
     private DateTime date;
-    private ObjectLocation objectLocation;
+    private Location objectLocation;
 
     public Memento(Guid guid, string prefabName, SerializableTransform transform) {
         this.guid = guid;
@@ -38,7 +38,7 @@ public class Memento
     }
 
     //call the less demanding constructor + add assignment to the field
-    public Memento(Guid guid, string prefabName, SerializableTransform transform, ObjectLocation objectLocation) : this(guid, prefabName, transform)
+    public Memento(Guid guid, string prefabName, SerializableTransform transform, Location objectLocation) : this(guid, prefabName, transform)
     {
         this.objectLocation = objectLocation;
     }
@@ -66,7 +66,7 @@ public class Memento
     public DateTime GetDate() {
         return date;
     }
-    public ObjectLocation GetObjectLocation() {
+    public Location GetObjectLocation() {
         return objectLocation;
     }
 }
