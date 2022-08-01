@@ -19,8 +19,7 @@ public class GameObjController : MonoBehaviour {
         //CaretakerScene.saveGlobalState.AddListener(() => CaretakerScene.SaveGlobalState(this));
         //CaretakerScene.saveLocalState.AddListener(() => CaretakerScene.SaveLocalState(this));
 
-        //prova
-        CaretakerScene.saveGenericState.AddListener(() => CaretakerScene.SaveState(this));
+        CaretakerScene.saveState.AddListener(() => CaretakerScene.SaveState(this));
     }
 
     void Update() {

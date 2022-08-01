@@ -7,7 +7,7 @@ using UnityEngine.Events;
 
 // mi posso permettere di usare un dizionario e non una lista perchè non mi server uno storico dell'oggetto,
 //visto che la 'storia' sarebbe 
-//forse non serve tutta la classe static? boh
+
 public class CaretakerScene : MonoBehaviour
 {
     //keeps mementos of global scene
@@ -23,9 +23,11 @@ public class CaretakerScene : MonoBehaviour
     public static UnityEvent saveLocalState = new UnityEvent();
 
     //provo a mettere solo un evento generico?
-    public static UnityEvent saveGenericState = new UnityEvent();
+    public static UnityEvent saveState = new UnityEvent(); // ne faccio due perchè l'idea è che se un oggetto non + più in una delle due scene, si può togliere da un evento no? boh? o forse si applica se ho due eventi, uno per global e uno per local? mi sa di si uff
+    public static UnityEvent restoreState = new UnityEvent();
 
-    void Start() {
+    void Start()
+    {
         UIManager.Instance.ChangeSceneState(sceneState);
     }
 
@@ -71,10 +73,25 @@ public class CaretakerScene : MonoBehaviour
     {        
         //salva lo stato degli oggetti nelle loro liste corrette chiamando un invoke
         //la funzione di salvataggio legge in che scena l'utente è e salva nella lista corrispondente (tipo se sono in local, salvo in local)
-        saveGenericState.Invoke();
+
+        // chiama SaveState con tutti gli oggetti attaccati
+        saveState.Invoke();
+
+        //rimetti lo stato dell'oggetto rispetto alla scena precedente (se switch a local, rimetti gli oggetti in posizione di local)
+        RestoreState();
 
         //la funzione di flip fa il cambio da global a local e viceversa
         FlipSceneState();
+    }
+
+    public static void SaveState(GameObjController gObj) {
+        if (sceneState.Equals(Location.LocalLayer)) {
+            localListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        }
+
+        if (sceneState.Equals(Location.GlobalLayer)) {
+            globalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        }
     }
 
     public static void ChangeSceneState(Location sceneState) {
@@ -94,24 +111,9 @@ public class CaretakerScene : MonoBehaviour
         UIManager.Instance.ChangeSceneState(sceneState);
     }
     
-    public static void SaveState(GameObjController gObj)
-    {        
-        if (sceneState.Equals(Location.LocalLayer)) 
-        {
-            if (localListMementos.ContainsKey(gObj.Guid)) {
-                localListMementos[gObj.Guid] = gObj.Save();
-            } else {
-                localListMementos.Add(gObj.Guid, gObj.Save());
-            }
-        }
 
-        if (sceneState.Equals(Location.GlobalLayer)) {
-            if (globalListMementos.ContainsKey(gObj.Guid)) {
-                globalListMementos[gObj.Guid] = gObj.Save();
-            } else {
-                globalListMementos.Add(gObj.Guid, gObj.Save());
-            }
-        }
+    public static void RestoreState() { 
+
     }
 
     /*
