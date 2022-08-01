@@ -16,8 +16,8 @@ public class GameObjController : MonoBehaviour {
         // Add guid and attached gameobject in list
         GUIDKeeper.AddToList(Guid, gameObject);
 
-        CaretakerScene.saveGlobalState.AddListener(() => CaretakerScene.SaveGlobalState(this));
-        CaretakerScene.saveLocalState.AddListener(() => CaretakerScene.SaveLocalState(this));
+        //CaretakerScene.saveGlobalState.AddListener(() => CaretakerScene.SaveGlobalState(this));
+        //CaretakerScene.saveLocalState.AddListener(() => CaretakerScene.SaveLocalState(this));
 
         //prova
         CaretakerScene.saveGenericState.AddListener(() => CaretakerScene.SaveState(this));

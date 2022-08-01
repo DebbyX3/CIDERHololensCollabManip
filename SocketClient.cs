@@ -19,13 +19,13 @@ public class SocketClient: MonoBehaviour
         client.Connect(ipToSend, portToSend);
 
         //create thread to handle request
-        handleIncomingRequestThread = new Thread(() => NetworkHandler.Receive(client, connectionEstablished));
+        handleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(client, connectionEstablished));
         handleIncomingRequestThread.IsBackground = true;
         handleIncomingRequestThread.Start();
 
         if (!client.Connected) {
             Debug.LogError("Connection Failed");
-            NetworkHandler.PrintMessages("Connection Failed");
+            UIManager.Instance.PrintMessages("Connection Failed");
             return false;
         }
 
@@ -41,7 +41,7 @@ public class SocketClient: MonoBehaviour
         GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName, CommitType.ForcedCommit));
         byte[] serializedMsg = msg.Serialize();
 
-        NetworkHandler.Send(client, serializedMsg, connectionEstablished);
+        NetworkHandler.Instance.Send(client, serializedMsg, connectionEstablished);
     }
 
     protected void StopClient()
@@ -58,7 +58,7 @@ public class SocketClient: MonoBehaviour
             }                      
 
             Debug.Log("Disconnected!");
-            NetworkHandler.PrintMessages("Disconnected!");
+            UIManager.Instance.PrintMessages("Disconnected!");
         }
 
         //stop thread
@@ -67,7 +67,7 @@ public class SocketClient: MonoBehaviour
         }
 
         Debug.Log("Abort threads");
-        NetworkHandler.PrintMessages("Abort threads");
+        UIManager.Instance.PrintMessages("Abort threads");
     }
 
     void OnDisable() {

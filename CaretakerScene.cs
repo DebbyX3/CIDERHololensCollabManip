@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -23,6 +24,10 @@ public class CaretakerScene : MonoBehaviour
 
     //provo a mettere solo un evento generico?
     public static UnityEvent saveGenericState = new UnityEvent();
+
+    void Start() {
+        UIManager.Instance.ChangeSceneState(sceneState);
+    }
 
     public static void SaveGlobalState(GameObjController gObj) {
         //salva
@@ -51,7 +56,7 @@ public class CaretakerScene : MonoBehaviour
 
         ChangeSceneState(Location.LocalLayer);
     }
-
+    
     public static void ChangeSceneToGlobal() 
     {
         //before changing to global, save the local one
@@ -80,12 +85,13 @@ public class CaretakerScene : MonoBehaviour
     public static void FlipSceneState() 
     {
         if (sceneState.Equals(Location.LocalLayer)) {
-            sceneState = Location.GlobalLayer;
+            ChangeSceneState(Location.GlobalLayer);
+        }
+        else if (sceneState.Equals(Location.GlobalLayer)) {
+            ChangeSceneState(Location.LocalLayer);
         }
 
-        if (sceneState.Equals(Location.GlobalLayer)) {
-            sceneState = Location.LocalLayer;
-        }
+        UIManager.Instance.ChangeSceneState(sceneState);
     }
     
     public static void SaveState(GameObjController gObj)

@@ -39,25 +39,25 @@ public class SocketServer : MonoBehaviour
                 ListenToClient();
 
                 Debug.Log("Waiting for Connection");
-                NetworkHandler.PrintMessages("Waiting for Connection");
+                UIManager.Instance.PrintMessages("Waiting for Connection");
 
                 // Program is suspended while waiting for an incoming connection
                 // (not a problem because we are in a different thread than the main one)
                 handler = listener.Accept();
 
                 Debug.Log("Client Connected");
-                NetworkHandler.PrintMessages("Client connected");
+                UIManager.Instance.PrintMessages("Client connected");
 
                 connectionEstablished = true;
 
                 //create thread to handle request
-                handleIncomingRequestThread = new Thread(() => NetworkHandler.Receive(handler, connectionEstablished));
+                handleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(handler, connectionEstablished));
                 handleIncomingRequestThread.IsBackground = true;
                 handleIncomingRequestThread.Start();
             }
         } catch (Exception e) {
             Debug.Log(e.ToString());
-            NetworkHandler.PrintMessages(e.ToString());
+            UIManager.Instance.PrintMessages(e.ToString());
         }
     }
 
@@ -70,7 +70,7 @@ public class SocketServer : MonoBehaviour
         GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName, CommitType.ForcedCommit));
         byte[] serializedMsg = msg.Serialize();
 
-        NetworkHandler.Send(handler, serializedMsg, connectionEstablished);
+        NetworkHandler.Instance.Send(handler, serializedMsg, connectionEstablished);
     }
 
     protected void CreateServerListener() 
@@ -80,7 +80,7 @@ public class SocketServer : MonoBehaviour
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 60000);
 
         Debug.Log(ipAddress);
-        NetworkHandler.PrintMessages(ipAddress.ToString());
+        UIManager.Instance.PrintMessages(ipAddress.ToString());
 
         // Create a TCP/IP socket
         listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -95,13 +95,13 @@ public class SocketServer : MonoBehaviour
             listener.Bind(localEndPoint);
         } catch (SocketException se) {
             Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
-            NetworkHandler.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
+            UIManager.Instance.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
         } catch (ObjectDisposedException ode) {
             Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
-            NetworkHandler.PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
+            UIManager.Instance.PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
         } catch (ArgumentNullException ane) {
             Debug.Log("The local endpoint is null.\n\n" + ane.ToString());
-            NetworkHandler.PrintMessages("The local endpoint is null.\n\n" + ane.ToString());
+            UIManager.Instance.PrintMessages("The local endpoint is null.\n\n" + ane.ToString());
         }
     }
 
@@ -112,13 +112,13 @@ public class SocketServer : MonoBehaviour
             listener.Listen(10); //max 10 connections
         } catch (SocketException se) {
             Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
-            NetworkHandler.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
+            UIManager.Instance.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
         } catch (ObjectDisposedException ode) {
             Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
-            NetworkHandler.PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
+            UIManager.Instance.PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
         } catch (ArgumentNullException ane) {
             Debug.Log("The local endpoint is null.\n\n" + ane.ToString());
-            NetworkHandler.PrintMessages("The local endpoint is null.\n\n" + ane.ToString());
+            UIManager.Instance.PrintMessages("The local endpoint is null.\n\n" + ane.ToString());
         }
     }
 
@@ -133,7 +133,7 @@ public class SocketServer : MonoBehaviour
             handler.Close();
 
             Debug.Log("Disconnected!");
-            NetworkHandler.PrintMessages("Disconnected!");
+            UIManager.Instance.PrintMessages("Disconnected!");
         }
 
         //stop thread
@@ -145,7 +145,7 @@ public class SocketServer : MonoBehaviour
         }
 
         Debug.Log("Abort threads");
-        NetworkHandler.PrintMessages("Abort threads");
+        UIManager.Instance.PrintMessages("Abort threads");
     }
 
     void OnDisable() 

@@ -7,7 +7,7 @@ public class SocketClientMain : SocketClient
     {
         //open connection
         Debug.Log("Client: connect to server");
-        NetworkHandler.PrintMessages("Client: connect to server");
+        UIManager.Instance.PrintMessages("Client: connect to server");
 
         connectionEstablished = StartClient();            
 
