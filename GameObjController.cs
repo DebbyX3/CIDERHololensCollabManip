@@ -16,10 +16,11 @@ public class GameObjController : MonoBehaviour {
         // Add guid and attached gameobject in list
         GUIDKeeper.AddToList(Guid, gameObject);
 
-        //CaretakerScene.saveGlobalState.AddListener(() => CaretakerScene.SaveGlobalState(this));
-        //CaretakerScene.saveLocalState.AddListener(() => CaretakerScene.SaveLocalState(this));
+        CaretakerScene.saveGlobalState.AddListener(() => CaretakerScene.SaveGlobalState(this));
+        CaretakerScene.restoreGlobalState.AddListener(() => CaretakerScene.RestoreGlobalState(this));
 
-        CaretakerScene.saveState.AddListener(() => CaretakerScene.SaveState(this));
+        CaretakerScene.saveLocalState.AddListener(() => CaretakerScene.SaveLocalState(this));
+        CaretakerScene.restoreLocalState.AddListener(() => CaretakerScene.RestoreLocalState(this));
     }
 
     void Update() {
@@ -91,5 +92,6 @@ public class GameObjController : MonoBehaviour {
         PrefabName = memento.GetPrefabName();*/
 
         Transform = memento.GetTransform();
+        TransformSerializer.LoadTransform(gameObject.transform, Transform);
     }
 }

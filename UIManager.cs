@@ -31,7 +31,7 @@ public class UIManager : MonoBehaviour
         logText.text = logText.text + message + "\n";
     }
 
-    public void ChangeSceneState(Location info) {
+    public void ChangeSceneStateText(Location info) {
         sceneStateText.text = "Current scene: " + info;
     }
 }
