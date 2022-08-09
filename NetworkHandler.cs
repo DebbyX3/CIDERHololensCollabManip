@@ -24,6 +24,11 @@ using UnityEngine;
 
 public class NetworkHandler : MonoBehaviour
 {
+    /*
+        roba nuova da qua in giù
+     */
+    //NetworkHandler 
+
     public static ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
     public static NetworkHandler Instance { get; private set; }
 

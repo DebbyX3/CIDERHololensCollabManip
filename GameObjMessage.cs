@@ -22,7 +22,7 @@ public struct GameObjMessageInfo {
 
     // ma al posto di fare un costruttore così astruso perchè non passo direttamente gameobjcontroller?
     // ma se invece GameObjMessageInfo contenesse direttamente il controller? non è + facile? mhm MI SA DI SI!! MA è SERIALIZZABILE??? PENSO DI SI?
-
+    // NO!!!!!!!!! NON METTERE IL CONTROLLER DIRETTAMENTE!!! CHE QUELLO SI TIENE UNA MIRIADE DI ROBE! METTI SOLO QUELLO CHE SERVE NEL MSG!!!
 
     public GameObjMessageInfo(Guid gameObjectGuid, SerializableTransform transform, string prefabName, CommitType commitType) {
         this.GameObjectGuid = gameObjectGuid;

@@ -9,29 +9,50 @@ using UnityEngine.Events;
 
 public class CaretakerScene : MonoBehaviour
 {
+    public static CaretakerScene Instance { get; private set; }
+
     // keeps mementos of global scene
-    private static Dictionary<Guid, Memento> globalListMementos { get; } = new Dictionary<Guid, Memento>();
+    private Dictionary<Guid, Memento> globalListMementos { get; } = new Dictionary<Guid, Memento>();
 
     // keeps mementos of local scene
-    private static Dictionary<Guid, Memento> localListMementos { get; } = new Dictionary<Guid, Memento>();
+    private Dictionary<Guid, Memento> localListMementos { get; } = new Dictionary<Guid, Memento>();
+
+    // not sure about the use of a Memento object here
+    private Dictionary<Guid, Memento> pendingListRequests { get; } = new Dictionary<Guid, Memento>();
 
     // don't really know if i should keep this variable here
-    private static Location sceneState = Location.LocalLayer;
+    private Location sceneState = Location.LocalLayer;
 
     // need 4 events, because the save and restore are done in different moments:
     // save is done always before the restore, and some objs may not be in both scenes
-    public static UnityEvent saveGlobalState = new UnityEvent();
-    public static UnityEvent saveLocalState = new UnityEvent();
+    public UnityEvent saveGlobalState = new UnityEvent();
+    public UnityEvent saveLocalState = new UnityEvent();
 
-    public static UnityEvent restoreGlobalState = new UnityEvent();
-    public static UnityEvent restoreLocalState = new UnityEvent();
+    public UnityEvent restoreGlobalState = new UnityEvent();
+    public UnityEvent restoreLocalState = new UnityEvent();
 
-    void Start() {
-        UIManager.Instance.ChangeSceneStateText(sceneState);
-        saveLocalState.Invoke();
+    private void Awake()
+    {
+        // If there is an instance, and it's not me, delete myself.
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
     }
 
-    public static void ChangeScene() 
+    private void Start() {
+        UIManager.Instance.ChangeSceneStateText(sceneState);
+
+        saveLocalState.Invoke();
+        saveGlobalState.Invoke();
+    }
+
+    public void ChangeScene()
     {
         //salva lo stato degli oggetti nelle loro liste corrette chiamando gli invoke
 
@@ -46,44 +67,54 @@ public class CaretakerScene : MonoBehaviour
         FlipSceneState();
     }
 
-    private static void SaveGlobalRestoreLocal() {
+    public void ChangeSceneToGlobal()
+    {
+        if (sceneState.Equals(Location.LocalLayer))
+        {
+            SaveLocalRestoreGlobal();
+            ChangeSceneState(Location.GlobalLayer);
+            UIManager.Instance.ChangeSceneStateText(sceneState);
+        }
+    }
+
+    private void SaveGlobalRestoreLocal() {
         // before changing to local, save the global one
         saveGlobalState.Invoke();
         restoreLocalState.Invoke();
     }
 
-    private static void SaveLocalRestoreGlobal() {
+    private void SaveLocalRestoreGlobal() {
         //before changing to global, save the local one
         saveLocalState.Invoke();
         restoreGlobalState.Invoke();
     }
 
-    public static void SaveGlobalState(GameObjController gObj) {
+    public void SaveGlobalState(GameObjController gObj) {
         globalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public static void SaveLocalState(GameObjController gObj) {
+    public void SaveLocalState(GameObjController gObj) {
         localListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public static void RestoreGlobalState(GameObjController gObj) {
+    public void RestoreGlobalState(GameObjController gObj) {
         Memento value;
 
         if (globalListMementos.TryGetValue(gObj.Guid, out value))
             gObj.Restore(value);
-        else 
+        else
         {
             Debug.Log("Key " + gObj.Guid + " not found in dictionary GlobalListMementos");
             UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary GlobalListMementos");
         }
     }
 
-    public static void RestoreLocalState(GameObjController gObj) {
+    public void RestoreLocalState(GameObjController gObj) {
         Memento value;
 
         if (localListMementos.TryGetValue(gObj.Guid, out value))
             gObj.Restore(value);
-        else 
+        else
         {
             Debug.Log("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
             UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
@@ -101,7 +132,7 @@ public class CaretakerScene : MonoBehaviour
         }
     }*/
 
-    private static void FlipSceneState() 
+    private void FlipSceneState()
     {
         if (sceneState.Equals(Location.LocalLayer)) {
             ChangeSceneState(Location.GlobalLayer);
@@ -113,40 +144,13 @@ public class CaretakerScene : MonoBehaviour
         UIManager.Instance.ChangeSceneStateText(sceneState);
     }
 
-    private static void ChangeSceneState(Location sceneState) {
-        CaretakerScene.sceneState = sceneState;
+    private void ChangeSceneState(Location sceneState) {
+        Instance.sceneState = sceneState;
     }
 
-    /*
-    public void Backup() {
-        Debug.Log("\nCaretaker: Saving Originator (GObj)'s state...");
-        this.globalListMementos.Add(this.Originator.Save());
+    public void ExecuteForcedCommit(GameObjController gObj)
+    {
+        Instance.SaveGlobalState(gObj);
+        Instance.ChangeSceneToGlobal();
     }
-
-    public void Undo() {
-        if (this.globalListMementos.Count == 0) {
-            return;
-        }
-
-        var memento = globalListMementos[globalListMementos.Count-1]; // get last element!
-        
-        // ma non lo devo rimuovere! mi sa che devo ripensare al salvataggio mhm
-        //this.mementos.Remove(memento);
-
-        Debug.Log("Caretaker: Restoring state to: " + memento.GetName());
-
-        try {
-            this.Originator.Restore(memento);
-        } catch (Exception) {
-            this.Undo();
-        }
-    }
-
-    public void ShowHistory() {
-        Console.WriteLine("Caretaker: Here's the list of mementos:");
-
-        foreach (var memento in this.globalListMementos) {
-            Debug.Log(memento.GetName());
-        }
-    }*/
 }

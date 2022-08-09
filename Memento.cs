@@ -37,14 +37,14 @@ public class Memento
         this.date = DateTime.Now;
     }
 
-    //call the less demanding constructor + add assignment to the field
+    //cCall the less demanding constructor + add assignment to the field
     public Memento(Guid guid, string prefabName, SerializableTransform transform, Location objectLocation) : this(guid, prefabName, transform)
     {
         this.objectLocation = objectLocation;
     }
 
-    // The Originator (gobjcontroller) uses this method when restoring its state.
-    // forse ne mancano altri??
+    // Not used because the originator does not have to modify the GUID or the prefabname!!!!
+    /*
     public Guid GetGuid() {
         return this.guid;
     }
@@ -52,7 +52,9 @@ public class Memento
     public string GetPrefabName() {
         return prefabName;
     }
+    */
 
+    // The Originator (gobjcontroller) uses this method when restoring its transform
     public SerializableTransform GetTransform() {
         return transform;
     }

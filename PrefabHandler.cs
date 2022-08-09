@@ -35,7 +35,6 @@ public class PrefabHandler : MonoBehaviour
 
         GameObject button1 = Instantiate(Resources.Load<GameObject>("PressableButtonHoloLens2"), Vector3.zero, Quaternion.identity);
         Interactable interactable = button1.GetComponent<Interactable>();
-
         interactable.OnClick.AddListener(() => newObj.GetComponent<GameObjController>().UpdateObj());
 
         return newObj;
