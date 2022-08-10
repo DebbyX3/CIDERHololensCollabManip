@@ -2,28 +2,28 @@ using UnityEngine;
 using System.Net.Sockets;
 using System.Threading;
 
-public class SocketClient: MonoBehaviour
+public class SocketClient: NetworkHandler
 {
     public string ipToSend = "0.0.0.0"; //to be changed in the Unity Inspector
     public int portToSend = 60000;
     public GameObject cube;
 
-    private Socket client;
     private Thread handleIncomingRequestThread;
-
-    protected volatile bool connectionEstablished = false;
 
     protected bool StartClient() 
     {
-        client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        client.Connect(ipToSend, portToSend);
+        connectionHandler = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        connectionHandler.Connect(ipToSend, portToSend);
 
         //create thread to handle request
-        handleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(client, connectionEstablished));
+        handleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(connectionHandler, connectionEstablished));
         handleIncomingRequestThread.IsBackground = true;
         handleIncomingRequestThread.Start();
 
-        if (!client.Connected) {
+        //attach this object to NetworkHandler
+        //NetworkHandler.Instance.SetNetworkPeer(this);
+
+        if (!connectionHandler.Connected) {
             Debug.LogError("Connection Failed");
             UIManager.Instance.PrintMessages("Connection Failed");
             return false;
@@ -34,6 +34,8 @@ public class SocketClient: MonoBehaviour
 
     //nota: questo metodo è identico a SendObject di SocketServer, cambia solo che passo l'handler di socket diverso (giustamente)!
     //Da capire se delegarlo a network? boh? (penso di no)
+
+    // ****************** METODO DA RIVEDERE, PROBABILMENTE DA BUTTARE!
     public void SendObject(GameObject gameObject) 
     {
         GameObjController controller = gameObject.GetComponent<GameObjController>();
@@ -41,20 +43,20 @@ public class SocketClient: MonoBehaviour
         GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName, CommitType.ForcedCommit));
         byte[] serializedMsg = msg.Serialize();
 
-        NetworkHandler.Instance.Send(client, serializedMsg, connectionEstablished);
+        NetworkHandler.Instance.Send(serializedMsg);
     }
 
     protected void StopClient()
     {
-        if (client != null) 
+        if (connectionHandler != null) 
         {
             try 
             {
-                client.Shutdown(SocketShutdown.Both);
-                client.Disconnect(false);
+                connectionHandler.Shutdown(SocketShutdown.Both);
+                connectionHandler.Disconnect(false);
             } 
             finally {
-                client.Close();
+                connectionHandler.Close();
             }                      
 
             Debug.Log("Disconnected!");

@@ -5,16 +5,11 @@ using System.Threading;
 using UnityEngine;
 using TMPro;
 
-public class SocketServer : MonoBehaviour 
+public class SocketServer : NetworkHandler 
 {
-    protected volatile bool connectionEstablished = false;
-
     private Thread waitingForConnectionsThread;
     private Thread handleIncomingRequestThread;
-
     private Socket listener;
-    private Socket handler;
-
     private IPEndPoint localEndPoint;
 
     public GameObject cube;
@@ -30,6 +25,9 @@ public class SocketServer : MonoBehaviour
         waitingForConnectionsThread = new Thread(WaitingForConnections);
         waitingForConnectionsThread.IsBackground = true;
         waitingForConnectionsThread.Start();
+
+        //attach this object to NetworkHandler
+        //NetworkHandler.Instance.SetNetworkPeer(this);
     }
 
     private void WaitingForConnections() 
@@ -43,7 +41,7 @@ public class SocketServer : MonoBehaviour
 
                 // Program is suspended while waiting for an incoming connection
                 // (not a problem because we are in a different thread than the main one)
-                handler = listener.Accept();
+                connectionHandler = listener.Accept();
 
                 Debug.Log("Client Connected");
                 UIManager.Instance.PrintMessages("Client connected");
@@ -51,7 +49,7 @@ public class SocketServer : MonoBehaviour
                 connectionEstablished = true;
 
                 //create thread to handle request
-                handleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(handler, connectionEstablished));
+                handleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(connectionHandler, connectionEstablished));
                 handleIncomingRequestThread.IsBackground = true;
                 handleIncomingRequestThread.Start();
             }
@@ -63,6 +61,8 @@ public class SocketServer : MonoBehaviour
 
     //nota: questo metodo è identico a SendObject di SocketClient, cambia solo che passo l'handler di socket diverso (giustamente)!
     //Da capire se delegarlo a network? boh? (penso di no)
+
+    // ****************** METODO DA RIVEDERE, PROBABILMENTE DA BUTTARE!
     public void SendObject(GameObject gameObject) 
     {
         GameObjController controller = gameObject.GetComponent<GameObjController>();
@@ -70,7 +70,7 @@ public class SocketServer : MonoBehaviour
         GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName, CommitType.ForcedCommit));
         byte[] serializedMsg = msg.Serialize();
 
-        NetworkHandler.Instance.Send(handler, serializedMsg, connectionEstablished);
+        NetworkHandler.Instance.Send(serializedMsg);
     }
 
     protected void CreateServerListener() 
@@ -124,13 +124,13 @@ public class SocketServer : MonoBehaviour
 
     protected void StopServer() 
     {
-        if (handler != null && handler.Connected) {
+        if (connectionHandler != null && connectionHandler.Connected) {
             // there's no need of shutdown and disconnect a listener socket
             listener.Close();
 
-            handler.Shutdown(SocketShutdown.Both);
-            handler.Disconnect(false);
-            handler.Close();
+            connectionHandler.Shutdown(SocketShutdown.Both);
+            connectionHandler.Disconnect(false);
+            connectionHandler.Close();
 
             Debug.Log("Disconnected!");
             UIManager.Instance.PrintMessages("Disconnected!");

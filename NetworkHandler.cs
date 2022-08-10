@@ -24,13 +24,12 @@ using UnityEngine;
 
 public class NetworkHandler : MonoBehaviour
 {
-    /*
-        roba nuova da qua in giù
-     */
-    //NetworkHandler 
-
-    public static ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
     public static NetworkHandler Instance { get; private set; }
+    public static ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
+
+    // Socket to send/receive - inherited by subclasses
+    protected Socket connectionHandler;
+    protected volatile bool connectionEstablished = false;
 
     private void Awake() {
         // If there is an instance, and it's not me, delete myself.
@@ -40,6 +39,7 @@ public class NetworkHandler : MonoBehaviour
         } else {
             Instance = this;
         }
+
     }
 
     void Update()         
@@ -62,13 +62,11 @@ public class NetworkHandler : MonoBehaviour
         }
     }
 
-    // non sono sicura se passare lo stato della connessione, magari è un attributo che si tiene questa classe? non so
-    // sicuramente, voglio passare l'handler!
-    public void Send(Socket handler, byte[] message, bool connectionEstablished) 
+    public void Send(byte[] message) 
     {
         if (connectionEstablished) {
             try {
-                handler.Send(message);
+                connectionHandler.Send(message);
             } 
             catch (SocketException se) {
                 Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
@@ -85,7 +83,6 @@ public class NetworkHandler : MonoBehaviour
         }
     }
 
-    //receive per ora è esattamente il metodo RequestHandler di SocketServer.
     public void Receive(Socket handler, bool connectionEstablished) 
     {
         bool keepReading = true; // not sure, in SocketServer era attributo della classe, non so bene come mai, da rivedere!

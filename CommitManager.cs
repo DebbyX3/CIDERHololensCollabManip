@@ -30,10 +30,15 @@ public class CommitManager : MonoBehaviour
         
     }
 
-    public void OnClickForcedCommit(GameObjController gObj)
+    public void OnClickForcedCommit(GameObjController gObjCont)
     {
-        CaretakerScene.Instance.ExecuteForcedCommit(gObj);
-        //send commit message
+        CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
+
+        //crea il messaggio da inviare, passalo a send di networkhandler
+        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, CommitType.ForcedCommit));
+        byte[] serializedMsg = msg.Serialize();
+
+        NetworkHandler.Instance.Send(serializedMsg);
 
         //send commit notification to this device
     }
