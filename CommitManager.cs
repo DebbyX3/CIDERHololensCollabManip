@@ -39,7 +39,9 @@ public class CommitManager : MonoBehaviour
         byte[] serializedMsg = msg.Serialize();
 
         NetworkHandler.Instance.Send(serializedMsg);
+        UIManager.Instance.GetComponent<AudioSource>().Play();
 
         //send commit notification to this device
+
     }
 }

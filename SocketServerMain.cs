@@ -16,7 +16,7 @@ public class SocketServerMain : SocketServer {
     {
         if (connectionEstablished && avviato == false) {
             avviato = true;
-            StartCoroutine(Cor());
+            //StartCoroutine(Cor());
         }
     }
 
