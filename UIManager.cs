@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
     public TMP_Text sceneStateText;
     public TMP_Text logText;
 
+    private string logString;
+
     private void Awake() 
     {
         // If there is an instance, and it's not me, delete myself.
@@ -25,10 +27,15 @@ public class UIManager : MonoBehaviour
 
     private void Update() 
     {
+        if (!logString.Equals(""))
+        {
+            logText.text = logText.text + logString;
+            logString = "";
+        }
     }
 
     public void PrintMessages(string message) {
-        logText.text = logText.text + message + "\n";
+        logString += message + "\n";
     }
 
     public void ChangeSceneStateText(Location info) {
