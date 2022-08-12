@@ -45,7 +45,8 @@ public class CaretakerScene : MonoBehaviour
         }
     }
 
-    private void Start() {
+    private void Start()
+    {
         UIManager.Instance.ChangeSceneStateText(sceneState);
 
         saveLocalState.Invoke();
@@ -77,27 +78,47 @@ public class CaretakerScene : MonoBehaviour
         }
     }
 
-    private void SaveGlobalRestoreLocal() {
+    private void SaveGlobalRestoreLocal()
+    {
         // before changing to local, save the global one
         saveGlobalState.Invoke();
         restoreLocalState.Invoke();
     }
 
-    private void SaveLocalRestoreGlobal() {
+    private void SaveLocalRestoreGlobal()
+    {
         //before changing to global, save the local one
         saveLocalState.Invoke();
         restoreGlobalState.Invoke();
     }
 
-    public void SaveGlobalState(GameObjController gObj) {
+    public void SaveGlobalState(GameObjController gObj)
+    {
         globalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public void SaveLocalState(GameObjController gObj) {
+    public void SaveLocalState(GameObjController gObj)
+    {
         localListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public void RestoreGlobalState(GameObjController gObj) {
+    public void SavePendingState(GameObjController gObj)
+    {
+        pendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+    }
+
+    public void EmptyAllPendingStates()
+    {
+        pendingListRequests.Clear();
+    }
+
+    public void RemoveFromPendingStates(GameObjController gObj)
+    {
+        pendingListRequests.Remove(gObj.Guid);
+    }
+
+    public void RestoreGlobalState(GameObjController gObj)
+    {
         Memento value;
 
         if (globalListMementos.TryGetValue(gObj.Guid, out value))
@@ -109,7 +130,8 @@ public class CaretakerScene : MonoBehaviour
         }
     }
 
-    public void RestoreLocalState(GameObjController gObj) {
+    public void RestoreLocalState(GameObjController gObj)
+    {
         Memento value;
 
         if (localListMementos.TryGetValue(gObj.Guid, out value))
@@ -134,17 +156,20 @@ public class CaretakerScene : MonoBehaviour
 
     private void FlipSceneState()
     {
-        if (sceneState.Equals(Location.LocalLayer)) {
+        if (sceneState.Equals(Location.LocalLayer))
+        {
             ChangeSceneState(Location.GlobalLayer);
         }
-        else if (sceneState.Equals(Location.GlobalLayer)) {
+        else if (sceneState.Equals(Location.GlobalLayer))
+        {
             ChangeSceneState(Location.LocalLayer);
         }
 
         UIManager.Instance.ChangeSceneStateText(sceneState);
     }
 
-    private void ChangeSceneState(Location sceneState) {
+    private void ChangeSceneState(Location sceneState)
+    {
         Instance.sceneState = sceneState;
     }
 
@@ -152,5 +177,10 @@ public class CaretakerScene : MonoBehaviour
     {
         Instance.SaveGlobalState(gObj);
         Instance.ChangeSceneToGlobal();
+    }
+
+    public void ExecuteVotingCommit(GameObjController gObj)
+    {
+        Instance.SavePendingState(gObj);
     }
 }

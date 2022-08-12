@@ -164,7 +164,7 @@ public class GameObjController : MonoBehaviour {
     public void OnSelect(ManipulationEventData data)
     {
         button.SetActive(true);
-        button.transform.position = data.Pointer.Position;
+        button.transform.position = data.PointerCentroid;
 
         Debug.Log(data + "\nselect!");
         UIManager.Instance.PrintMessages(data + "\nSelect!");

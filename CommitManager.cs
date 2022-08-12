@@ -38,10 +38,18 @@ public class CommitManager : MonoBehaviour
         GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, CommitType.ForcedCommit));
         byte[] serializedMsg = msg.Serialize();
 
+        // Send message
         NetworkHandler.Instance.Send(serializedMsg);
+
+        // Play sound on commit
         UIManager.Instance.GetComponent<AudioSource>().Play();
 
         //send commit notification to this device
+        //UIManager.Instance
+    }
 
+    public void OnClickVotingCommit(GameObjController gObjCont)
+    { 
+    
     }
 }

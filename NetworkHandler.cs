@@ -64,22 +64,32 @@ public class NetworkHandler : MonoBehaviour
 
     public void Send(byte[] message) 
     {
-        if (connectionEstablished) {
-            try {
+        if (connectionEstablished)
+        {
+            try
+            {
                 connectionHandler.Send(message);
-            } 
-            catch (SocketException se) {
+            }
+            catch (SocketException se)
+            {
                 Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
                 UIManager.Instance.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
-            } 
-            catch (ObjectDisposedException ode) {
+            }
+            catch (ObjectDisposedException ode)
+            {
                 Debug.Log("The Socket has been closed.\n\n" + ode.ToString());
                 UIManager.Instance.PrintMessages("The Socket has been closed.\n\n" + ode.ToString());
-            } 
-            catch (ArgumentNullException ane) {
+            }
+            catch (ArgumentNullException ane)
+            {
                 Debug.Log("Data to be sent is null.\n\n" + ane.ToString());
                 UIManager.Instance.PrintMessages("Data to be sent is null.\n\n" + ane.ToString());
             }
+        }
+        else
+        {
+            Debug.Log("Connection is not established yet");
+            UIManager.Instance.PrintMessages("Connection is not established yet");
         }
     }
 
