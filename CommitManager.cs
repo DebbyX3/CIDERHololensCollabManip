@@ -50,6 +50,6 @@ public class CommitManager : MonoBehaviour
 
     public void OnClickVotingCommit(GameObjController gObjCont)
     { 
-    
+        
     }
 }

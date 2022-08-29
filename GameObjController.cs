@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
-using Microsoft.MixedReality.Toolkit.UI;
 
 public class GameObjController : MonoBehaviour {
     public Guid Guid { get; private set; }
@@ -18,7 +16,7 @@ public class GameObjController : MonoBehaviour {
     private UnityAction saveLocalStateAction;
     private UnityAction restoreLocalStateAction;
 
-    private GameObject button;
+    private GameObject nearFollowingMenu;
 
     private void Awake() 
     {
@@ -47,18 +45,7 @@ public class GameObjController : MonoBehaviour {
 
     private void Start()
     {
-        // Create button
-        button = Instantiate(Resources.Load<GameObject>("PressableButtonHoloLens2"), Vector3.zero, Quaternion.identity);
-
-        ButtonConfigHelper bch = button.GetComponent<ButtonConfigHelper>();
-        bch.MainLabelText = "Force Commit";
-        bch.SeeItSayItLabelEnabled = false;
-
-        Interactable interactable = button.GetComponent<Interactable>();
-        interactable.OnClick.AddListener(() => CommitManager.Instance.OnClickForcedCommit(this));
-
-        // 'Hide' button
-        button.SetActive(false);
+        SetNearFollowingMenu();
     }
 
     void Update() {
@@ -163,10 +150,63 @@ public class GameObjController : MonoBehaviour {
 
     public void OnSelect(ManipulationEventData data)
     {
-        button.SetActive(true);
-        button.transform.position = data.PointerCentroid;
+        nearFollowingMenu.SetActive(true);
 
         Debug.Log(data + "\nselect!");
         UIManager.Instance.PrintMessages(data + "\nSelect!");
+    }
+
+    private void SetNearFollowingMenu()
+    {
+        nearFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2"), Vector3.zero, Quaternion.identity);
+
+        GameObject buttonCollection = nearFollowingMenu.transform.Find("ButtonCollection").gameObject;
+
+        // Button 1
+        GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
+        Interactable interactableOne = buttonOne.GetComponent<Interactable>();
+        interactableOne.OnClick.AddListener(() => CommitManager.Instance.OnClickForcedCommit(this));
+
+        // Button 2
+        GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
+
+        // Button 3
+        GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
+
+        // Button 4 - Remove
+        GameObject buttonFour = buttonCollection.transform.Find("ButtonFour").gameObject;
+        Interactable interactableFour = buttonFour.GetComponent<Interactable>();
+        interactableFour.OnClick.AddListener(() => RemoveGObj());
+
+        // Button 5
+        GameObject buttonFive = buttonCollection.transform.Find("ButtonFive").gameObject;
+
+        // Button 6
+        GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
+
+        SolverHandler sh = nearFollowingMenu.GetComponent<SolverHandler>();
+        sh.TrackedTargetType = Microsoft.MixedReality.Toolkit.Utilities.TrackedObjectType.CustomOverride;
+        sh.TransformOverride = gameObject.transform;
+
+        /*
+        Vector3 forcedCommitButtonAddOffset = Vector3.zero;
+        forcedCommitButtonAddOffset.z = -1f;
+        sh.AdditionalOffset = forcedCommitButtonAddOffset;
+
+        RadialView rv = destroyButton.AddComponent<RadialView>();
+        rv.MinDistance = 0.1f;
+        rv.MaxDistance = 0.3f;*/
+
+        // 'Hide' button
+        nearFollowingMenu.SetActive(false);
+
+        // button parent is this gameobject
+        nearFollowingMenu.transform.parent = gameObject.transform;
+    }
+
+    public void RemoveGObj()
+    {
+        GUIDKeeper.RemoveFromList(this.Guid);
+        Destroy(gameObject); //also destroy its children, e.g.: buttons
     }
 }
