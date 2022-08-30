@@ -10,7 +10,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text sceneStateText;
     public TMP_Text logText;
 
-    private string logString;
+    private string logString = "";
 
     private void Awake() 
     {

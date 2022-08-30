@@ -28,7 +28,7 @@ public class GameObjController : MonoBehaviour {
 
         // Set initial positions/rotations/scale
         Transform.Position = gameObject.transform.position;
-        Transform.Rotation = (SerializebleVector)gameObject.transform.rotation;
+        Transform.Rotation = (SerializableVector)gameObject.transform.rotation;
         Transform.Scale = gameObject.transform.lossyScale;
 
         // Set global and local UnityActions
@@ -41,6 +41,10 @@ public class GameObjController : MonoBehaviour {
         // Subscribe to change scene events
         SubscribeToGlobalScene();
         SubscribeToLocalScene();
+
+        // Add manipulation event/s
+        ObjectManipulator objManip = gameObject.GetComponent<ObjectManipulator>();
+        objManip.OnManipulationStarted.AddListener(OnSelect);
     }
 
     private void Start()
@@ -62,7 +66,7 @@ public class GameObjController : MonoBehaviour {
             Transform.Rotation.z != gameObject.transform.rotation.z ||
             Transform.Rotation.w != gameObject.transform.rotation.w) 
         {
-            Transform.Rotation = (SerializebleVector)gameObject.transform.rotation;
+            Transform.Rotation = (SerializableVector)gameObject.transform.rotation;
         }
 
         if (Transform.Scale.x != gameObject.transform.lossyScale.x ||
@@ -94,15 +98,6 @@ public class GameObjController : MonoBehaviour {
 
     public void SendGObj() {
 
-    }
-
-    public void UpdateObj() {
-        SerializableTransform tr = new SerializableTransform(gameObject.transform);
-        SerializebleVector pos = tr.Position;
-        pos.x = pos.x + 0.3f;
-        tr.Position = pos;
-
-        PrefabHandler.UpdateObject(Guid, tr);
     }
 
     /* METHODS FOR 'MEMENTO' PATTERN */
@@ -162,40 +157,37 @@ public class GameObjController : MonoBehaviour {
 
         GameObject buttonCollection = nearFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
-        // Button 1
+        // Button 1 - Forced Commit
         GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
         Interactable interactableOne = buttonOne.GetComponent<Interactable>();
         interactableOne.OnClick.AddListener(() => CommitManager.Instance.OnClickForcedCommit(this));
 
-        // Button 2
+        // Button 2 - Voting Commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
 
-        // Button 3
+        // Button 3 - Close Menu
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
+        Interactable interactableThree = buttonThree.GetComponent<Interactable>();
+        interactableThree.OnClick.AddListener(() => CloseMenu());
 
         // Button 4 - Remove
         GameObject buttonFour = buttonCollection.transform.Find("ButtonFour").gameObject;
         Interactable interactableFour = buttonFour.GetComponent<Interactable>();
         interactableFour.OnClick.AddListener(() => RemoveGObj());
 
-        // Button 5
+        // Button 5 - Duplicate
         GameObject buttonFive = buttonCollection.transform.Find("ButtonFive").gameObject;
+        Interactable interactableFive = buttonFive.GetComponent<Interactable>();
+        interactableFive.OnClick.AddListener(() => DuplicateObj());
 
         // Button 6
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
 
+        //----------------------
+
         SolverHandler sh = nearFollowingMenu.GetComponent<SolverHandler>();
         sh.TrackedTargetType = Microsoft.MixedReality.Toolkit.Utilities.TrackedObjectType.CustomOverride;
         sh.TransformOverride = gameObject.transform;
-
-        /*
-        Vector3 forcedCommitButtonAddOffset = Vector3.zero;
-        forcedCommitButtonAddOffset.z = -1f;
-        sh.AdditionalOffset = forcedCommitButtonAddOffset;
-
-        RadialView rv = destroyButton.AddComponent<RadialView>();
-        rv.MinDistance = 0.1f;
-        rv.MaxDistance = 0.3f;*/
 
         // 'Hide' button
         nearFollowingMenu.SetActive(false);
@@ -208,5 +200,26 @@ public class GameObjController : MonoBehaviour {
     {
         GUIDKeeper.RemoveFromList(this.Guid);
         Destroy(gameObject); //also destroy its children, e.g.: buttons
+    }
+
+    // Duplicate obj with a slight movement of 0.1f on axis X and Y
+    public void DuplicateObj()
+    {
+        SerializableTransform st = Transform; 
+        SerializableVector sv = st.Position;
+
+        Transform.Position = new SerializableVector(
+            sv.x + 0.1f, 
+            sv.y + 0.1f, 
+            sv.z);
+
+        st.Position = sv;
+
+        PrefabHandler.CreateNewObject(PrefabName, st);
+    }
+
+    public void CloseMenu()
+    {
+        nearFollowingMenu.SetActive(false);
     }
 }

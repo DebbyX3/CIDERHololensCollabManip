@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
-// mi posso permettere di usare un dizionario e non una lista perchè non mi server uno storico dell'oggetto,
+// mi posso permettere di usare un dizionario e non una lista perchè non mi serve uno storico dell'oggetto,
 
 public class CaretakerScene : MonoBehaviour
 {

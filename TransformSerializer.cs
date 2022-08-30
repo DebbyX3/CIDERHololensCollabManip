@@ -6,22 +6,22 @@ using SysDiag = System.Diagnostics;
 
 //https://stackoverflow.com/questions/39345820/easy-way-to-write-and-read-some-transform-to-a-text-file-in-unity3d
 [Serializable]
-public struct SerializebleVector {
+public struct SerializableVector {
     public float x, y, z, w;
 
-    public SerializebleVector(float x, float y, float z, float w = 0f) {
+    public SerializableVector(float x, float y, float z, float w = 0f) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.w = w;
     }
 
-    public static explicit operator SerializebleVector(Quaternion a) {
-        return new SerializebleVector(a.x, a.y, a.z, a.w);
+    public static explicit operator SerializableVector(Quaternion a) {
+        return new SerializableVector(a.x, a.y, a.z, a.w);
     }
 
-    public static implicit operator SerializebleVector(Vector3 a) {
-        return new SerializebleVector(a.x, a.y, a.z);
+    public static implicit operator SerializableVector(Vector3 a) {
+        return new SerializableVector(a.x, a.y, a.z);
     }
 
     public override string ToString() {
@@ -32,20 +32,19 @@ public struct SerializebleVector {
 [Serializable]
 public struct SerializableTransform {
 
-    public SerializebleVector Position { get; set; }
-    public SerializebleVector Rotation { get; set; }
-    public SerializebleVector Scale { get; set; }
-
+    public SerializableVector Position { get; set; }
+    public SerializableVector Rotation { get; set; }
+    public SerializableVector Scale { get; set; }
 
     public SerializableTransform(Transform tr) {
         Position = tr.position;
-        Rotation = (SerializebleVector) tr.rotation;
+        Rotation = (SerializableVector) tr.rotation;
         Scale = tr.lossyScale;
     }
 
     public SerializableTransform(Vector3 position, Quaternion rotation, Vector3 scale) {
         this.Position = position;
-        this.Rotation = (SerializebleVector) rotation;
+        this.Rotation = (SerializableVector) rotation;
         this.Scale = scale;
     }
 
@@ -54,8 +53,12 @@ public struct SerializableTransform {
     }
 }
 
+
 [Serializable]
 public static class TransformSerializer {
+
+    // tutta la roba commentata probabilmente non serve a niente perchè la serializzazione la fa lui. sigh quanto tempo perso
+    /*
     public static byte[] Serialize(IEnumerable<Transform> transforms) {
         byte[] data = null;
 
@@ -105,7 +108,7 @@ public static class TransformSerializer {
 
         // Write the transform data.
         WritePosition(writer, transform.position);
-        WriteRotation(writer, (SerializebleVector) transform.rotation);
+        WriteRotation(writer, (SerializableVector) transform.rotation);
         WriteScale(writer, transform.lossyScale);
     }
 
@@ -118,7 +121,7 @@ public static class TransformSerializer {
         WriteScale(writer, transform.Scale);
     }
 
-    private static void WritePosition(BinaryWriter writer, SerializebleVector position) {
+    private static void WritePosition(BinaryWriter writer, SerializableVector position) {
         SysDiag.Debug.Assert(writer != null);
 
         writer.Write(position.x);
@@ -126,7 +129,7 @@ public static class TransformSerializer {
         writer.Write(position.z);
     }
 
-    private static void WriteRotation(BinaryWriter writer, SerializebleVector rotation) {
+    private static void WriteRotation(BinaryWriter writer, SerializableVector rotation) {
         SysDiag.Debug.Assert(writer != null);
 
         writer.Write(rotation.x);
@@ -135,7 +138,7 @@ public static class TransformSerializer {
         writer.Write(rotation.w);
     }
 
-    private static void WriteScale(BinaryWriter writer, SerializebleVector scale) {
+    private static void WriteScale(BinaryWriter writer, SerializableVector scale) {
         SysDiag.Debug.Assert(writer != null);
 
         writer.Write(scale.x);
@@ -203,6 +206,7 @@ public static class TransformSerializer {
 
         return new Vector3(x, y, z);
     }
+*/
 
     //da mettere in un'altra classe probabilmente
     //https://answers.unity.com/questions/1296012/best-way-to-set-game-object-transforms.html
@@ -213,5 +217,4 @@ public static class TransformSerializer {
         originalTransform.rotation = new Quaternion(deserializedTransform.Rotation.x, deserializedTransform.Rotation.y, deserializedTransform.Rotation.z, deserializedTransform.Rotation.w); 
         originalTransform.localScale = new Vector3(deserializedTransform.Scale.x, deserializedTransform.Scale.y, deserializedTransform.Scale.z);
     }
-
 }
