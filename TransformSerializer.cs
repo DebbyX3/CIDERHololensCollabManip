@@ -48,6 +48,11 @@ public struct SerializableTransform {
         this.Scale = scale;
     }
 
+    public static implicit operator SerializableTransform(Transform t)
+    {
+        return new SerializableTransform(t);
+    }
+
     public override string ToString() {
         return $"Position {Position}, Rotation {Rotation}, Scale {Scale}";
     }

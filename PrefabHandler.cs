@@ -7,14 +7,24 @@ using Microsoft.MixedReality.Toolkit.UI;
 
 public class PrefabHandler : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static PrefabHandler Instance { get; private set; }
+
+    private void Awake()
     {
-        //GameObject nuovo = CreateNewObject("cube", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.one));        
+        // If there is an instance, and it's not me, delete myself.
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
     }
 
     // need this method because sometimes i want to spawn an object with a certain GUID
-    public static GameObject CreateNewObject(Guid guid, string prefabName, SerializableTransform transform)
+    public GameObject CreateNewObject(Guid guid, string prefabName, SerializableTransform transform)
     {
         GameObject newObj = CreateNewObject(prefabName, transform);
         newObj.GetComponent<GameObjController>().SetGuid(guid);
@@ -22,7 +32,7 @@ public class PrefabHandler : MonoBehaviour
         return newObj;
     }
 
-    public static GameObject CreateNewObject(string prefabName, SerializableTransform transform) {
+    public GameObject CreateNewObject(string prefabName, SerializableTransform transform) {
         SerializableVector position = transform.Position;
         SerializableVector rotation = transform.Rotation;
         SerializableVector scale = transform.Scale;
@@ -36,7 +46,22 @@ public class PrefabHandler : MonoBehaviour
         return newObj;
     }
 
-    public static void UpdateObject(Guid guid, SerializableTransform transform) 
+    public void CreateNewObject(string prefabName)
+    {
+        // When creating an obj from scratch, shift it
+
+        SerializableTransform st = Camera.main.transform;
+        SerializableVector sv = new SerializableVector(
+            st.Position.x + 0.5f,
+            st.Position.y,
+            st.Position.z + 0.5f);
+
+        st.Position = sv;
+
+        CreateNewObject(prefabName, st);        
+    }
+
+    public void UpdateObject(Guid guid, SerializableTransform transform) 
     {        
         GameObject obj = GUIDKeeper.GetGObjFromGuid(guid);
         TransformSerializer.LoadTransform(obj.transform, transform);

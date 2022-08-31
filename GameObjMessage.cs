@@ -59,12 +59,12 @@ public class GameObjMessage : Message {
         //if the scene contains the object
         if (GUIDKeeper.ContainsGuid(getMsgInfo().GameObjectGuid)) 
         {
-            PrefabHandler.UpdateObject(getMsgInfo().GameObjectGuid, getMsgInfo().Transform);
+            PrefabHandler.Instance.UpdateObject(getMsgInfo().GameObjectGuid, getMsgInfo().Transform);
         } 
         else //if the scene does NOT contain the object
         {
             //Create it
-            PrefabHandler.CreateNewObject(getMsgInfo().GameObjectGuid, getMsgInfo().PrefabName, getMsgInfo().Transform);
+            PrefabHandler.Instance.CreateNewObject(getMsgInfo().GameObjectGuid, getMsgInfo().PrefabName, getMsgInfo().Transform);
         }
     }
 

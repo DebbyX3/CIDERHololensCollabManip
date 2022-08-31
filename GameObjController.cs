@@ -147,8 +147,8 @@ public class GameObjController : MonoBehaviour {
     {
         nearFollowingMenu.SetActive(true);
 
-        Debug.Log(data + "\nselect!");
-        UIManager.Instance.PrintMessages(data + "\nSelect!");
+        Debug.Log("Select!");
+        UIManager.Instance.PrintMessages("Select!");
     }
 
     private void SetNearFollowingMenu()
@@ -160,7 +160,7 @@ public class GameObjController : MonoBehaviour {
         // Button 1 - Forced Commit
         GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
         Interactable interactableOne = buttonOne.GetComponent<Interactable>();
-        interactableOne.OnClick.AddListener(() => CommitManager.Instance.OnClickForcedCommit(this));
+        interactableOne.OnClick.AddListener(() => CommitManager.Instance.ForcedCommit(this));
 
         // Button 2 - Voting Commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
@@ -206,16 +206,14 @@ public class GameObjController : MonoBehaviour {
     public void DuplicateObj()
     {
         SerializableTransform st = Transform; 
-        SerializableVector sv = st.Position;
-
-        Transform.Position = new SerializableVector(
-            sv.x + 0.1f, 
-            sv.y + 0.1f, 
-            sv.z);
+        SerializableVector sv = new SerializableVector(
+            st.Position.x + 0.1f,
+            st.Position.y,
+            st.Position.z);
 
         st.Position = sv;
 
-        PrefabHandler.CreateNewObject(PrefabName, st);
+        PrefabHandler.Instance.CreateNewObject(PrefabName, st);
     }
 
     public void CloseMenu()

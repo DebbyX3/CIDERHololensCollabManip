@@ -30,7 +30,7 @@ public class CommitManager : MonoBehaviour
         
     }
 
-    public void OnClickForcedCommit(GameObjController gObjCont)
+    public void ForcedCommit(GameObjController gObjCont)
     {
         CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
 

@@ -7,21 +7,6 @@ using System.Threading;
 using TMPro;
 using UnityEngine;
 
-//per inviare un roba con send, indipendentemente che sia un client o un server, potrei accendere un thread che
-//sta sempre in ascolto per entrambi e poi usare gli stessi metodi delle stesse classi (che accomuno?) per inviare il messaggio,
-//passsando a questa funzione in comune l'HANDLER, DOVE SE SONO CLIENT METTO L'HANDLER CLIENT, SE SONO SERVER QUELLO SERVER
-//e poi l'oggetto da inviare tipo no? magari già serializzato, così il metodo COMUNE deve solo inviare e non fare altri casini.
-//prima di inviare però controllo che la connessione sia già stabilita, con una var della classe che mi tengo magari, così non devo fare altro
-
-/* 
- * non è complicato! una volta creato l'handler di classe Socket, basta passarlo sia per fare SEND che per fare RECEIVE sullo stesso!!! quindi il client non deve fare nulla di strano,
- * solo mandare e ricevere sullo stesso socket. idem il server, ma qua è + avvantaggiato perchè entrambi sono fatti praticamente.
- * Nota! il client per accettare le incoming request, così come il server, deve creare un thread apposito!!!! aiutox
- * 
- * funziona? incredible
- * */
-
-
 public class NetworkHandler : MonoBehaviour
 {
     public static NetworkHandler Instance { get; private set; }
