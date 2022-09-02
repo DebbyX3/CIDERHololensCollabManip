@@ -1,3 +1,5 @@
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -53,22 +55,7 @@ public class CaretakerScene : MonoBehaviour
         saveGlobalState.Invoke();
     }
 
-    public void ChangeScene()
-    {
-        //salva lo stato degli oggetti nelle loro liste corrette chiamando gli invoke
-
-        //la funzione di salvataggio legge in che scena l'utente è e salva nella lista corrispondente (tipo se sono in local, salvo in local)
-
-        if (sceneState.Equals(Location.GlobalLayer))
-            SaveGlobalRestoreLocal();
-        else if (sceneState.Equals(Location.LocalLayer))
-            SaveLocalRestoreGlobal();
-
-        //la funzione di flip fa il cambio da global a local e viceversa
-        FlipSceneState();
-    }
-
-    public void ChangeSceneToGlobal()
+    private void ChangeSceneToGlobal()
     {
         if (sceneState.Equals(Location.LocalLayer))
         {
@@ -90,6 +77,52 @@ public class CaretakerScene : MonoBehaviour
         //before changing to global, save the local one
         saveLocalState.Invoke();
         restoreGlobalState.Invoke();
+    }
+
+    private void FlipSceneState()
+    {
+        if (sceneState.Equals(Location.LocalLayer))
+        {
+            ChangeSceneState(Location.GlobalLayer);
+        }
+        else if (sceneState.Equals(Location.GlobalLayer))
+        {
+            ChangeSceneState(Location.LocalLayer);
+        }
+
+        UIManager.Instance.ChangeSceneStateText(sceneState);
+    }
+
+    private void ChangeSceneState(Location sceneState)
+    {
+        Instance.sceneState = sceneState;
+    }
+
+    private bool IsGlobalScene()
+    {
+        return sceneState.Equals(Location.GlobalLayer);
+    }
+
+    private bool IsLocalScene()
+    {
+        return sceneState.Equals(Location.LocalLayer);
+    }
+
+    //------------ PUBLIC
+
+    public void ChangeScene()
+    {
+        //salva lo stato degli oggetti nelle loro liste corrette chiamando gli invoke
+
+        //la funzione di salvataggio legge in che scena l'utente è e salva nella lista corrispondente (tipo se sono in local, salvo in local)
+
+        if (sceneState.Equals(Location.GlobalLayer))
+            SaveGlobalRestoreLocal();
+        else if (sceneState.Equals(Location.LocalLayer))
+            SaveLocalRestoreGlobal();
+
+        //la funzione di flip fa il cambio da global a local e viceversa
+        FlipSceneState();
     }
 
     public void SaveGlobalState(GameObjController gObj)
@@ -143,34 +176,22 @@ public class CaretakerScene : MonoBehaviour
         }
     }
 
-    /*
-    private static void SaveState(GameObjController gObj) {
-        if (sceneState.Equals(Location.LocalLayer)) {
-            SaveLocalState(gObj);
-        }
-
-        if (sceneState.Equals(Location.GlobalLayer)) {
-            SaveGlobalState(gObj);
-        }
-    }*/
-
-    private void FlipSceneState()
+    public void ShowDialogOnGlobalScene(Dialog dialog)
     {
-        if (sceneState.Equals(Location.LocalLayer))
+        if (IsGlobalScene())
         {
-            ChangeSceneState(Location.GlobalLayer);
+            dialog.gameObject.SetActive(true);
+            dialog.GetComponent<SolverHandler>().enabled = true;
         }
-        else if (sceneState.Equals(Location.GlobalLayer))
-        {
-            ChangeSceneState(Location.LocalLayer);
-        }
-
-        UIManager.Instance.ChangeSceneStateText(sceneState);
     }
 
-    private void ChangeSceneState(Location sceneState)
+    public void ShowSlateOnLocalScene(GameObject slate)
     {
-        Instance.sceneState = sceneState;
+        if (IsLocalScene())
+        {
+            slate.gameObject.SetActive(true);
+            slate.GetComponent<RadialView>().enabled = true;
+        }
     }
 
     public void ExecuteForcedCommit(GameObjController gObj)

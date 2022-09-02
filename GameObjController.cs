@@ -143,14 +143,6 @@ public class GameObjController : MonoBehaviour {
         CaretakerScene.Instance.restoreLocalState.RemoveListener(restoreLocalStateAction);
     }
 
-    public void OnSelect(ManipulationEventData data)
-    {
-        nearFollowingMenu.SetActive(true);
-
-        Debug.Log("Select!");
-        UIManager.Instance.PrintMessages("Select!");
-    }
-
     private void SetNearFollowingMenu()
     {
         nearFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2"), Vector3.zero, Quaternion.identity);
@@ -189,10 +181,10 @@ public class GameObjController : MonoBehaviour {
         sh.TrackedTargetType = Microsoft.MixedReality.Toolkit.Utilities.TrackedObjectType.CustomOverride;
         sh.TransformOverride = gameObject.transform;
 
-        // 'Hide' button
+        // Hide it
         nearFollowingMenu.SetActive(false);
 
-        // button parent is this gameobject
+        // The parent of the menu is the gameobject
         nearFollowingMenu.transform.parent = gameObject.transform;
     }
 
@@ -219,5 +211,14 @@ public class GameObjController : MonoBehaviour {
     public void CloseMenu()
     {
         nearFollowingMenu.SetActive(false);
+    }
+
+    public void OnSelect(ManipulationEventData data)
+    {
+        nearFollowingMenu.SetActive(true);
+        nearFollowingMenu.GetComponent<RadialView>().enabled = true;
+
+        Debug.Log("Select!");
+        UIManager.Instance.PrintMessages("Select!");
     }
 }
