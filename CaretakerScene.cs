@@ -33,6 +33,8 @@ public class CaretakerScene : MonoBehaviour
     public UnityEvent restoreGlobalState = new UnityEvent();
     public UnityEvent restoreLocalState = new UnityEvent();
 
+    public UnityEvent hideObject = new UnityEvent();
+
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.
@@ -69,6 +71,11 @@ public class CaretakerScene : MonoBehaviour
     {
         // before changing to local, save the global one
         saveGlobalState.Invoke();
+
+        // hide all objects (each obj is subscribed to this event)
+        hideObject.Invoke();
+
+        // change to local
         restoreLocalState.Invoke();
     }
 
@@ -76,6 +83,11 @@ public class CaretakerScene : MonoBehaviour
     {
         //before changing to global, save the local one
         saveLocalState.Invoke();
+
+        // hide all objects (each obj is subscribed to this event)
+        hideObject.Invoke();
+
+        // change to global
         restoreGlobalState.Invoke();
     }
 
@@ -154,8 +166,12 @@ public class CaretakerScene : MonoBehaviour
     {
         Memento value;
 
-        if (globalListMementos.TryGetValue(gObj.Guid, out value))
-            gObj.Restore(value);
+        if (globalListMementos.TryGetValue(gObj.Guid, out value)) // if the obj is in the global list, restore it
+        {
+            // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call  
+            gObj.gameObject.SetActive(true);
+            gObj.Restore(value);            
+        }
         else
         {
             Debug.Log("Key " + gObj.Guid + " not found in dictionary GlobalListMementos");
@@ -167,13 +183,23 @@ public class CaretakerScene : MonoBehaviour
     {
         Memento value;
 
-        if (localListMementos.TryGetValue(gObj.Guid, out value))
+        if (localListMementos.TryGetValue(gObj.Guid, out value)) // if the obj is in the local list, restore it
+        {
+            // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
+            gObj.gameObject.SetActive(true);
             gObj.Restore(value);
+        }
         else
         {
             Debug.Log("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
             UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
         }
+    }
+
+    // Always hide the object on change scene!
+    public void HideObject(GameObjController gObj)
+    {
+        gObj.gameObject.SetActive(false);
     }
 
     public void ShowDialogOnGlobalScene(Dialog dialog)
@@ -191,6 +217,14 @@ public class CaretakerScene : MonoBehaviour
         {
             slate.gameObject.SetActive(true);
             slate.GetComponent<RadialView>().enabled = true;
+        }
+    }
+
+    public void HideSlateOnGlobalScene(GameObject slate)
+    {
+        if (IsGlobalScene())
+        {
+            slate.gameObject.SetActive(false);
         }
     }
 

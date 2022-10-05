@@ -38,8 +38,14 @@ public class GameObjController : MonoBehaviour {
         saveLocalStateAction = () => CaretakerScene.Instance.SaveLocalState(this);
         restoreLocalStateAction = () => CaretakerScene.Instance.RestoreLocalState(this);
 
+        // Subscribe to event to hide the object at each scene change
+        // no need to use an unityaction (I think) because i don't need to unsubscribe from this event! it's fixed
+        CaretakerScene.Instance.hideObject.AddListener(() => CaretakerScene.Instance.HideObject(this));
+
         // Subscribe to change scene events
-        SubscribeToGlobalScene();
+        //SubscribeToGlobalScene();
+
+        //only subscribe to local on first spawn!
         SubscribeToLocalScene();
 
         // Add manipulation event/s
@@ -131,13 +137,13 @@ public class GameObjController : MonoBehaviour {
         CaretakerScene.Instance.saveLocalState.AddListener(saveLocalStateAction);
         CaretakerScene.Instance.restoreLocalState.AddListener(restoreLocalStateAction);
     }
-    public void UnsubscribeToGlobalScene()
+    public void UnsubscribeFromGlobalScene()
     {
         CaretakerScene.Instance.saveGlobalState.RemoveListener(saveGlobalStateAction);
         CaretakerScene.Instance.restoreGlobalState.RemoveListener(restoreGlobalStateAction);
     }
 
-    public void UnsubscribeToLocalScene()
+    public void UnsubscribeFromLocalScene()
     {
         CaretakerScene.Instance.saveLocalState.RemoveListener(saveLocalStateAction);
         CaretakerScene.Instance.restoreLocalState.RemoveListener(restoreLocalStateAction);
@@ -186,11 +192,17 @@ public class GameObjController : MonoBehaviour {
 
         // The parent of the menu is the gameobject
         nearFollowingMenu.transform.parent = gameObject.transform;
+
+        //maybe to do: set scale to the same for every menu (so it doesn't become too small or too big)
     }
 
+    //bisogna toglierlo anche dalla global e local list mementos!!!!!!!!! WIP TODO
     public void RemoveGObj()
     {
         GUIDKeeper.RemoveFromList(this.Guid);
+
+        //CaretakerScene.Instance.RemoveFromExistingMementos(this);
+
         Destroy(gameObject); //also destroy its children, e.g.: buttons
     }
 
