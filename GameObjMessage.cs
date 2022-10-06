@@ -64,7 +64,7 @@ public class GameObjMessage : Message {
         else //if the scene does NOT contain the object
         {
             //Create it
-            PrefabHandler.Instance.CreateNewObject(getMsgInfo().GameObjectGuid, getMsgInfo().PrefabName, getMsgInfo().Transform);
+            PrefabHandler.Instance.CreateNewObjectGlobal(getMsgInfo().GameObjectGuid, getMsgInfo().PrefabName, getMsgInfo().Transform);
         }
     }
 

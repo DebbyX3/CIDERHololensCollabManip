@@ -6,7 +6,7 @@ using UnityEngine.Events;
 
 public class GameObjController : MonoBehaviour {
     public Guid Guid { get; private set; }
-    public string PrefabName { get; private set; } = "cube"; // solo per debug, poi l'assegnamento si toglie. TODO magari ricordati di toglierlo polla!!!
+    public string PrefabName { get; private set; } // solo per debug, poi l'assegnamento si toglie. TODO magari ricordati di toglierlo polla!!!
     public SerializableTransform Transform;
 
     // Need to keep the references to the unity actions in order to disable them
@@ -46,7 +46,7 @@ public class GameObjController : MonoBehaviour {
         //SubscribeToGlobalScene();
 
         //only subscribe to local on first spawn!
-        SubscribeToLocalScene();
+        //SubscribeToLocalScene();
 
         // Add manipulation event/s
         ObjectManipulator objManip = gameObject.GetComponent<ObjectManipulator>();
@@ -116,6 +116,7 @@ public class GameObjController : MonoBehaviour {
     {
         // These 2 are commented because a memento should not touch or restore the object guid and its prefab name
         // It just needs to change the propreties, like position/rot/scale, or colors etc...
+
         /*
         Guid = memento.GetGuid();
         PrefabName = memento.GetPrefabName();*/
@@ -209,6 +210,8 @@ public class GameObjController : MonoBehaviour {
     // Duplicate obj with a slight movement of 0.1f on axis X and Y
     public void DuplicateObj()
     {
+        // I think no need to do all of this when the CreateNewObject method does kinda the same thing
+        /*
         SerializableTransform st = Transform; 
         SerializableVector sv = new SerializableVector(
             st.Position.x + 0.1f,
@@ -216,8 +219,9 @@ public class GameObjController : MonoBehaviour {
             st.Position.z);
 
         st.Position = sv;
+        */
 
-        PrefabHandler.Instance.CreateNewObject(PrefabName, st);
+        PrefabHandler.Instance.CreateNewObjectLocal(PrefabName);
     }
 
     public void CloseMenu()
