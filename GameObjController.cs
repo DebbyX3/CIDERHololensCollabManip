@@ -42,12 +42,6 @@ public class GameObjController : MonoBehaviour {
         // no need to use an unityaction (I think) because i don't need to unsubscribe from this event! it's fixed
         CaretakerScene.Instance.hideObject.AddListener(() => CaretakerScene.Instance.HideObject(this));
 
-        // Subscribe to change scene events
-        //SubscribeToGlobalScene();
-
-        //only subscribe to local on first spawn!
-        //SubscribeToLocalScene();
-
         // Add manipulation event/s
         ObjectManipulator objManip = gameObject.GetComponent<ObjectManipulator>();
         objManip.OnManipulationStarted.AddListener(OnSelect);
@@ -122,7 +116,7 @@ public class GameObjController : MonoBehaviour {
         PrefabName = memento.GetPrefabName();*/
 
         Transform = memento.GetTransform();
-        TransformSerializer.LoadTransform(gameObject.transform, Transform);
+        TransformSerializer.AssignDeserTransformToOriginalTransform(gameObject.transform, Transform);
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -202,6 +196,8 @@ public class GameObjController : MonoBehaviour {
     {
         GUIDKeeper.RemoveFromList(this.Guid);
 
+        //should remove from local scene or also global? TODO
+
         //CaretakerScene.Instance.RemoveFromExistingMementos(this);
 
         Destroy(gameObject); //also destroy its children, e.g.: buttons
@@ -210,7 +206,7 @@ public class GameObjController : MonoBehaviour {
     // Duplicate obj with a slight movement of 0.1f on axis X and Y
     public void DuplicateObj()
     {
-        // I think no need to do all of this when the CreateNewObject method does kinda the same thing
+        // I think I don't need to do all of this when the CreateNewObject method does kinda the same thing
         /*
         SerializableTransform st = Transform; 
         SerializableVector sv = new SerializableVector(

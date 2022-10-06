@@ -9,6 +9,8 @@ public class PrefabHandler : MonoBehaviour
 {
     public static PrefabHandler Instance { get; private set; }
 
+    // -------------- PRIVATE --------------
+
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.
@@ -72,22 +74,37 @@ public class PrefabHandler : MonoBehaviour
         return CreateNewObject(prefabName, st);
     }
 
-    public void CreateNewObjectLocal(string prefabName)
+    // -------------- PUBLIC --------------
+
+    public GameObject CreateNewObjectLocal(string prefabName)
     {
         GameObject gobj = CreateNewObjectShiftPos(prefabName);
         gobj.GetComponent<GameObjController>().SubscribeToLocalScene();
+
+        return gobj;
     }
 
-    // not sure about this, maybe WIP or TODO better
-    public void CreateNewObjectGlobal(Guid guid, string prefabName, SerializableTransform transform)
+    public GameObject CreateNewObjectGlobal(Guid guid, string prefabName, SerializableTransform transform)
     {
         GameObject gobj = CreateNewObject(guid, prefabName, transform);
         gobj.GetComponent<GameObjController>().SubscribeToGlobalScene();
+
+        return gobj;
     }
 
-    public void UpdateObject(Guid guid, SerializableTransform transform) 
+    public void UpdateObjectLocal(Guid guid, SerializableTransform transform) 
     {        
-        GameObject obj = GUIDKeeper.GetGObjFromGuid(guid);
-        TransformSerializer.LoadTransform(obj.transform, transform);
+        GameObject gobj = GUIDKeeper.GetGObjFromGuid(guid);
+        TransformSerializer.AssignDeserTransformToOriginalTransform(gobj.transform, transform);
+
+        gobj.GetComponent<GameObjController>().SubscribeToLocalScene();
+    }
+
+    public void UpdateObjectGlobal(Guid guid, SerializableTransform transform)
+    {
+        GameObject gobj = GUIDKeeper.GetGObjFromGuid(guid);
+        TransformSerializer.AssignDeserTransformToOriginalTransform(gobj.transform, transform);
+
+        gobj.GetComponent<GameObjController>().SubscribeToGlobalScene();
     }
 }

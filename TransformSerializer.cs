@@ -215,9 +215,9 @@ public static class TransformSerializer {
 
     //da mettere in un'altra classe probabilmente
     //https://answers.unity.com/questions/1296012/best-way-to-set-game-object-transforms.html
-    public static void LoadTransform(this Transform originalTransform, SerializableTransform deserializedTransform) 
+    // Assign deserializedTransform to originalTransform
+    public static void AssignDeserTransformToOriginalTransform(this Transform originalTransform, SerializableTransform deserializedTransform) 
     {
-        //boh??
         originalTransform.position = new Vector3(deserializedTransform.Position.x, deserializedTransform.Position.y, deserializedTransform.Position.z);
         originalTransform.rotation = new Quaternion(deserializedTransform.Rotation.x, deserializedTransform.Rotation.y, deserializedTransform.Rotation.z, deserializedTransform.Rotation.w); 
         originalTransform.localScale = new Vector3(deserializedTransform.Scale.x, deserializedTransform.Scale.y, deserializedTransform.Scale.z);
