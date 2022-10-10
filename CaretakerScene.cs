@@ -57,16 +57,6 @@ public class CaretakerScene : MonoBehaviour
         saveGlobalState.Invoke();
     }
 
-    private void ChangeSceneToGlobal()
-    {
-        if (sceneState.Equals(Location.LocalLayer))
-        {
-            SaveLocalRestoreGlobal();
-            ChangeSceneState(Location.GlobalLayer);
-            UIManager.Instance.ChangeSceneStateText(sceneState);
-        }
-    }
-
     private void SaveGlobalRestoreLocal()
     {
         // before changing to local, save the global one
@@ -200,6 +190,15 @@ public class CaretakerScene : MonoBehaviour
     public void HideObject(GameObjController gObj)
     {
         gObj.gameObject.SetActive(false);
+    }
+    public void ChangeSceneToGlobal()
+    {
+        if (sceneState.Equals(Location.LocalLayer))
+        {
+            SaveLocalRestoreGlobal();
+            ChangeSceneState(Location.GlobalLayer);
+            UIManager.Instance.ChangeSceneStateText(sceneState);
+        }
     }
 
     public void ShowDialogOnGlobalScene(Dialog dialog)

@@ -37,7 +37,7 @@ public class CommitManager : MonoBehaviour
         UIManager.Instance.GetComponent<AudioSource>().Play();
 
         //send commit notification to this device
-        //UIManager.Instance
+        UIManager.Instance.SetNotificationButtonActive();
     }
 
     public void OnCommitSent(GameObjController gObjCont)

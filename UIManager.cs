@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
     public TMP_Text sceneStateText;
     public TMP_Text logText;
 
+    public GameObject notificationButton;
+
     private string logString = "";
 
     private void Awake() 
@@ -40,5 +42,10 @@ public class UIManager : MonoBehaviour
 
     public void ChangeSceneStateText(Location info) {
         sceneStateText.text = "Current scene: " + info;
+    }
+
+    public void SetNotificationButtonActive()
+    {
+        notificationButton.SetActive(true);
     }
 }
