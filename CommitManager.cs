@@ -54,6 +54,7 @@ public class CommitManager : MonoBehaviour
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
             // To fix probably
+            // cioè che potrebbe avere l'oggetto in locale e non globale? ma può capitare o no? Da capire?
             PrefabHandler.Instance.UpdateObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform);
         }
         // If it does NOT have the object

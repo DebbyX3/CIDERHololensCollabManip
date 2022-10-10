@@ -76,12 +76,10 @@ public class PrefabHandler : MonoBehaviour
 
     // -------------- PUBLIC --------------
 
-    public GameObject CreateNewObjectLocal(string prefabName)
+    public void CreateNewObjectLocal(string prefabName)
     {
         GameObject gobj = CreateNewObjectShiftPos(prefabName);
         gobj.GetComponent<GameObjController>().SubscribeToLocalScene();
-
-        return gobj;
     }
 
     public GameObject CreateNewObjectGlobal(Guid guid, string prefabName, SerializableTransform transform)
