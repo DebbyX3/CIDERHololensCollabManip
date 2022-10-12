@@ -153,7 +153,7 @@ public class GameObjController : MonoBehaviour {
         // Button 1 - Forced Commit
         GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
         Interactable interactableOne = buttonOne.GetComponent<Interactable>();
-        interactableOne.OnClick.AddListener(() => CommitManager.Instance.ForcedCommit(this));
+        interactableOne.OnClick.AddListener(() => CommitManager.Instance.SendForcedCommit(this));
 
         // Button 2 - Voting Commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;

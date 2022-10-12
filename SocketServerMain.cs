@@ -9,15 +9,21 @@ public class SocketServerMain : SocketServer {
     {
         //open connection
         Debug.Log("Server: open connection");
+
+        SetInstance(this);
+        Debug.Log("istanza settata");
+
         StartServer();
     }
 
-    void Update() 
+    new void Update() 
     {
         if (connectionEstablished && avviato == false) {
             avviato = true;
             //StartCoroutine(Cor());
         }
+
+        base.Update();
     }
 
     IEnumerator Cor() {

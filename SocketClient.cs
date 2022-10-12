@@ -12,6 +12,8 @@ public class SocketClient: NetworkHandler
 
     protected bool StartClient() 
     {
+        SetInstance(Instance);
+
         connectionHandler = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         connectionHandler.Connect(ipToSend, portToSend);
 

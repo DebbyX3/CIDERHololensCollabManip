@@ -4,31 +4,45 @@ using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Threading;
-using TMPro;
 using UnityEngine;
 
-public class NetworkHandler : MonoBehaviour
+public class NetworkHandler : MonoBehaviour 
 {
     public static NetworkHandler Instance { get; private set; }
     public static ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
 
     // Socket to send/receive - inherited by subclasses
     protected Socket connectionHandler;
-    protected volatile bool connectionEstablished = false;
+    protected volatile bool connectionEstablished = false; // volatile: field might be changed by multiple threads
 
-    private void Awake() {
+    /*private void Start()
+    {
         // If there is an instance, and it's not me, delete myself.
 
-        if (Instance != null && Instance != this) {
+        if (Instance != null && Instance != this)
+        {
             Destroy(this);
-        } else {
+        }
+        else
+        {
             Instance = this;
         }
 
+        Debug.Log("awake net", gameObject);
     }
 
-    void Update()         
-    {        
+    private void OnEnable()
+    {
+        Debug.Log("enable net", gameObject);
+    }*/
+
+    protected void SetInstance(NetworkHandler instance)
+    {
+        Instance = instance;
+    }
+
+    protected void Update()         
+    {
         if (!messages.IsEmpty) 
         {
             messages.TryDequeue(out Message item);

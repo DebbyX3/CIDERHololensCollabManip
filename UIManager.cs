@@ -12,6 +12,9 @@ public class UIManager : MonoBehaviour
 
     public GameObject notificationButton;
 
+    public AudioSource notificationSound;
+    public AudioSource commitSentSound;
+
     private string logString = "";
 
     private void Awake() 
@@ -46,6 +49,6 @@ public class UIManager : MonoBehaviour
 
     public void SetNotificationButtonActive()
     {
-        notificationButton.SetActive(true);
+        notificationButton.GetComponent<NotificationButtonController>().SetButtonStatus(true);
     }
 }

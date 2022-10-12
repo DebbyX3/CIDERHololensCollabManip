@@ -22,7 +22,7 @@ public class CommitManager : MonoBehaviour
         }
     }
 
-    public void ForcedCommit(GameObjController gObjCont)
+    public void SendForcedCommit(GameObjController gObjCont)
     {
         CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
 
@@ -34,10 +34,9 @@ public class CommitManager : MonoBehaviour
         NetworkHandler.Instance.Send(serializedMsg);
 
         // Play sound on commit
-        UIManager.Instance.GetComponent<AudioSource>().Play();
+        UIManager.Instance.commitSentSound.Play();
 
-        //send commit notification to this device
-        UIManager.Instance.SetNotificationButtonActive();
+        // maybe display a dialog/confirmation box?
     }
 
     public void OnCommitSent(GameObjController gObjCont)
@@ -63,8 +62,15 @@ public class CommitManager : MonoBehaviour
             // Spawn the obj in a specific pos & rot and make it subscribe to the global scene events
             GameObject newGObj = PrefabHandler.Instance.CreateNewObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
 
-            // Create the instance in the GUIDKeeper list and add the obj
-            GUIDKeeper.AddToList(gObjMsgInfo.GameObjectGuid, newGObj);
+            // Note: the instance is added in the GUIDKeeper list in the Awake directly at object creation!
         }
+
+        // Notify the user that a new commit has arrived
+
+        // Play notification sound
+        UIManager.Instance.notificationSound.Play();
+
+        // Send commit notification to this device
+        UIManager.Instance.SetNotificationButtonActive();
     }
 }
