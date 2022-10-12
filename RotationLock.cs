@@ -8,6 +8,7 @@ public class RotationLock : MonoBehaviour
     private Vector3 startRotation;
 
     void Start() { startRotation = transform.rotation.eulerAngles; }
+
     void LateUpdate()
     {
         Vector3 newRotation = transform.rotation.eulerAngles;

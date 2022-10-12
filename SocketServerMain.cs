@@ -11,7 +11,6 @@ public class SocketServerMain : SocketServer {
         Debug.Log("Server: open connection");
 
         SetInstance(this);
-        Debug.Log("istanza settata");
 
         StartServer();
     }

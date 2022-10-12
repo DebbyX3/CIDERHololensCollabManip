@@ -191,6 +191,7 @@ public class CaretakerScene : MonoBehaviour
     {
         gObj.gameObject.SetActive(false);
     }
+
     public void ChangeSceneToGlobal()
     {
         if (sceneState.Equals(Location.LocalLayer))

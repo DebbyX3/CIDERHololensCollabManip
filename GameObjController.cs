@@ -40,7 +40,8 @@ public class GameObjController : MonoBehaviour {
 
         // Subscribe to event to hide the object at each scene change
         // no need to use an unityaction (I think) because i don't need to unsubscribe from this event! it's fixed
-        CaretakerScene.Instance.hideObject.AddListener(() => CaretakerScene.Instance.HideObject(this));
+        //CaretakerScene.Instance.hideObject.AddListener(() => CaretakerScene.Instance.HideObject(this)); prima
+        CaretakerScene.Instance.hideObject.AddListener(() => HideObject());
 
         // Add manipulation event/s
         ObjectManipulator objManip = gameObject.GetComponent<ObjectManipulator>();
@@ -123,6 +124,8 @@ public class GameObjController : MonoBehaviour {
     public void SubscribeToGlobalScene()
     {
         CaretakerScene.Instance.saveGlobalState.AddListener(saveGlobalStateAction);
+        CaretakerScene.Instance.saveGlobalState.AddListener(() => SetActiveManipulation(false));
+
         CaretakerScene.Instance.restoreGlobalState.AddListener(restoreGlobalStateAction);
     }
 
@@ -130,6 +133,8 @@ public class GameObjController : MonoBehaviour {
     public void SubscribeToLocalScene()
     {
         CaretakerScene.Instance.saveLocalState.AddListener(saveLocalStateAction);
+        CaretakerScene.Instance.saveGlobalState.AddListener(() => SetActiveManipulation(true));
+
         CaretakerScene.Instance.restoreLocalState.AddListener(restoreLocalStateAction);
     }
     public void UnsubscribeFromGlobalScene()
@@ -142,6 +147,12 @@ public class GameObjController : MonoBehaviour {
     {
         CaretakerScene.Instance.saveLocalState.RemoveListener(saveLocalStateAction);
         CaretakerScene.Instance.restoreLocalState.RemoveListener(restoreLocalStateAction);
+    }
+
+    // Always hide the object on change scene!
+    public void HideObject()
+    {
+        this.gameObject.SetActive(false);
     }
 
     private void SetNearFollowingMenu()
@@ -223,6 +234,11 @@ public class GameObjController : MonoBehaviour {
     public void CloseMenu()
     {
         nearFollowingMenu.SetActive(false);
+    }
+
+    public void SetActiveManipulation(bool active)
+    {
+        gameObject.GetComponent<ObjectManipulator>().enabled = active;
     }
 
     public void OnSelect(ManipulationEventData data)

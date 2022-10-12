@@ -10,7 +10,6 @@ public class SocketClientMain : SocketClient
         UIManager.Instance.PrintMessages("Client: connect to server");
 
         SetInstance(this);
-        Debug.Log("istanza settata");
 
         connectionEstablished = StartClient();            
 
