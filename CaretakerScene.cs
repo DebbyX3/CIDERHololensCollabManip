@@ -100,17 +100,16 @@ public class CaretakerScene : MonoBehaviour
         Instance.sceneState = sceneState;
     }
 
-    private bool IsGlobalScene()
+    //------------ PUBLIC
+    public bool IsGlobalScene()
     {
         return sceneState.Equals(Location.GlobalLayer);
     }
 
-    private bool IsLocalScene()
+    public bool IsLocalScene()
     {
         return sceneState.Equals(Location.LocalLayer);
     }
-
-    //------------ PUBLIC
 
     public void ChangeScene()
     {
@@ -126,6 +125,28 @@ public class CaretakerScene : MonoBehaviour
         //la funzione di flip fa il cambio da global a local e viceversa
         FlipSceneState();
     }
+
+    public void ChangeSceneToGlobal()
+    {
+        if (sceneState.Equals(Location.LocalLayer))
+        {
+            SaveLocalRestoreGlobal();
+            ChangeSceneState(Location.GlobalLayer);
+            UIManager.Instance.ChangeSceneStateText(sceneState);
+        }
+    }
+
+    public void ChangeSceneToLocal()
+    {
+        if (sceneState.Equals(Location.GlobalLayer))
+        {
+            SaveGlobalRestoreLocal();
+            ChangeSceneState(Location.LocalLayer);
+            UIManager.Instance.ChangeSceneStateText(sceneState);
+        }
+    }
+
+    //*****************
 
     public void SaveGlobalState(GameObjController gObj)
     {
@@ -183,22 +204,6 @@ public class CaretakerScene : MonoBehaviour
         {
             Debug.Log("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
             UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
-        }
-    }
-
-    // Always hide the object on change scene!
-    public void HideObject(GameObjController gObj)
-    {
-        gObj.gameObject.SetActive(false);
-    }
-
-    public void ChangeSceneToGlobal()
-    {
-        if (sceneState.Equals(Location.LocalLayer))
-        {
-            SaveLocalRestoreGlobal();
-            ChangeSceneState(Location.GlobalLayer);
-            UIManager.Instance.ChangeSceneStateText(sceneState);
         }
     }
 

@@ -78,31 +78,83 @@ public class PrefabHandler : MonoBehaviour
 
     public void CreateNewObjectLocal(string prefabName)
     {
+        bool wasGlobalScene = false;
+
+        // Want to spawn object in the local scene, so check and switch to it. Then re-switch to the global one if that's the case
+        if (CaretakerScene.Instance.IsGlobalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToLocal();
+            wasGlobalScene = true;
+        }
+
         GameObject gobj = CreateNewObjectShiftPos(prefabName);
         gobj.GetComponent<GameObjController>().SubscribeToLocalScene();
+
+        // If the previous scene was the global one, reswitch to the global
+        if (wasGlobalScene)
+            CaretakerScene.Instance.ChangeSceneToGlobal();
     }
 
     public GameObject CreateNewObjectGlobal(Guid guid, string prefabName, SerializableTransform transform)
     {
+        bool wasLocalScene = false;
+
+        // Want to spawn object in the global scene, so check and switch to it. Then re-switch to the local one if that's the case
+        if (CaretakerScene.Instance.IsLocalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+            wasLocalScene = true;
+        }
+
         GameObject gobj = CreateNewObject(guid, prefabName, transform);
         gobj.GetComponent<GameObjController>().SubscribeToGlobalScene();
+
+        // If the previous scene was the local one, reswitch to the local
+        if (wasLocalScene)
+            CaretakerScene.Instance.ChangeSceneToLocal();
 
         return gobj;
     }
 
     public void UpdateObjectLocal(Guid guid, SerializableTransform transform) 
-    {        
+    {
+        bool wasGlobalScene = false;
+
+        // Want to spawn object in the local scene, so check and switch to it. Then re-switch to the global one if that's the case
+        if (CaretakerScene.Instance.IsGlobalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToLocal();
+            wasGlobalScene = true;
+        }
+
         GameObject gobj = GUIDKeeper.GetGObjFromGuid(guid);
         TransformSerializer.AssignDeserTransformToOriginalTransform(gobj.transform, transform);
 
         gobj.GetComponent<GameObjController>().SubscribeToLocalScene();
+
+        // If the previous scene was the global one, reswitch to the global
+        if (wasGlobalScene)
+            CaretakerScene.Instance.ChangeSceneToGlobal();        
     }
 
     public void UpdateObjectGlobal(Guid guid, SerializableTransform transform)
     {
+        bool wasLocalScene = false;
+
+        // Want to spawn object in the global scene, so check and switch to it. Then re-switch to the local one if that's the case
+        if (CaretakerScene.Instance.IsLocalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+            wasLocalScene = true;
+        }
+
         GameObject gobj = GUIDKeeper.GetGObjFromGuid(guid);
         TransformSerializer.AssignDeserTransformToOriginalTransform(gobj.transform, transform);
 
         gobj.GetComponent<GameObjController>().SubscribeToGlobalScene();
+
+        // If the previous scene was the local one, reswitch to the local
+        if (wasLocalScene)
+            CaretakerScene.Instance.ChangeSceneToLocal();       
     }
 }

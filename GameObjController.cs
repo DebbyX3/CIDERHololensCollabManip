@@ -238,7 +238,19 @@ public class GameObjController : MonoBehaviour {
 
     public void SetActiveManipulation(bool active)
     {
-        gameObject.GetComponent<ObjectManipulator>().enabled = active;
+        // Want to just spawn the object menu on manipulation, so lock rotations and movements
+
+        // if manip is active (true), then do not lock movements (make 'enable' false)
+        gameObject.GetComponent<MoveAxisConstraint>().enabled = !active; // not - because i want to lock on false
+
+        // if manip is not active (false), then lock y axis
+        if (!active)
+            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.YAxis;
+        else // if manip is active (true), then do not lock y axis (only lock axis x and z) 
+        {
+            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.YAxis;
+        }
+        
     }
 
     public void OnSelect(ManipulationEventData data)

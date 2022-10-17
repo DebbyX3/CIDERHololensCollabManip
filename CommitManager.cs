@@ -60,9 +60,9 @@ public class CommitManager : MonoBehaviour
         else
         {
             // Spawn the obj in a specific pos & rot and make it subscribe to the global scene events
-            GameObject newGObj = PrefabHandler.Instance.CreateNewObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
+            PrefabHandler.Instance.CreateNewObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
 
-            // Note: the instance is added in the GUIDKeeper list in the Awake directly at object creation!
+            // Note: the instance is added in the GUIDKeeper.List in the Awake directly at object creation!
         }
 
         // Notify the user that a new commit has arrived
@@ -71,6 +71,6 @@ public class CommitManager : MonoBehaviour
         UIManager.Instance.notificationSound.Play();
 
         // Send commit notification to this device
-        UIManager.Instance.SetNotificationButtonActive();
+        UIManager.Instance.SetNotificationButtonActive(true);
     }
 }

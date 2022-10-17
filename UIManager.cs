@@ -47,8 +47,8 @@ public class UIManager : MonoBehaviour
         sceneStateText.text = "Current scene: " + info;
     }
 
-    public void SetNotificationButtonActive()
+    public void SetNotificationButtonActive(bool active)
     {
-        notificationButton.GetComponent<NotificationButtonController>().SetButtonStatus(true);
+        notificationButton.GetComponent<NotificationButtonController>().SetButtonStatus(active);
     }
 }
