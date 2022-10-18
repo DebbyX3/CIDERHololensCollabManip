@@ -37,7 +37,7 @@ public class Memento
         this.date = DateTime.Now;
     }
 
-    //cCall the less demanding constructor + add assignment to the field
+    // Call the less demanding constructor + add assignment to the field
     public Memento(Guid guid, string prefabName, SerializableTransform transform, Location objectLocation) : this(guid, prefabName, transform)
     {
         this.objectLocation = objectLocation;

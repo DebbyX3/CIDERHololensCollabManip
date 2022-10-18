@@ -207,6 +207,19 @@ public class CaretakerScene : MonoBehaviour
         }
     }
 
+    public void ExecuteForcedCommit(GameObjController gObj)
+    {
+        //Instance.SaveGlobalState(gObj);
+        //Instance.ChangeSceneToGlobal();
+    }
+
+    public void ExecuteVotingCommit(GameObjController gObj)
+    {
+        Instance.SavePendingState(gObj);
+    }
+
+
+    // mi sa che questi 3 li posso spostare in UIManager?
     public void ShowDialogOnGlobalScene(Dialog dialog)
     {
         if (IsGlobalScene())
@@ -233,14 +246,4 @@ public class CaretakerScene : MonoBehaviour
         }
     }
 
-    public void ExecuteForcedCommit(GameObjController gObj)
-    {
-        //Instance.SaveGlobalState(gObj);
-        //Instance.ChangeSceneToGlobal();
-    }
-
-    public void ExecuteVotingCommit(GameObjController gObj)
-    {
-        Instance.SavePendingState(gObj);
-    }
 }

@@ -17,7 +17,8 @@ public class GameObjController : MonoBehaviour {
     private UnityAction saveLocalStateAction;
     private UnityAction restoreLocalStateAction;
 
-    private GameObject nearFollowingMenu;
+    private GameObject nearLocalFollowingMenu;
+    private GameObject nearGlobalFollowingMenu;
 
     private void Awake() 
     {
@@ -51,7 +52,8 @@ public class GameObjController : MonoBehaviour {
 
     private void Start()
     {
-        SetNearFollowingMenu();
+        SetNearLocalFollowingMenu();
+        SetNearGlobalFollowingMenu();
     }
 
     void Update() {
@@ -128,6 +130,9 @@ public class GameObjController : MonoBehaviour {
        
         CaretakerScene.Instance.restoreGlobalState.AddListener(restoreGlobalStateAction);
         CaretakerScene.Instance.restoreGlobalState.AddListener(() => SetActiveManipulation(false));
+
+        // untoggle local menu
+        CaretakerScene.Instance.restoreGlobalState.AddListener(() => SetActiveLocalMenu(false));
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -137,6 +142,9 @@ public class GameObjController : MonoBehaviour {
         
         CaretakerScene.Instance.restoreLocalState.AddListener(restoreLocalStateAction);
         CaretakerScene.Instance.restoreLocalState.AddListener(() => SetActiveManipulation(true));
+
+        // untoggle global menu
+        CaretakerScene.Instance.restoreLocalState.AddListener(() => SetActiveGlobalMenu(false));
     }
     public void UnsubscribeFromGlobalScene()
     {
@@ -156,11 +164,11 @@ public class GameObjController : MonoBehaviour {
         this.gameObject.SetActive(false);
     }
 
-    private void SetNearFollowingMenu()
+    private void SetNearLocalFollowingMenu()
     {
-        nearFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2"), Vector3.zero, Quaternion.identity);
+        nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2"), Vector3.zero, Quaternion.identity);
 
-        GameObject buttonCollection = nearFollowingMenu.transform.Find("ButtonCollection").gameObject;
+        GameObject buttonCollection = nearLocalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // Button 1 - Forced Commit
         GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
@@ -190,21 +198,61 @@ public class GameObjController : MonoBehaviour {
 
         //----------------------
 
-        SolverHandler sh = nearFollowingMenu.GetComponent<SolverHandler>();
-        sh.TrackedTargetType = Microsoft.MixedReality.Toolkit.Utilities.TrackedObjectType.CustomOverride;
+        SolverHandler sh = nearLocalFollowingMenu.GetComponent<SolverHandler>();
+        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
         sh.TransformOverride = gameObject.transform;
 
         // Hide it
-        nearFollowingMenu.SetActive(false);
+        nearLocalFollowingMenu.SetActive(false);
 
         // The parent of the menu is the gameobject
-        nearFollowingMenu.transform.parent = gameObject.transform;
+        nearLocalFollowingMenu.transform.parent = gameObject.transform;
 
         //maybe to do: set scale to the same for every menu (so it doesn't become too small or too big)
     }
 
+    private void SetNearGlobalFollowingMenu()
+    {
+        nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Global obj"), Vector3.zero, Quaternion.identity);
+
+        GameObject buttonCollection = nearGlobalFollowingMenu.transform.Find("ButtonCollection").gameObject;
+
+        // Button 1 - Forced Commit
+        GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
+        Interactable interactableOne = buttonOne.GetComponent<Interactable>();
+        interactableOne.OnClick.AddListener(() => CopyObjectInLocalAndChangeToLocal(this));
+
+        // Button 2 - Voting Commit
+        GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
+
+        // Button 3 - Close Menu
+        GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
+
+        //----------------------
+
+        SolverHandler sh = nearGlobalFollowingMenu.GetComponent<SolverHandler>();
+        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
+        sh.TransformOverride = gameObject.transform;
+
+        // Hide it
+        nearGlobalFollowingMenu.SetActive(false);
+
+        // The parent of the menu is the gameobject
+        nearGlobalFollowingMenu.transform.parent = gameObject.transform;
+
+        //maybe to do: set scale to the same for every menu (so it doesn't become too small or too big)
+    }
+
+    // forse questo metodo va in Caretaker?
+    private void CopyObjectInLocalAndChangeToLocal(GameObjController gobj)
+    {
+        //se lo sto copiando, allora ce l'ho già nella lista completa dei guid!
+        PrefabHandler.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform);
+        CaretakerScene.Instance.ChangeSceneToLocal();
+    }
+
     //bisogna toglierlo anche dalla global e local list mementos!!!!!!!!! WIP TODO
-    public void RemoveGObj()
+    private void RemoveGObj()
     {
         GUIDKeeper.RemoveFromList(this.Guid);
 
@@ -216,7 +264,7 @@ public class GameObjController : MonoBehaviour {
     }
 
     // Duplicate obj with a slight movement of 0.1f on axis X and Y
-    public void DuplicateObj()
+    private void DuplicateObj()
     {
         // I think I don't need to do all of this when the CreateNewObject method does kinda the same thing
         /*
@@ -232,12 +280,12 @@ public class GameObjController : MonoBehaviour {
         PrefabHandler.Instance.CreateNewObjectLocal(PrefabName);
     }
 
-    public void CloseMenu()
+    private void CloseMenu()
     {
-        nearFollowingMenu.SetActive(false);
+        nearLocalFollowingMenu.SetActive(false);
     }
 
-    public void SetActiveManipulation(bool active)
+    private void SetActiveManipulation(bool active)
     {      
         // Want to just spawn the object menu on manipulation, so lock rotations and movements
 
@@ -253,10 +301,27 @@ public class GameObjController : MonoBehaviour {
 
     public void OnSelect(ManipulationEventData data)
     {
-        nearFollowingMenu.SetActive(true);
-        nearFollowingMenu.GetComponent<RadialView>().enabled = true;
+        // toggle global or local menu on object selection
 
-        Debug.Log("Select!");
-        UIManager.Instance.PrintMessages("Select!");
+        if (CaretakerScene.Instance.IsGlobalScene())
+        {
+            nearGlobalFollowingMenu.SetActive(true);
+            nearGlobalFollowingMenu.GetComponent<RadialView>().enabled = true;
+        }
+        else if (CaretakerScene.Instance.IsLocalScene())
+        {
+            nearLocalFollowingMenu.SetActive(true);
+            nearLocalFollowingMenu.GetComponent<RadialView>().enabled = true;
+        }        
+    }
+
+    private void SetActiveLocalMenu(bool active)
+    {
+        nearLocalFollowingMenu.SetActive(active);
+    }
+
+    private void SetActiveGlobalMenu(bool active)
+    {
+        nearGlobalFollowingMenu.SetActive(active);
     }
 }

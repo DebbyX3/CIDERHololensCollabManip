@@ -40,7 +40,7 @@ public class CommitManager : MonoBehaviour
     }
 
     // per ora questo metodo funziona bene solo con i commit forzati. con quelli di voting è più complicato
-    // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica (sempre che si facciano insomma) 
+    // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica (sempre che si facciano insomma) ???
     public void OnCommitSent(GameObjController gObjCont)
     {
         PrefabHandler.Instance.UpdateObjectGlobal(gObjCont.Guid, gObjCont.Transform);
