@@ -6,9 +6,6 @@ public class CommitManager : MonoBehaviour
 {
     public static CommitManager Instance { get; private set; }
 
-    // i metodi oncommitreceived e oncommitsent sono quelli di 'base' che probabilmente
-    // poi forced commit e voting commit useranno? può darsi? boh
-
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.
@@ -37,11 +34,16 @@ public class CommitManager : MonoBehaviour
         UIManager.Instance.commitSentSound.Play();
 
         // maybe display a dialog/confirmation box?
+
+        // Do things
+        OnCommitSent(gObjCont);
     }
 
+    // per ora questo metodo funziona bene solo con i commit forzati. con quelli di voting è più complicato
+    // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica (sempre che si facciano insomma) 
     public void OnCommitSent(GameObjController gObjCont)
-    { 
-
+    {
+        PrefabHandler.Instance.UpdateObjectGlobal(gObjCont.Guid, gObjCont.Transform);
     }
 
     // forse questo metodo è da spostare in una classe più appropriata?

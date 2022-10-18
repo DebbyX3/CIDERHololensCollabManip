@@ -235,8 +235,8 @@ public class CaretakerScene : MonoBehaviour
 
     public void ExecuteForcedCommit(GameObjController gObj)
     {
-        Instance.SaveGlobalState(gObj);
-        Instance.ChangeSceneToGlobal();
+        //Instance.SaveGlobalState(gObj);
+        //Instance.ChangeSceneToGlobal();
     }
 
     public void ExecuteVotingCommit(GameObjController gObj)

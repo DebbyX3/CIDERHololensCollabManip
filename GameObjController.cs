@@ -3,6 +3,7 @@ using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using System;
 using UnityEngine;
 using UnityEngine.Events;
+using MSUtilities = Microsoft.MixedReality.Toolkit.Utilities;
 
 public class GameObjController : MonoBehaviour {
     public Guid Guid { get; private set; }
@@ -124,18 +125,18 @@ public class GameObjController : MonoBehaviour {
     public void SubscribeToGlobalScene()
     {
         CaretakerScene.Instance.saveGlobalState.AddListener(saveGlobalStateAction);
-        CaretakerScene.Instance.saveGlobalState.AddListener(() => SetActiveManipulation(false));
-
+       
         CaretakerScene.Instance.restoreGlobalState.AddListener(restoreGlobalStateAction);
+        CaretakerScene.Instance.restoreGlobalState.AddListener(() => SetActiveManipulation(false));
     }
 
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToLocalScene()
     {
         CaretakerScene.Instance.saveLocalState.AddListener(saveLocalStateAction);
-        CaretakerScene.Instance.saveGlobalState.AddListener(() => SetActiveManipulation(true));
-
+        
         CaretakerScene.Instance.restoreLocalState.AddListener(restoreLocalStateAction);
+        CaretakerScene.Instance.restoreLocalState.AddListener(() => SetActiveManipulation(true));
     }
     public void UnsubscribeFromGlobalScene()
     {
@@ -237,20 +238,17 @@ public class GameObjController : MonoBehaviour {
     }
 
     public void SetActiveManipulation(bool active)
-    {
+    {      
         // Want to just spawn the object menu on manipulation, so lock rotations and movements
 
         // if manip is active (true), then do not lock movements (make 'enable' false)
         gameObject.GetComponent<MoveAxisConstraint>().enabled = !active; // not - because i want to lock on false
 
-        // if manip is not active (false), then lock y axis
+        // if manip is not active (false), then also lock y axis (so lock every axis)
         if (!active)
-            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.YAxis;
+            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = MSUtilities.AxisFlags.YAxis | MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
         else // if manip is active (true), then do not lock y axis (only lock axis x and z) 
-        {
-            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = Microsoft.MixedReality.Toolkit.Utilities.AxisFlags.YAxis;
-        }
-        
+            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
     }
 
     public void OnSelect(ManipulationEventData data)
