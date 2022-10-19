@@ -248,7 +248,7 @@ public class GameObjController : MonoBehaviour {
     {
         //se lo sto copiando, allora ce l'ho già nella lista completa dei guid!
         PrefabHandler.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform);
-        CaretakerScene.Instance.ChangeSceneToLocal();
+        //CaretakerScene.Instance.ChangeSceneToLocal();
     }
 
     //bisogna toglierlo anche dalla global e local list mementos!!!!!!!!! WIP TODO
