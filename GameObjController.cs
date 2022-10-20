@@ -206,7 +206,8 @@ public class GameObjController : MonoBehaviour {
         nearLocalFollowingMenu.SetActive(false);
 
         // The parent of the menu is the gameobject
-        nearLocalFollowingMenu.transform.parent = gameObject.transform;
+        nearLocalFollowingMenu.transform.SetParent(gameObject.transform);
+        //nearLocalFollowingMenu.transform.parent = gameObject.transform;
 
         //maybe to do: set scale to the same for every menu (so it doesn't become too small or too big)
     }
@@ -238,7 +239,8 @@ public class GameObjController : MonoBehaviour {
         nearGlobalFollowingMenu.SetActive(false);
 
         // The parent of the menu is the gameobject
-        nearGlobalFollowingMenu.transform.parent = gameObject.transform;
+        nearGlobalFollowingMenu.transform.SetParent(gameObject.transform);
+        //nearGlobalFollowingMenu.transform.parent = gameObject.transform;
 
         //maybe to do: set scale to the same for every menu (so it doesn't become too small or too big)
     }
