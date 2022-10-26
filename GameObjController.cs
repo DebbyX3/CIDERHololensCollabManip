@@ -126,36 +126,36 @@ public class GameObjController : MonoBehaviour {
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToGlobalScene()
     {
-        CaretakerScene.Instance.SaveGlobalState.AddListener(saveGlobalStateAction);
+        CaretakerScene.Instance.SaveGlobalStateEvent.AddListener(saveGlobalStateAction);
        
-        CaretakerScene.Instance.RestoreGlobalState.AddListener(restoreGlobalStateAction);
-        CaretakerScene.Instance.RestoreGlobalState.AddListener(() => SetActiveManipulation(false));
+        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(restoreGlobalStateAction);
+        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveManipulation(false));
 
         // untoggle local menu
-        CaretakerScene.Instance.RestoreGlobalState.AddListener(() => SetActiveLocalMenu(false));
+        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveLocalMenu(false));
     }
 
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToLocalScene()
     {
-        CaretakerScene.Instance.SaveLocalState.AddListener(saveLocalStateAction);
+        CaretakerScene.Instance.SaveLocalStateEvent.AddListener(saveLocalStateAction);
         
-        CaretakerScene.Instance.RestoreLocalState.AddListener(restoreLocalStateAction);
-        CaretakerScene.Instance.RestoreLocalState.AddListener(() => SetActiveManipulation(true));
+        CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(restoreLocalStateAction);
+        CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(() => SetActiveManipulation(true));
 
         // untoggle global menu
-        CaretakerScene.Instance.RestoreLocalState.AddListener(() => SetActiveGlobalMenu(false));
+        CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(() => SetActiveGlobalMenu(false));
     }
     public void UnsubscribeFromGlobalScene()
     {
-        CaretakerScene.Instance.SaveGlobalState.RemoveListener(saveGlobalStateAction);
-        CaretakerScene.Instance.RestoreGlobalState.RemoveListener(restoreGlobalStateAction);
+        CaretakerScene.Instance.SaveGlobalStateEvent.RemoveListener(saveGlobalStateAction);
+        CaretakerScene.Instance.RestoreGlobalStateEvent.RemoveListener(restoreGlobalStateAction);
     }
 
     public void UnsubscribeFromLocalScene()
     {
-        CaretakerScene.Instance.SaveLocalState.RemoveListener(saveLocalStateAction);
-        CaretakerScene.Instance.RestoreLocalState.RemoveListener(restoreLocalStateAction);
+        CaretakerScene.Instance.SaveLocalStateEvent.RemoveListener(saveLocalStateAction);
+        CaretakerScene.Instance.RestoreLocalStateEvent.RemoveListener(restoreLocalStateAction);
     }
 
     // Always hide the object on change scene!
