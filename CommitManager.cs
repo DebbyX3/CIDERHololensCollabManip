@@ -43,7 +43,7 @@ public class CommitManager : MonoBehaviour
     // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica (sempre che si facciano insomma) ???
     public void OnCommitSent(GameObjController gObjCont)
     {
-        PrefabHandler.Instance.UpdateObjectGlobal(gObjCont.Guid, gObjCont.Transform);
+        PrefabManager.Instance.UpdateObjectGlobal(gObjCont.Guid, gObjCont.Transform);
     }
 
     // forse questo metodo è da spostare in una classe più appropriata?
@@ -56,13 +56,13 @@ public class CommitManager : MonoBehaviour
         {
             // To fix probably
             // cioè che potrebbe avere l'oggetto in locale e non globale? ma può capitare o no? Da capire?
-            PrefabHandler.Instance.UpdateObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform);
+            PrefabManager.Instance.UpdateObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform);
         }
         // If it does NOT have the object
         else
         {
             // Spawn the obj in a specific pos & rot and make it subscribe to the global scene events
-            PrefabHandler.Instance.CreateNewObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
+            PrefabManager.Instance.CreateNewObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
 
             // Note: the instance is added in the GUIDKeeper.List in the Awake directly at object creation!
         }

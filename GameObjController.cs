@@ -7,7 +7,7 @@ using MSUtilities = Microsoft.MixedReality.Toolkit.Utilities;
 
 public class GameObjController : MonoBehaviour {
     public Guid Guid { get; private set; }
-    public string PrefabName { get; private set; } // solo per debug, poi l'assegnamento si toglie. TODO magari ricordati di toglierlo polla!!!
+    public string PrefabName { get; private set; }
     public SerializableTransform Transform;
 
     // Need to keep the references to the unity actions in order to disable them
@@ -249,7 +249,7 @@ public class GameObjController : MonoBehaviour {
     private void CopyObjectInLocalAndChangeToLocal(GameObjController gobj)
     {
         //se lo sto copiando, allora ce l'ho già nella lista completa dei guid!
-        PrefabHandler.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform);
+        PrefabManager.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform);
         //CaretakerScene.Instance.ChangeSceneToLocal();
     }
 
@@ -279,7 +279,7 @@ public class GameObjController : MonoBehaviour {
         st.Position = sv;
         */
 
-        PrefabHandler.Instance.CreateNewObjectLocal(PrefabName);
+        PrefabManager.Instance.CreateNewObjectLocal(PrefabName);
     }
 
     private void CloseMenu()

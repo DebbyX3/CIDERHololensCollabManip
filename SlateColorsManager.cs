@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using System;
-using System.Windows.Storage;
 
 // Script is attached to the SlateUGUI Colors
 
@@ -15,32 +14,22 @@ public class SlateColorsManager : MonoBehaviour
     private void Start()
     {
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
-
-        PopulateSlateColors("couch/couch");
-
+       
+        PopulateSlateColors("couch\\couch");
     }
 
-#if WINDOWS_UWP
     public void PopulateSlateColors(string prefabPathame)
     {
-        var openPicker = new FileOpenPicker();
-        StorageFile file = await openPicker.PickSingleFileAsync();
-        // Process picked file
-        if (file != null)
-        {
-            // Store file for future access
-            Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.Add(file);
-        }
-        else
-        {
-            // The user didn't pick a file
-        }
-    }
-#endif
+        string prefabName = Path.GetFileName(prefabPathame);
 
-#if UNITY_EDITOR
-    public void PopulateSlateColors(string prefabPathame)
-    {
+
+
+        // sta roba non serve a niente! non voglio leggere il file system perchè hololens è una app uwp
+        // e per sta roba bisogna usare delle schifezze
+        /*
+        //Load a Texture (Assets/Resources/Textures/texture01.png)
+        Texture2D texture = Resources.Load<Texture2D>("Textures/texture01");
+
         // Get the path to the prefab
         string directoryName = Path.GetDirectoryName(prefabPathame);
         Debug.Log(directoryName);
@@ -59,9 +48,21 @@ public class SlateColorsManager : MonoBehaviour
             UIManager.Instance.PrintMessages(fileName);
             AddButton(fileName);
         }
-    }
-#endif
 
+        //-------------------------------------------
+
+        DirectoryInfo dir = new DirectoryInfo(imagesDirectoryName);
+        FileInfo[] info = dir.GetFiles("*.*");
+        foreach (FileInfo f in info)
+        {
+            Debug.Log(f);
+            UIManager.Instance.PrintMessages(f.ToString());
+        }*/
+
+
+    }
+
+    // questa funzione si può sistemare e semplificare, perchè ora ho già una texture2d quando carico l'immagine!
     private void AddButton(string fileName)
     {
         // The parent of the button is the gameobject UGUIButtons - important: set false as argument

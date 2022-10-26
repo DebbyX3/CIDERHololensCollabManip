@@ -20,23 +20,23 @@ public struct GameObjMessageInfo {
     public CommitType CommitType { get; private set; }
 
     public GameObjMessageInfo(Guid gameObjectGuid, SerializableTransform transform, string prefabName, CommitType commitType) {
-        this.GameObjectGuid = gameObjectGuid;
-        this.Transform = transform;
-        this.PrefabName = prefabName;
-        this.CommitType = commitType;
+        GameObjectGuid = gameObjectGuid;
+        Transform = transform;
+        PrefabName = prefabName;
+        CommitType = commitType;
     }
     public GameObjMessageInfo(GameObjController gObj, CommitType commitType) {
         GameObjectGuid = gObj.Guid;
         Transform = gObj.Transform;
         PrefabName = gObj.PrefabName;
-        this.CommitType = commitType;
+        CommitType = commitType;
     }
 
     public GameObjMessageInfo(Guid gameObjectGuid, Transform transform, string prefabName, CommitType commitType) {
-        this.GameObjectGuid = gameObjectGuid;
-        this.Transform = new SerializableTransform(transform.position, transform.rotation, transform.lossyScale);
-        this.PrefabName = prefabName;
-        this.CommitType = commitType;
+        GameObjectGuid = gameObjectGuid;
+        Transform = new SerializableTransform(transform.position, transform.rotation, transform.lossyScale);
+        PrefabName = prefabName;
+        CommitType = commitType;
     }
 }
 
