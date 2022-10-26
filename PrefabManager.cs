@@ -5,9 +5,16 @@ using System;
 using UnityEngine.Events;
 using Microsoft.MixedReality.Toolkit.UI;
 
-public class PrefabHandler : MonoBehaviour
+public class PrefabManager : MonoBehaviour
 {
-    public static PrefabHandler Instance { get; private set; }
+    public static PrefabManager Instance { get; private set; }
+
+    public List<GameObject> prefabs;
+    public List<Texture2D> images;
+    public List<Material> materials;
+
+    private List<PrefabSpecs> prefabCollection = new List<PrefabSpecs>();
+
 
     // -------------- PRIVATE --------------
 
@@ -23,6 +30,65 @@ public class PrefabHandler : MonoBehaviour
         {
             Instance = this;
         }
+
+        // Populate 
+        PopulatePrefabCollection();
+    }
+
+    private void PopulatePrefabCollection()
+    {
+        PrefabSpecs prefabSpecs;
+        List<Texture2D> prefabImages;
+        List<Material> prefabMaterials;
+
+        string prefabName;
+
+        foreach (GameObject gObj in prefabs)
+        {
+            prefabName = gObj.name;
+
+            prefabImages = getRelevantImagesByPrefab(prefabName);
+        }
+
+        /*
+        ImagesMaterialsStruct item;
+
+        foreach (Texture2D tex in images)
+        {
+            item = new ImagesMaterialsStruct
+            {
+                name = tex.name,
+                image = tex
+            };
+
+            if (materials.Find(x => x.name == tex.name) is Material mat)
+                item.material = mat;
+
+            imagesMaterialsStruct.Add(item);
+        }*/
+    }
+
+    // Given a list of images and the prefab name, the function returns a list of images of that prefab, following this logic:
+    //      the current image is a relevant image of that prefab if the prefab name is at the beginning of the image name, before the dash
+    //      for example:
+    //          cube is the prefab name
+    //          cube-red and cube-green are the images associated with the 'cube' prefab.
+    //          Please note that if the image is called 'cubeoid-red', it does not belong to the cube prebab, because we want to match
+    //          the entire word before the dash, not just the substring
+    private List<Texture2D> getRelevantImagesByPrefab(string prefabName)
+    {
+        string stringToMatch;
+        List<Texture2D> relevantImages = new List<Texture2D>();
+
+        foreach (Texture2D tex in images)
+        {
+            stringToMatch = tex.name.Substring(0, prefabName.IndexOf('-'));
+
+            if (stringToMatch.Equals(prefabName))
+                relevantImages.Add(tex);
+        }
+
+        return relevantImages;
     }
 
     private GameObject InstantiateAndSetPrefabName(string prefabName, Vector3 pos, Quaternion rot)
@@ -157,4 +223,12 @@ public class PrefabHandler : MonoBehaviour
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();       
     }
+
+    /* public ImagesMaterialsStruct FindElementByName(string name)
+     {
+         if (imagesMaterialsStruct.Find(x => x.name == name) is ImagesMaterialsStruct ims)
+             return ims;
+
+         return null;
+     }*/
 }
