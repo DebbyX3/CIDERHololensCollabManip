@@ -24,7 +24,7 @@ public class CommitManager : MonoBehaviour
         CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
 
         // Create message to send (serialize it)
-        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, CommitType.ForcedCommit));
+        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, CommitType.ForcedCommit));
         byte[] serializedMsg = msg.Serialize();
 
         // Send message
@@ -62,7 +62,7 @@ public class CommitManager : MonoBehaviour
         else
         {
             // Spawn the obj in a specific pos & rot and make it subscribe to the global scene events
-            PrefabManager.Instance.CreateNewObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
+            PrefabManager.Instance.CreateNewObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.MaterialName, gObjMsgInfo.Transform);
 
             // Note: the instance is added in the GUIDKeeper.List in the Awake directly at object creation!
         }

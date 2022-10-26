@@ -112,7 +112,7 @@ public class GameObjController : MonoBehaviour {
     /* METHODS FOR 'MEMENTO' PATTERN */
 
     public Memento Save() {
-        return new Memento(Guid, PrefabName, Transform);
+        return new Memento(Guid, PrefabName, MaterialName, Transform);
     }
 
     public void Restore(Memento memento) 
@@ -286,7 +286,7 @@ public class GameObjController : MonoBehaviour {
         st.Position = sv;
         */
 
-        PrefabManager.Instance.CreateNewObjectLocal(PrefabName);
+        PrefabManager.Instance.CreateNewObjectLocal(PrefabName, MaterialName);
     }
 
     private void CloseMenu()

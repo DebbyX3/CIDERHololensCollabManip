@@ -8,12 +8,12 @@ using TMPro;
 
 // Script is attached to SlateUGUI Colors
 
-public class SlateColorsManager : MonoBehaviour, ISlateManager
+public class SlateColorsManager : MonoBehaviour
 {
     private GameObject UGUIButtons;
     PrefabSpecs prefabSpecs;
 
-    private void Start()
+    private void Awake()
     {
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
     }
@@ -23,10 +23,10 @@ public class SlateColorsManager : MonoBehaviour, ISlateManager
         prefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabManager.Instance.PrefabCollection);
 
         foreach (KeyValuePair<string, Texture2D> images in prefabSpecs.Images)
-            AddButton(images.Key, images.Value);
+            AddButton(prefabName, images.Key, images.Value);
     }
 
-    public void AddButton(string imageName, Texture2D image)
+    public void AddButton(string prefabName, string imageName, Texture2D image)
     {
         // The parent of the button is the gameobject UGUIButtons - important: set false as argument
         GameObject button = Instantiate(Resources.Load<GameObject>("SlateButton"), UGUIButtons.transform, false);
@@ -35,9 +35,11 @@ public class SlateColorsManager : MonoBehaviour, ISlateManager
         Button buttonComponent = button.GetComponent<Button>();
 
         // Add object specifying the material
-        buttonComponent.onClick.AddListener(() => AddObjectToScene(imageName));
+        buttonComponent.onClick.AddListener(() => AddObjectToScene(prefabName, imageName));
         //Hide this slate
         buttonComponent.onClick.AddListener(() => gameObject.SetActive(false));
+        // Destroy all the buttons
+        buttonComponent.onClick.AddListener(() => DestroyButtons());
 
         // Get RawImage gameObject and component
         GameObject rawImage = button.transform.Find("RawImage").gameObject;
@@ -54,13 +56,20 @@ public class SlateColorsManager : MonoBehaviour, ISlateManager
         textTMP.SetText(char.ToUpper(imageName[0]) + imageName.Substring(1));
     }
 
-    private void AddObjectToScene(string imageName)
+    // dovrei passare direttamente il materiale oppure il nome? da capire, per ora passo il nome
+    // posso anche fare che ci sono vari overload del metodo e così accontento tutti? boh
+    private void AddObjectToScene(string prefabName, string imageName)
     {
-        prefabSpecs.GetMaterialByName(imageName);
+        //Material material = prefabSpecs.GetMaterialByName(imageName);
+
+        // Remember: image name and material name is the same!
+        PrefabManager.Instance.CreateNewObjectLocal(prefabName, imageName);
     }
 
     // Delete all buttons when choice is made
     private void DestroyButtons()
-    { 
+    {
+        foreach (Transform child in UGUIButtons.transform)
+            Destroy(child.gameObject);
     }
 }

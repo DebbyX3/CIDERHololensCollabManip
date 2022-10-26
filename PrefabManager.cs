@@ -124,24 +124,42 @@ public class PrefabManager : MonoBehaviour
         return relevantMaterials;
     }
 
-    private GameObject InstantiateAndSetPrefabName(string prefabName, Vector3 pos, Quaternion rot)
+    // forse è da cambiare perchè per ora pesca solo un mat dalla lista, mentre io voglio generarne uno nuovo ogni volta? da capire,
+    // forse devo solo copiarlo e ciaone- idem per la creazione in globale no? (anche se qua non mi intressa)
+    private GameObject InstantiateAndSetPrefabNameMaterialName(string prefabName, string materialName, Vector3 pos, Quaternion rot)
     {
-        GameObject newObj = Instantiate(Resources.Load<GameObject>(prefabName), pos, rot);
+        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabCollection);
+
+        // Get prefab and instantiate it
+        GameObject prefabToSpawn = prefabSpecs.PrefabFile;
+        GameObject newObj = Instantiate(prefabToSpawn, pos, rot);
+
+        // Find material to apply
+        Material material = prefabSpecs.GetMaterialByName(materialName);
+
+        // Get mesh renderer
+        MeshRenderer meshRenderer = newObj.GetComponent<MeshRenderer>();
+
+        // Set the new material on the GameObject
+        meshRenderer.material = material;
+
+        // Set prefab and material name
         newObj.GetComponent<GameObjController>().SetPrefabName(prefabName);
+        newObj.GetComponent<GameObjController>().SetMaterialName(materialName);
 
         return newObj;
     }
 
     // need this method because sometimes i want to spawn an object with a certain GUID
-    private GameObject CreateNewObject(Guid guid, string prefabName, SerializableTransform transform)
+    private GameObject CreateNewObject(Guid guid, string prefabName, string materialName, SerializableTransform transform)
     {
-        GameObject newObj = CreateNewObject(prefabName, transform);
+        GameObject newObj = CreateNewObject(prefabName, materialName, transform);
         newObj.GetComponent<GameObjController>().SetGuid(guid);
 
         return newObj;
     }
 
-    private GameObject CreateNewObject(string prefabName, SerializableTransform transform)
+    private GameObject CreateNewObject(string prefabName, string materialName, SerializableTransform transform)
     {
         // NO need to modify or touch the scale property
         // We want to keep the same scale as the original prefab! Otherwise the real world scale would not be correct!
@@ -152,10 +170,10 @@ public class PrefabManager : MonoBehaviour
         Vector3 pos = new Vector3(position.X, position.Y, position.Z);
         Quaternion rot = new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
 
-        return InstantiateAndSetPrefabName(prefabName, pos, rot);
+        return InstantiateAndSetPrefabNameMaterialName(prefabName, materialName, pos, rot);
     }
 
-    private GameObject CreateNewObjectShiftPos(string prefabName)
+    private GameObject CreateNewObjectShiftPos(string prefabName, string materialName)
     {
         // When creating an obj from scratch, shift it
         SerializableTransform st = Camera.main.transform;
@@ -170,12 +188,12 @@ public class PrefabManager : MonoBehaviour
         // Keep 0,0,0,1 quaternion as rotation
         st.Rotation = (SerializableVector)Quaternion.identity;
 
-        return CreateNewObject(prefabName, st);
+        return CreateNewObject(prefabName, materialName, st);
     }
 
     // -------------- PUBLIC --------------
 
-    public void CreateNewObjectLocal(string prefabName)
+    public void CreateNewObjectLocal(string prefabName, string materialName)
     {
         bool wasGlobalScene = false;
 
@@ -186,7 +204,7 @@ public class PrefabManager : MonoBehaviour
             wasGlobalScene = true;
         }
 
-        GameObject gobj = CreateNewObjectShiftPos(prefabName);
+        GameObject gobj = CreateNewObjectShiftPos(prefabName, materialName);
         gobj.GetComponent<GameObjController>().SubscribeToLocalScene();
 
         // If the previous scene was the global one, reswitch to the global
@@ -194,7 +212,7 @@ public class PrefabManager : MonoBehaviour
             CaretakerScene.Instance.ChangeSceneToGlobal();
     }
 
-    public GameObject CreateNewObjectGlobal(Guid guid, string prefabName, SerializableTransform transform)
+    public GameObject CreateNewObjectGlobal(Guid guid, string prefabName, string materialName, SerializableTransform transform)
     {
         bool wasLocalScene = false;
 
@@ -205,7 +223,7 @@ public class PrefabManager : MonoBehaviour
             wasLocalScene = true;
         }
 
-        GameObject gobj = CreateNewObject(guid, prefabName, transform);
+        GameObject gobj = CreateNewObject(guid, prefabName, materialName, transform);
         gobj.GetComponent<GameObjController>().SubscribeToGlobalScene();
 
         // If the previous scene was the local one, reswitch to the local

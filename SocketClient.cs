@@ -41,7 +41,7 @@ public class SocketClient: NetworkHandler
     {
         GameObjController controller = gameObject.GetComponent<GameObjController>();
 
-        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName, CommitType.ForcedCommit));
+        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName, controller.MaterialName, CommitType.ForcedCommit));
         byte[] serializedMsg = msg.Serialize();
 
         NetworkHandler.Instance.Send(serializedMsg);

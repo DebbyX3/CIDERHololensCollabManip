@@ -4,14 +4,15 @@ using TMPro;
 
 // Script is attached to SlateUGUI
 
-public class SlatePrefabsManager : MonoBehaviour, ISlateManager
+public class SlatePrefabsManager : MonoBehaviour
 {
     public GameObject SlateColor;
     private GameObject UGUIButtons;
 
-    private void Start()
+    private void Awake()
     {
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
+        PopulateSlate();
     }
 
     public void PopulateSlate()

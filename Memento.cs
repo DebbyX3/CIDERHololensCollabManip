@@ -24,21 +24,24 @@ public class Memento
     // originator (gobjcontroller) info
     private Guid Guid;
     private string PrefabName;
+    private string MaterialName;
     private SerializableTransform Transform;
 
     // memento info
     private DateTime Date;
     private Location ObjectLocation;
 
-    public Memento(Guid guid, string prefabName, SerializableTransform transform) {
+    public Memento(Guid guid, string prefabName, string materialName, SerializableTransform transform) {
         Guid = guid;
         PrefabName = prefabName;
+        MaterialName = materialName;
         Transform = transform;
         Date = DateTime.Now;
     }
 
     // Call the less demanding constructor + add assignment to the field
-    public Memento(Guid guid, string prefabName, SerializableTransform transform, Location objectLocation) : this(guid, prefabName, transform)
+    public Memento(Guid guid, string prefabName, string materialName, SerializableTransform transform, Location objectLocation) 
+                   : this(guid, prefabName, materialName, transform)
     {
         ObjectLocation = objectLocation;
     }
@@ -46,11 +49,16 @@ public class Memento
     // Not used because the originator does not have to modify the GUID or the prefabname!!!!
     /*
     public Guid GetGuid() {
-        return this.guid;
+        return Guid;
     }
 
     public string GetPrefabName() {
-        return prefabName;
+        return PrefabName;
+    }
+
+    public string GetMaterialName()
+    {
+        return MaterialName;
     }
     */
 
