@@ -31,7 +31,7 @@ public class CommitManager : MonoBehaviour
         NetworkHandler.Instance.Send(serializedMsg);
 
         // Play sound on commit
-        UIManager.Instance.commitSentSound.Play();
+        UIManager.Instance.CommitSentSound.Play();
 
         // maybe display a dialog/confirmation box?
 
@@ -70,7 +70,7 @@ public class CommitManager : MonoBehaviour
         // Notify the user that a new commit has arrived
 
         // Play notification sound
-        UIManager.Instance.notificationSound.Play();
+        UIManager.Instance.NotificationSound.Play();
 
         // Send commit notification to this device
         UIManager.Instance.SetNotificationButtonActive(true);

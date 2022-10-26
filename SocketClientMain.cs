@@ -11,9 +11,9 @@ public class SocketClientMain : SocketClient
 
         SetInstance(this);
 
-        connectionEstablished = StartClient();            
+        ConnectionEstablished = StartClient();            
 
-        if (connectionEstablished) 
+        if (ConnectionEstablished) 
         {
             //StartCoroutine(Cor());
         }        

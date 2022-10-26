@@ -9,11 +9,11 @@ public class PrefabManager : MonoBehaviour
 {
     public static PrefabManager Instance { get; private set; }
 
-    public List<GameObject> prefabs;
-    public List<Texture2D> images;
-    public List<Material> materials;
+    public List<GameObject> Prefabs;
+    public List<Texture2D> Images;
+    public List<Material> Materials;
 
-    private List<PrefabSpecs> prefabCollection = new List<PrefabSpecs>();
+    private List<PrefabSpecs> PrefabCollection = new List<PrefabSpecs>();
 
 
     // -------------- PRIVATE --------------
@@ -43,7 +43,7 @@ public class PrefabManager : MonoBehaviour
 
         string prefabName;
 
-        foreach (GameObject gObj in prefabs)
+        foreach (GameObject gObj in Prefabs)
         {
             prefabName = gObj.name;
 
@@ -80,7 +80,7 @@ public class PrefabManager : MonoBehaviour
         string stringToMatch;
         List<Texture2D> relevantImages = new List<Texture2D>();
 
-        foreach (Texture2D tex in images)
+        foreach (Texture2D tex in Images)
         {
             stringToMatch = tex.name.Substring(0, prefabName.IndexOf('-'));
 
@@ -116,8 +116,8 @@ public class PrefabManager : MonoBehaviour
         SerializableVector position = transform.Position;
         SerializableVector rotation = transform.Rotation;
 
-        Vector3 pos = new Vector3(position.x, position.y, position.z);
-        Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+        Vector3 pos = new Vector3(position.X, position.Y, position.Z);
+        Quaternion rot = new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
 
         return InstantiateAndSetPrefabName(prefabName, pos, rot);
     }
@@ -127,9 +127,9 @@ public class PrefabManager : MonoBehaviour
         // When creating an obj from scratch, shift it
         SerializableTransform st = Camera.main.transform;
         SerializableVector sv = new SerializableVector(
-            st.Position.x + 0.5f,
-            st.Position.y,
-            st.Position.z + 0.5f);
+            st.Position.X + 0.5f,
+            st.Position.Y,
+            st.Position.Z + 0.5f);
 
         // Assign new position
         st.Position = sv;

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SocketServerMain : SocketServer {
 
-    bool avviato = false;
+    bool Running = false;
 
     void Start() 
     {
@@ -17,18 +17,19 @@ public class SocketServerMain : SocketServer {
 
     new void Update() 
     {
-        if (connectionEstablished && avviato == false) {
-            avviato = true;
+        if (ConnectionEstablished && Running == false) {
+            Running = true;
             //StartCoroutine(Cor());
         }
 
         base.Update();
     }
 
+    /*
     IEnumerator Cor() {
         while (true) {
             SendObject(cube);
             yield return new WaitForSeconds(0.5f);
         }
-    }
+    }*/
 }

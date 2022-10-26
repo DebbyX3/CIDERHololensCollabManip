@@ -7,13 +7,13 @@ using SysDiag = System.Diagnostics;
 //https://stackoverflow.com/questions/39345820/easy-way-to-write-and-read-some-transform-to-a-text-file-in-unity3d
 [Serializable]
 public struct SerializableVector {
-    public float x, y, z, w;
+    public float X, Y, Z, W;
 
     public SerializableVector(float x, float y, float z, float w = 0f) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.w = w;
+        X = x;
+        Y = y;
+        Z = z;
+        W = w;
     }
 
     public static explicit operator SerializableVector(Quaternion a) {
@@ -25,7 +25,7 @@ public struct SerializableVector {
     }
 
     public override string ToString() {
-        return "x = " + x + "\ny = " + y + "\nz = " + z + "\nw = " + w;
+        return "x = " + X + "\ny = " + Y + "\nz = " + Z + "\nw = " + W;
     }
 }
 
@@ -43,9 +43,9 @@ public struct SerializableTransform {
     }
 
     public SerializableTransform(Vector3 position, Quaternion rotation, Vector3 scale) {
-        this.Position = position;
-        this.Rotation = (SerializableVector) rotation;
-        this.Scale = scale;
+        Position = position;
+        Rotation = (SerializableVector) rotation;
+        Scale = scale;
     }
 
     public static implicit operator SerializableTransform(Transform t)
@@ -218,8 +218,8 @@ public static class TransformSerializer {
     // Assign deserializedTransform to originalTransform
     public static void AssignDeserTransformToOriginalTransform(this Transform oldTransform, SerializableTransform newTransform) 
     {
-        oldTransform.position = new Vector3(newTransform.Position.x, newTransform.Position.y, newTransform.Position.z);
-        oldTransform.rotation = new Quaternion(newTransform.Rotation.x, newTransform.Rotation.y, newTransform.Rotation.z, newTransform.Rotation.w); 
-        oldTransform.localScale = new Vector3(newTransform.Scale.x, newTransform.Scale.y, newTransform.Scale.z);
+        oldTransform.position = new Vector3(newTransform.Position.X, newTransform.Position.Y, newTransform.Position.Z);
+        oldTransform.rotation = new Quaternion(newTransform.Rotation.X, newTransform.Rotation.Y, newTransform.Rotation.Z, newTransform.Rotation.W); 
+        oldTransform.localScale = new Vector3(newTransform.Scale.X, newTransform.Scale.Y, newTransform.Scale.Z);
     }
 }

@@ -43,7 +43,7 @@ public class GameObjController : MonoBehaviour {
         // Subscribe to event to hide the object at each scene change
         // no need to use an unityaction (I think) because i don't need to unsubscribe from this event! it's fixed
         //CaretakerScene.Instance.hideObject.AddListener(() => CaretakerScene.Instance.HideObject(this)); prima
-        CaretakerScene.Instance.hideObject.AddListener(() => HideObject());
+        CaretakerScene.Instance.HideObjectEvent.AddListener(() => HideObject());
 
         // Add manipulation event/s
         ObjectManipulator objManip = gameObject.GetComponent<ObjectManipulator>();
@@ -58,24 +58,24 @@ public class GameObjController : MonoBehaviour {
 
     void Update() {
         // Can be done better but not really urgent
-        if (Transform.Position.x != gameObject.transform.position.x ||
-            Transform.Position.y != gameObject.transform.position.y ||
-            Transform.Position.z != gameObject.transform.position.z) 
+        if (Transform.Position.X != gameObject.transform.position.x ||
+            Transform.Position.Y != gameObject.transform.position.y ||
+            Transform.Position.Z != gameObject.transform.position.z) 
         {
             Transform.Position = gameObject.transform.position;
         }
 
-        if (Transform.Rotation.x != gameObject.transform.rotation.x ||
-            Transform.Rotation.y != gameObject.transform.rotation.y ||
-            Transform.Rotation.z != gameObject.transform.rotation.z ||
-            Transform.Rotation.w != gameObject.transform.rotation.w) 
+        if (Transform.Rotation.X != gameObject.transform.rotation.x ||
+            Transform.Rotation.Y != gameObject.transform.rotation.y ||
+            Transform.Rotation.Z != gameObject.transform.rotation.z ||
+            Transform.Rotation.W != gameObject.transform.rotation.w) 
         {
             Transform.Rotation = (SerializableVector)gameObject.transform.rotation;
         }
 
-        if (Transform.Scale.x != gameObject.transform.lossyScale.x ||
-            Transform.Scale.y != gameObject.transform.lossyScale.y ||
-            Transform.Scale.z != gameObject.transform.lossyScale.z) 
+        if (Transform.Scale.X != gameObject.transform.lossyScale.x ||
+            Transform.Scale.Y != gameObject.transform.lossyScale.y ||
+            Transform.Scale.Z != gameObject.transform.lossyScale.z) 
         {
             Transform.Scale = gameObject.transform.lossyScale;
         }
@@ -126,36 +126,36 @@ public class GameObjController : MonoBehaviour {
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToGlobalScene()
     {
-        CaretakerScene.Instance.saveGlobalState.AddListener(saveGlobalStateAction);
+        CaretakerScene.Instance.SaveGlobalState.AddListener(saveGlobalStateAction);
        
-        CaretakerScene.Instance.restoreGlobalState.AddListener(restoreGlobalStateAction);
-        CaretakerScene.Instance.restoreGlobalState.AddListener(() => SetActiveManipulation(false));
+        CaretakerScene.Instance.RestoreGlobalState.AddListener(restoreGlobalStateAction);
+        CaretakerScene.Instance.RestoreGlobalState.AddListener(() => SetActiveManipulation(false));
 
         // untoggle local menu
-        CaretakerScene.Instance.restoreGlobalState.AddListener(() => SetActiveLocalMenu(false));
+        CaretakerScene.Instance.RestoreGlobalState.AddListener(() => SetActiveLocalMenu(false));
     }
 
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToLocalScene()
     {
-        CaretakerScene.Instance.saveLocalState.AddListener(saveLocalStateAction);
+        CaretakerScene.Instance.SaveLocalState.AddListener(saveLocalStateAction);
         
-        CaretakerScene.Instance.restoreLocalState.AddListener(restoreLocalStateAction);
-        CaretakerScene.Instance.restoreLocalState.AddListener(() => SetActiveManipulation(true));
+        CaretakerScene.Instance.RestoreLocalState.AddListener(restoreLocalStateAction);
+        CaretakerScene.Instance.RestoreLocalState.AddListener(() => SetActiveManipulation(true));
 
         // untoggle global menu
-        CaretakerScene.Instance.restoreLocalState.AddListener(() => SetActiveGlobalMenu(false));
+        CaretakerScene.Instance.RestoreLocalState.AddListener(() => SetActiveGlobalMenu(false));
     }
     public void UnsubscribeFromGlobalScene()
     {
-        CaretakerScene.Instance.saveGlobalState.RemoveListener(saveGlobalStateAction);
-        CaretakerScene.Instance.restoreGlobalState.RemoveListener(restoreGlobalStateAction);
+        CaretakerScene.Instance.SaveGlobalState.RemoveListener(saveGlobalStateAction);
+        CaretakerScene.Instance.RestoreGlobalState.RemoveListener(restoreGlobalStateAction);
     }
 
     public void UnsubscribeFromLocalScene()
     {
-        CaretakerScene.Instance.saveLocalState.RemoveListener(saveLocalStateAction);
-        CaretakerScene.Instance.restoreLocalState.RemoveListener(restoreLocalStateAction);
+        CaretakerScene.Instance.SaveLocalState.RemoveListener(saveLocalStateAction);
+        CaretakerScene.Instance.RestoreLocalState.RemoveListener(restoreLocalStateAction);
     }
 
     // Always hide the object on change scene!

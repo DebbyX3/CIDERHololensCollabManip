@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public struct ImageSpecs
 {
     public string Name { get; private set; }
@@ -24,20 +25,21 @@ public struct MaterialSpecs
         Name = name;
         Material = material;
     }
-}
+}*/
 
 public class PrefabSpecs 
 {
     public string PrefabName { get; private set; }
     public string PrefabPathResources { get; private set; }
 
-    public List<ImageSpecs> Images = new List<ImageSpecs>();
-    public List<MaterialSpecs> Materials = new List<MaterialSpecs>();
+    public Dictionary<string, Texture2D> Images = new Dictionary<string, Texture2D>();
+    public Dictionary<string, Material> Materials = new Dictionary<string, Material>();
 
     public PrefabSpecs() { }
 
     // Mai usato questo costruttore, sicuro
-    public PrefabSpecs(string prefabName, string prefabPathResources, List<ImageSpecs> images, List<MaterialSpecs> materials)
+    public PrefabSpecs(string prefabName, string prefabPathResources, 
+                       Dictionary<string, Texture2D> images, Dictionary<string, Material> materials)
     {
         PrefabName = prefabName;
         PrefabPathResources = prefabPathResources;
@@ -51,9 +53,9 @@ public class PrefabSpecs
         PrefabPathResources = prefabPathResources;
 
         foreach (Texture2D tex in images)
-            Images.Add(new ImageSpecs(tex.name, tex));
+            Images.Add(tex.name, tex);
 
         foreach (Material mat in materials)
-            Materials.Add(new MaterialSpecs(mat.name, mat));
+            Materials.Add(mat.name, mat);
     }
 }

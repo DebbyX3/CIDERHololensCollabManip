@@ -22,25 +22,25 @@ public enum Location : int {
 public class Memento
 {
     // originator (gobjcontroller) info
-    private Guid guid;
-    private string prefabName;
-    private SerializableTransform transform;
+    private Guid Guid;
+    private string PrefabName;
+    private SerializableTransform Transform;
 
     // memento info
-    private DateTime date;
-    private Location objectLocation;
+    private DateTime Date;
+    private Location ObjectLocation;
 
     public Memento(Guid guid, string prefabName, SerializableTransform transform) {
-        this.guid = guid;
-        this.prefabName = prefabName;
-        this.transform = transform;
-        this.date = DateTime.Now;
+        Guid = guid;
+        PrefabName = prefabName;
+        Transform = transform;
+        Date = DateTime.Now;
     }
 
     // Call the less demanding constructor + add assignment to the field
     public Memento(Guid guid, string prefabName, SerializableTransform transform, Location objectLocation) : this(guid, prefabName, transform)
     {
-        this.objectLocation = objectLocation;
+        ObjectLocation = objectLocation;
     }
 
     // Not used because the originator does not have to modify the GUID or the prefabname!!!!
@@ -56,19 +56,19 @@ public class Memento
 
     // The Originator (gobjcontroller) uses this method when restoring its transform
     public SerializableTransform GetTransform() {
-        return transform;
+        return Transform;
     }
 
     // The rest of the methods are used by the Caretaker to display metadata.
     public string GetName() 
     {
-        return $"{date} / Object: {prefabName} - GUID: {guid} - Transform: {transform}";        
+        return $"{Date} / Object: {PrefabName} - GUID: {Guid} - Transform: {Transform}";        
     }
 
     public DateTime GetDate() {
-        return date;
+        return Date;
     }
     public Location GetObjectLocation() {
-        return objectLocation;
+        return ObjectLocation;
     }
 }

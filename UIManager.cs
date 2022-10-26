@@ -7,15 +7,15 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
-    public TMP_Text sceneStateText;
-    public TMP_Text logText;
+    public TMP_Text SceneStateText;
+    public TMP_Text LogText;
 
-    public GameObject notificationButton;
+    public GameObject NotificationButton;
 
-    public AudioSource notificationSound;
-    public AudioSource commitSentSound;
+    public AudioSource NotificationSound;
+    public AudioSource CommitSentSound;
 
-    private string logString = "";
+    private string LogString = "";
 
     private void Awake() 
     {
@@ -32,23 +32,23 @@ public class UIManager : MonoBehaviour
 
     private void Update() 
     {
-        if (!logString.Equals(""))
+        if (!LogString.Equals(""))
         {
-            logText.text = logText.text + logString;
-            logString = "";
+            LogText.text = LogText.text + LogString;
+            LogString = "";
         }
     }
 
     public void PrintMessages(string message) {
-        logString += message + "\n";
+        LogString += message + "\n";
     }
 
     public void ChangeSceneStateText(Location info) {
-        sceneStateText.text = "Current scene: " + info;
+        SceneStateText.text = "Current scene: " + info;
     }
 
     public void SetNotificationButtonActive(bool active)
     {
-        notificationButton.GetComponent<NotificationButtonController>().SetButtonStatus(active);
+        NotificationButton.GetComponent<NotificationButtonController>().SetButtonStatus(active);
     }
 }

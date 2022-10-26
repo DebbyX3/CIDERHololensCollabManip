@@ -4,28 +4,27 @@ using System.Threading;
 
 public class SocketClient: NetworkHandler
 {
-    public string ipToSend = "0.0.0.0"; //to be changed in the Unity Inspector
-    public int portToSend = 60000;
-    public GameObject cube;
+    public string IpToSend = "0.0.0.0"; //to be changed in the Unity Inspector
+    public int PortToSend = 60000;
 
-    private Thread handleIncomingRequestThread;
+    private Thread HandleIncomingRequestThread;
 
     protected bool StartClient() 
     {
         SetInstance(Instance);
 
-        connectionHandler = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        connectionHandler.Connect(ipToSend, portToSend);
+        ConnectionHandler = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        ConnectionHandler.Connect(IpToSend, PortToSend);
 
         //create thread to handle request
-        handleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(connectionHandler, connectionEstablished));
-        handleIncomingRequestThread.IsBackground = true;
-        handleIncomingRequestThread.Start();
+        HandleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(ConnectionHandler, ConnectionEstablished));
+        HandleIncomingRequestThread.IsBackground = true;
+        HandleIncomingRequestThread.Start();
 
         //attach this object to NetworkHandler
         //NetworkHandler.Instance.SetNetworkPeer(this);
 
-        if (!connectionHandler.Connected) {
+        if (!ConnectionHandler.Connected) {
             Debug.LogError("Connection Failed");
             UIManager.Instance.PrintMessages("Connection Failed");
             return false;
@@ -50,15 +49,15 @@ public class SocketClient: NetworkHandler
 
     protected void StopClient()
     {
-        if (connectionHandler != null) 
+        if (ConnectionHandler != null) 
         {
             try 
             {
-                connectionHandler.Shutdown(SocketShutdown.Both);
-                connectionHandler.Disconnect(false);
+                ConnectionHandler.Shutdown(SocketShutdown.Both);
+                ConnectionHandler.Disconnect(false);
             } 
             finally {
-                connectionHandler.Close();
+                ConnectionHandler.Close();
             }                      
 
             Debug.Log("Disconnected!");
@@ -66,8 +65,8 @@ public class SocketClient: NetworkHandler
         }
 
         //stop thread
-        if (handleIncomingRequestThread != null) {
-            handleIncomingRequestThread.Abort();
+        if (HandleIncomingRequestThread != null) {
+            HandleIncomingRequestThread.Abort();
         }
 
         Debug.Log("Abort threads");

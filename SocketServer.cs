@@ -7,24 +7,22 @@ using TMPro;
 
 public class SocketServer : NetworkHandler 
 {
-    private Thread waitingForConnectionsThread;
-    private Thread handleIncomingRequestThread;
-    private Socket listener;
-    private IPEndPoint localEndPoint;
-
-    public GameObject cube;
-
     // can be changed in unity inspector
-    public int portToListen = 60000;
+    public int PortToListen = 60000;
+
+    private Thread WaitingForConnectionsThread;
+    private Thread HandleIncomingRequestThread;
+    private Socket Listener;
+    private IPEndPoint LocalEndPoint;
 
     protected void StartServer() 
     {
         CreateServerListener();
         BindToLocalEndPoint();
 
-        waitingForConnectionsThread = new Thread(WaitingForConnections);
-        waitingForConnectionsThread.IsBackground = true;
-        waitingForConnectionsThread.Start();
+        WaitingForConnectionsThread = new Thread(WaitingForConnections);
+        WaitingForConnectionsThread.IsBackground = true;
+        WaitingForConnectionsThread.Start();
 
         //attach this object to NetworkHandler
         //NetworkHandler.Instance.SetNetworkPeer(this);
@@ -41,17 +39,17 @@ public class SocketServer : NetworkHandler
 
                 // Program is suspended while waiting for an incoming connection
                 // (not a problem because we are in a different thread than the main one)
-                connectionHandler = listener.Accept();
+                ConnectionHandler = Listener.Accept();
 
                 Debug.Log("Client Connected");
                 UIManager.Instance.PrintMessages("Client connected");
 
-                connectionEstablished = true;
+                ConnectionEstablished = true;
 
                 //create thread to handle request
-                handleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(connectionHandler, connectionEstablished));
-                handleIncomingRequestThread.IsBackground = true;
-                handleIncomingRequestThread.Start();
+                HandleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(ConnectionHandler, ConnectionEstablished));
+                HandleIncomingRequestThread.IsBackground = true;
+                HandleIncomingRequestThread.Start();
             }
         } catch (Exception e) {
             Debug.Log(e.ToString());
@@ -83,16 +81,16 @@ public class SocketServer : NetworkHandler
         UIManager.Instance.PrintMessages(ipAddress.ToString());
 
         // Create a TCP/IP socket
-        listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        Listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        this.localEndPoint = localEndPoint;
+        this.LocalEndPoint = localEndPoint;
     }
 
     // not sure, but i think bind does not block
     private void BindToLocalEndPoint() 
     {
         try {
-            listener.Bind(localEndPoint);
+            Listener.Bind(LocalEndPoint);
         } catch (SocketException se) {
             Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
             UIManager.Instance.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
@@ -109,7 +107,7 @@ public class SocketServer : NetworkHandler
     private void ListenToClient() 
     {
         try {
-            listener.Listen(10); //max 10 connections
+            Listener.Listen(10); //max 10 connections
         } catch (SocketException se) {
             Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
             UIManager.Instance.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
@@ -124,24 +122,24 @@ public class SocketServer : NetworkHandler
 
     protected void StopServer() 
     {
-        if (connectionHandler != null && connectionHandler.Connected) {
+        if (ConnectionHandler != null && ConnectionHandler.Connected) {
             // there's no need of shutdown and disconnect a listener socket
-            listener.Close();
+            Listener.Close();
 
-            connectionHandler.Shutdown(SocketShutdown.Both);
-            connectionHandler.Disconnect(false);
-            connectionHandler.Close();
+            ConnectionHandler.Shutdown(SocketShutdown.Both);
+            ConnectionHandler.Disconnect(false);
+            ConnectionHandler.Close();
 
             Debug.Log("Disconnected!");
             UIManager.Instance.PrintMessages("Disconnected!");
         }
 
         //stop thread
-        if (waitingForConnectionsThread != null) {            
-            waitingForConnectionsThread.Abort();
+        if (WaitingForConnectionsThread != null) {            
+            WaitingForConnectionsThread.Abort();
         }
-        if (handleIncomingRequestThread != null) {
-            handleIncomingRequestThread.Abort();
+        if (HandleIncomingRequestThread != null) {
+            HandleIncomingRequestThread.Abort();
         }
 
         Debug.Log("Abort threads");

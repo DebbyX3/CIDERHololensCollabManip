@@ -21,23 +21,23 @@ public abstract class Message
 
     public Message(Guid id, System.Object info, MessageType messageType)
     {
-        this.Id = id;
-        this.Info = info;
-        this.MessageType = messageType;
+        Id = id;
+        Info = info;
+        MessageType = messageType;
     }
 
     public Message(String id, System.Object info, MessageType messageType) 
     {
-        this.Id = Guid.Parse(id);
-        this.Info = info;
-        this.MessageType = messageType;
+        Id = Guid.Parse(id);
+        Info = info;
+        MessageType = messageType;
     }
 
     public Message(System.Object info, MessageType messageType) 
     {
-        this.Id = Guid.NewGuid();
-        this.Info = info;
-        this.MessageType = messageType;
+        Id = Guid.NewGuid();
+        Info = info;
+        MessageType = messageType;
     }
 
     public String getIdString() {

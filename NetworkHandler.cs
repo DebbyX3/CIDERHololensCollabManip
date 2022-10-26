@@ -9,11 +9,11 @@ using UnityEngine;
 public class NetworkHandler : MonoBehaviour 
 {
     public static NetworkHandler Instance { get; private set; }
-    public static ConcurrentQueue<Message> messages = new ConcurrentQueue<Message>();
+    public static ConcurrentQueue<Message> Messages = new ConcurrentQueue<Message>();
 
     // Socket to send/receive - inherited by subclasses
-    protected Socket connectionHandler;
-    protected volatile bool connectionEstablished = false; // volatile: field might be changed by multiple threads
+    protected Socket ConnectionHandler;
+    protected volatile bool ConnectionEstablished = false; // volatile: field might be changed by multiple threads
 
     /*private void Start()
     {
@@ -43,9 +43,9 @@ public class NetworkHandler : MonoBehaviour
 
     protected void Update()         
     {
-        if (!messages.IsEmpty) 
+        if (!Messages.IsEmpty) 
         {
-            messages.TryDequeue(out Message item);
+            Messages.TryDequeue(out Message item);
             item.ExecuteMessage();
 
             /*
@@ -63,11 +63,11 @@ public class NetworkHandler : MonoBehaviour
 
     public void Send(byte[] message) 
     {
-        if (connectionEstablished)
+        if (ConnectionEstablished)
         {
             try
             {
-                connectionHandler.Send(message);
+                ConnectionHandler.Send(message);
             }
             catch (SocketException se)
             {
@@ -122,7 +122,7 @@ public class NetworkHandler : MonoBehaviour
                 // put new message in the concurrent queue, to be fetched later
                 try {
                     Message newMsg = Message.Deserialize(bytes);
-                    messages.Enqueue(newMsg);
+                    Messages.Enqueue(newMsg);
                 } 
                 catch (SerializationException sere) {
                     Debug.Log("The input stream is not a valid binary format.\n\n" + sere.ToString());
