@@ -1,42 +1,38 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
-using System;
 using TMPro;
 
-// Script is attached to SlateUGUI Colors
+// Script is attached to SlateUGUI
 
-public class SlateColorsManager : MonoBehaviour, ISlateManager
+public class SlatePrefabsManager : MonoBehaviour, ISlateManager
 {
+    public GameObject SlateColor;
     private GameObject UGUIButtons;
-    PrefabSpecs prefabSpecs;
 
     private void Start()
     {
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
     }
 
-    public void PopulateSlate(string prefabName)
+    public void PopulateSlate()
     {
-        prefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabManager.Instance.PrefabCollection);
-
-        foreach (KeyValuePair<string, Texture2D> images in prefabSpecs.Images)
-            AddButton(images.Key, images.Value);
+        foreach (PrefabSpecs prefabSpecs in PrefabManager.Instance.PrefabCollection)
+            AddButton(prefabSpecs.PrefabName, prefabSpecs.GetAnImage());
     }
 
-    public void AddButton(string imageName, Texture2D image)
+    public void AddButton(string prefabName, Texture2D image)
     {
         // The parent of the button is the gameobject UGUIButtons - important: set false as argument
         GameObject button = Instantiate(Resources.Load<GameObject>("SlateButton"), UGUIButtons.transform, false);
 
-        // Get Button component and add listener to the onClick event
+        // Get Button component and add listeners to the onClick event
         Button buttonComponent = button.GetComponent<Button>();
 
-        // Add object specifying the material
-        buttonComponent.onClick.AddListener(() => AddObjectToScene(imageName));
-        //Hide this slate
+        // Display SlateColor
+        buttonComponent.onClick.AddListener(() => SlateColor.SetActive(true));
+        // Populate the SlateColor
+        buttonComponent.onClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().PopulateSlate(prefabName));
+        // Hide this slate
         buttonComponent.onClick.AddListener(() => gameObject.SetActive(false));
 
         // Get RawImage gameObject and component
@@ -51,16 +47,6 @@ public class SlateColorsManager : MonoBehaviour, ISlateManager
         TMP_Text textTMP = text.GetComponent<TMP_Text>();
 
         // Set name, first letter uppercase
-        textTMP.SetText(char.ToUpper(imageName[0]) + imageName.Substring(1));
-    }
-
-    private void AddObjectToScene(string imageName)
-    {
-        prefabSpecs.GetMaterialByName(imageName);
-    }
-
-    // Delete all buttons when choice is made
-    private void DestroyButtons()
-    { 
+        textTMP.SetText(char.ToUpper(prefabName[0]) + prefabName.Substring(1));
     }
 }

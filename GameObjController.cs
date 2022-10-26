@@ -8,6 +8,7 @@ using MSUtilities = Microsoft.MixedReality.Toolkit.Utilities;
 public class GameObjController : MonoBehaviour {
     public Guid Guid { get; private set; }
     public string PrefabName { get; private set; }
+    public string MaterialName { get; private set; }
     public SerializableTransform Transform;
 
     // Need to keep the references to the unity actions in order to disable them
@@ -86,7 +87,11 @@ public class GameObjController : MonoBehaviour {
     }
 
     public void SetPrefabName(string prefabName) {
-        this.PrefabName = prefabName;
+        PrefabName = prefabName;
+    }
+
+    public void SetMaterialName(string materialName) {
+        MaterialName = materialName;
     }
 
     public void SetGuid(Guid guid) {
@@ -117,7 +122,9 @@ public class GameObjController : MonoBehaviour {
 
         /*
         Guid = memento.GetGuid();
-        PrefabName = memento.GetPrefabName();*/
+        PrefabName = memento.GetPrefabName();
+        MaterialName = memento.GetMaterialName();
+         */
 
         Transform = memento.GetTransform();
         TransformSerializer.AssignDeserTransformToOriginalTransform(gameObject.transform, Transform);

@@ -5,18 +5,32 @@ using System;
 using UnityEngine.Events;
 using Microsoft.MixedReality.Toolkit.UI;
 
+/*
+  Some comments about the prefabs/materials/images loading:
+
+    AVOID using Resources.Load, especially Resources.LoadAll!!!
+    It is better to drag and drop assets in the inspector and remove them from the Resources folder, because Unity serializes the entire
+    folder on build!
+    You can use Resources.Load at sporadic time though, like to load little or less used files.
+    Also, you can use Resources.Load at startup, but be careful that this will spike the application startup time. Once the assets are loaded 
+    at startup, you should store them in a structure or something similar and refer to them by using the structure, not using
+    Resources.Load anymore!
+
+    Foy my project, I decided to drag and drop all the prefabs, materials and images, but I may change and load everything at startup by
+    reading the folders using Resources.LoadAll. I want to do this just because the contents of the folders could change, 
+    and dragging & dropping in the inspector in this case would be not the idea (what if i miss a file?)
+ */
+
 public class PrefabManager : MonoBehaviour
 {
     public static PrefabManager Instance { get; private set; }
+    public List<PrefabSpecs> PrefabCollection { get; private set; } = new List<PrefabSpecs>();
 
     public List<GameObject> Prefabs;
     public List<Texture2D> Images;
     public List<Material> Materials;
 
-    private List<PrefabSpecs> PrefabCollection = new List<PrefabSpecs>();
-
-
-    // -------------- PRIVATE --------------
+// -------------- PRIVATE --------------
 
     private void Awake()
     {
@@ -31,7 +45,7 @@ public class PrefabManager : MonoBehaviour
             Instance = this;
         }
 
-        // Populate 
+        // Populate the collection that keeps prefabs, images and materials all together
         PopulatePrefabCollection();
     }
 
@@ -42,30 +56,26 @@ public class PrefabManager : MonoBehaviour
         List<Material> prefabMaterials;
 
         string prefabName;
+        string prefabPathResources;
+        string imagesPathResources;
+        string materialsPathResources;
 
-        foreach (GameObject gObj in Prefabs)
+        foreach (GameObject currentPrefab in Prefabs)
         {
-            prefabName = gObj.name;
+            prefabName = currentPrefab.name;
+            prefabPathResources = prefabName + "\\" + prefabName;
 
-            prefabImages = getRelevantImagesByPrefab(prefabName);
+            imagesPathResources = prefabPathResources + "\\images";
+            materialsPathResources = prefabPathResources + "\\materials";
+
+            prefabImages = GetRelevantImagesByPrefab(prefabName);
+            prefabMaterials = GetRelevantMaterialsByPrefab(prefabName);
+
+            prefabSpecs = new PrefabSpecs(prefabName, prefabPathResources, currentPrefab, imagesPathResources, 
+                                          prefabImages, materialsPathResources,prefabMaterials);
+
+            PrefabCollection.Add(prefabSpecs);
         }
-
-        /*
-        ImagesMaterialsStruct item;
-
-        foreach (Texture2D tex in images)
-        {
-            item = new ImagesMaterialsStruct
-            {
-                name = tex.name,
-                image = tex
-            };
-
-            if (materials.Find(x => x.name == tex.name) is Material mat)
-                item.material = mat;
-
-            imagesMaterialsStruct.Add(item);
-        }*/
     }
 
     // Given a list of images and the prefab name, the function returns a list of images of that prefab, following this logic:
@@ -75,20 +85,43 @@ public class PrefabManager : MonoBehaviour
     //          cube-red and cube-green are the images associated with the 'cube' prefab.
     //          Please note that if the image is called 'cubeoid-red', it does not belong to the cube prebab, because we want to match
     //          the entire word before the dash, not just the substring
-    private List<Texture2D> getRelevantImagesByPrefab(string prefabName)
+    private List<Texture2D> GetRelevantImagesByPrefab(string prefabName)
     {
         string stringToMatch;
         List<Texture2D> relevantImages = new List<Texture2D>();
 
         foreach (Texture2D tex in Images)
         {
-            stringToMatch = tex.name.Substring(0, prefabName.IndexOf('-'));
+            stringToMatch = tex.name.Substring(0, tex.name.IndexOf('-'));
 
             if (stringToMatch.Equals(prefabName))
                 relevantImages.Add(tex);
         }
 
         return relevantImages;
+    }
+
+    // Given a list of materials and the prefab name, the function returns a list of materials of that prefab, following this logic:
+    //      the current material is a relevant material of that prefab if the prefab name is at the beginning of the material name, before the dash
+    //      for example:
+    //          cube is the prefab name
+    //          cube-red and cube-green are the materials associated with the 'cube' prefab.
+    //          Please note that if the material is called 'cubeoid-red', it does not belong to the cube prebab, because we want to match
+    //          the entire word before the dash, not just the substring
+    private List<Material> GetRelevantMaterialsByPrefab(string prefabName)
+    {
+        string stringToMatch;
+        List<Material> relevantMaterials = new List<Material>();
+
+        foreach (Material mat in Materials)
+        {
+            stringToMatch = mat.name.Substring(0, mat.name.IndexOf('-'));
+
+            if (stringToMatch.Equals(prefabName))
+                relevantMaterials.Add(mat);
+        }
+
+        return relevantMaterials;
     }
 
     private GameObject InstantiateAndSetPrefabName(string prefabName, Vector3 pos, Quaternion rot)
@@ -223,12 +256,4 @@ public class PrefabManager : MonoBehaviour
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();       
     }
-
-    /* public ImagesMaterialsStruct FindElementByName(string name)
-     {
-         if (imagesMaterialsStruct.Find(x => x.name == name) is ImagesMaterialsStruct ims)
-             return ims;
-
-         return null;
-     }*/
 }
