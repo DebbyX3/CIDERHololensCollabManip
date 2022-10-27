@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.IO;
-using System;
 using TMPro;
 
 // Script is attached to SlateUGUI Colors
@@ -15,6 +12,8 @@ public class SlateColorsManager : MonoBehaviour
 
     private void Awake()
     {
+        // Need to to this operation at awake, because it is used in one of the other called method
+        // (so I need to make sure that is already assigned)
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
     }
 
@@ -38,8 +37,6 @@ public class SlateColorsManager : MonoBehaviour
         buttonComponent.onClick.AddListener(() => AddObjectToScene(prefabName, imageName));
         //Hide this slate
         buttonComponent.onClick.AddListener(() => gameObject.SetActive(false));
-        // Destroy all the buttons
-        buttonComponent.onClick.AddListener(() => DestroyButtons());
 
         // Get RawImage gameObject and component
         GameObject rawImage = button.transform.Find("RawImage").gameObject;
@@ -58,6 +55,13 @@ public class SlateColorsManager : MonoBehaviour
         textTMP.SetText(char.ToUpper(imageNameTrimmed[0]) + imageNameTrimmed.Substring(1));
     }
 
+    // Delete all buttons before repopulating the colors
+    public void DestroyButtons()
+    {
+        foreach (Transform child in UGUIButtons.transform)
+            Destroy(child.gameObject);
+    }
+
     // dovrei passare direttamente il materiale oppure il nome? da capire, per ora passo il nome
     // posso anche fare che ci sono vari overload del metodo e così accontento tutti? boh
     private void AddObjectToScene(string prefabName, string imageName)
@@ -68,10 +72,4 @@ public class SlateColorsManager : MonoBehaviour
         PrefabManager.Instance.CreateNewObjectLocal(prefabName, imageName);
     }
 
-    // Delete all buttons when choice is made
-    private void DestroyButtons()
-    {
-        foreach (Transform child in UGUIButtons.transform)
-            Destroy(child.gameObject);
-    }
 }

@@ -1,9 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using UnityEngine.Events;
-using Microsoft.MixedReality.Toolkit.UI;
 
 /*
   Some comments about the prefabs/materials/images loading:
@@ -151,10 +148,26 @@ public class PrefabManager : MonoBehaviour
     {
         MeshRenderer meshRenderer;
 
-        foreach (Transform child in gObj.transform)
+        if (gObj.transform.childCount > 0)
+        {
+            foreach (Transform child in gObj.transform)
+            {
+                // Get mesh renderer
+                meshRenderer = child.GetComponent<MeshRenderer>();
+
+                // If the child has a mesh, change the material
+                // I need to do this because a prefab has also other children, like the manipulation MRTK ones, and they don't have a Mesh
+                if (meshRenderer != null)
+                {
+                    // Set the new material on the GameObject
+                    meshRenderer.material = material;
+                }
+            }
+        }
+        else
         {
             // Get mesh renderer
-            meshRenderer = child.GetComponent<MeshRenderer>();
+            meshRenderer = gObj.GetComponent<MeshRenderer>();
             // Set the new material on the GameObject
             meshRenderer.material = material;
         }

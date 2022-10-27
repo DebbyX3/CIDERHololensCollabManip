@@ -5,7 +5,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-// mi posso permettere di usare un dizionario e non una lista perchè non mi serve uno storico dell'oggetto,
+/*
+ PLEASE NOTE!
+    CareTakerScene MUST BE executed BEFORE the GameObjController script! 
+    So, in the Unity execution order list, CareTakerScene has a lower number than GameObjController 
+    (that means GameObjController has an higher number than CareTakerScene)
+
+    This is because GameObjController needs an instance of CareTakerScene in the Awake, 
+    and the operations that use this instance of CareTaker cannot be moved in the Start method of GameObjController   
+    (it needs to attach listeners to events, so the Awake is necessary before the Start of the placed object is called)
+ */
 
 public class CaretakerScene : MonoBehaviour
 {

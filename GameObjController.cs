@@ -5,7 +5,19 @@ using UnityEngine;
 using UnityEngine.Events;
 using MSUtilities = Microsoft.MixedReality.Toolkit.Utilities;
 
-public class GameObjController : MonoBehaviour {
+/*
+ PLEASE NOTE!
+    GameObjController MUST BE executed AFTER the CareTakerScene script! 
+    So, in the Unity execution order list, CareTakerScene has a lower number than GameObjController 
+    (that means GameObjController has an higher number than CareTakerScene)
+
+    This is because GameObjController needs an instance of CareTakerScene in the Awake, 
+    and the operations that use this instance of CareTaker cannot be moved in the Start method of GameObjController   
+    (it needs to attach listeners to events, so the Awake is necessary before the Start of the placed object is called)
+ */
+
+public class GameObjController : MonoBehaviour
+{
     public Guid Guid { get; private set; }
     public string PrefabName { get; private set; }
     public string MaterialName { get; private set; }
@@ -43,16 +55,19 @@ public class GameObjController : MonoBehaviour {
 
         // Subscribe to event to hide the object at each scene change
         // no need to use an unityaction (I think) because i don't need to unsubscribe from this event! it's fixed
-        //CaretakerScene.Instance.hideObject.AddListener(() => CaretakerScene.Instance.HideObject(this)); prima
         CaretakerScene.Instance.HideObjectEvent.AddListener(() => HideObject());
 
         // Add manipulation event/s
         ObjectManipulator objManip = gameObject.GetComponent<ObjectManipulator>();
         objManip.OnManipulationStarted.AddListener(OnSelect);
-    }
 
-    private void Start()
-    {
+        /* Create the menus
+           Note: The menus need to stay in Awake because they are referred even when the gameobject is not active,
+           for example in SetActiveLocalMenu. The said function will throw an error if the creations of the menu is done in the Start method,
+           because Start is called only when the gameobject is active, but not before
+       
+           Long story short: keep these 2 methods here
+        */
         SetNearLocalFollowingMenu();
         SetNearGlobalFollowingMenu();
     }
@@ -103,10 +118,6 @@ public class GameObjController : MonoBehaviour {
         }
 
         GUIDKeeper.AddToList(Guid, gameObject);
-    }
-
-    public void SendGObj() {
-
     }
 
     /* METHODS FOR 'MEMENTO' PATTERN */
@@ -214,9 +225,8 @@ public class GameObjController : MonoBehaviour {
 
         // The parent of the menu is the gameobject
         nearLocalFollowingMenu.transform.SetParent(gameObject.transform);
-        //nearLocalFollowingMenu.transform.parent = gameObject.transform;
 
-        //maybe to do: set scale to the same for every menu (so it doesn't become too small or too big)
+        // todo Maybe:  set scale to the same for every menu (so it doesn't become too small or too big)
     }
 
     private void SetNearGlobalFollowingMenu()
@@ -247,9 +257,8 @@ public class GameObjController : MonoBehaviour {
 
         // The parent of the menu is the gameobject
         nearGlobalFollowingMenu.transform.SetParent(gameObject.transform);
-        //nearGlobalFollowingMenu.transform.parent = gameObject.transform;
 
-        //maybe to do: set scale to the same for every menu (so it doesn't become too small or too big)
+        //todo maybe: set scale to the same for every menu (so it doesn't become too small or too big)
     }
 
     // forse questo metodo va in Caretaker?
@@ -260,7 +269,7 @@ public class GameObjController : MonoBehaviour {
         //CaretakerScene.Instance.ChangeSceneToLocal();
     }
 
-    //bisogna toglierlo anche dalla global e local list mementos!!!!!!!!! WIP TODO
+    // TODO bisogna toglierlo anche dalla global e local list mementos!!!!!!!!!
     private void RemoveGObj()
     {
         GUIDKeeper.RemoveFromList(this.Guid);
@@ -298,19 +307,19 @@ public class GameObjController : MonoBehaviour {
     {      
         // Want to just spawn the object menu on manipulation, so lock rotations and movements
 
-        // if manip is active (true), then do not lock movements (make 'enable' false)
+        // If manip is active (true), then do not lock movements (make 'enable' false)
         gameObject.GetComponent<MoveAxisConstraint>().enabled = !active; // not - because i want to lock on false
 
-        // if manip is not active (false), then also lock y axis (so lock every axis)
+        // If manip is not active (false), then also lock y axis (so lock every axis)
         if (!active)
             gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = MSUtilities.AxisFlags.YAxis | MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
-        else // if manip is active (true), then do not lock y axis (only lock axis x and z) 
+        else // If manip is active (true), then do not lock y axis (only lock axis x and z) 
             gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
     }
 
     public void OnSelect(ManipulationEventData data)
     {
-        // toggle global or local menu on object selection
+        // Toggle global or local menu on object selection
 
         if (CaretakerScene.Instance.IsGlobalScene())
         {
