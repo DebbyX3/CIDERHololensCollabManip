@@ -52,8 +52,10 @@ public class SlateColorsManager : MonoBehaviour
         GameObject text = button.transform.Find("Text").gameObject;
         TMP_Text textTMP = text.GetComponent<TMP_Text>();
 
-        // Set name, first letter uppercase
-        textTMP.SetText(char.ToUpper(imageName[0]) + imageName.Substring(1));
+        // Set color name by trimming everything before the dash and making the first letter uppercase
+        string imageNameTrimmed = imageName.Substring(imageName.IndexOf('-') + 1); // +1 to exclude the dash
+
+        textTMP.SetText(char.ToUpper(imageNameTrimmed[0]) + imageNameTrimmed.Substring(1));
     }
 
     // dovrei passare direttamente il materiale oppure il nome? da capire, per ora passo il nome

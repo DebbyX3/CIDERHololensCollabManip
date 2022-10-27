@@ -9,7 +9,7 @@ public class SlatePrefabsManager : MonoBehaviour
     public GameObject SlateColor;
     private GameObject UGUIButtons;
 
-    private void Awake()
+    private void Start()
     {
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
         PopulateSlate();

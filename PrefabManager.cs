@@ -137,17 +137,27 @@ public class PrefabManager : MonoBehaviour
         // Find material to apply
         Material material = prefabSpecs.GetMaterialByName(materialName);
 
-        // Get mesh renderer
-        MeshRenderer meshRenderer = newObj.GetComponent<MeshRenderer>();
-
-        // Set the new material on the GameObject
-        meshRenderer.material = material;
+        // Change material of the object
+        ChangeMaterial(ref newObj, material);
 
         // Set prefab and material name
         newObj.GetComponent<GameObjController>().SetPrefabName(prefabName);
         newObj.GetComponent<GameObjController>().SetMaterialName(materialName);
 
         return newObj;
+    }
+
+    private void ChangeMaterial(ref GameObject gObj, Material material)
+    {
+        MeshRenderer meshRenderer;
+
+        foreach (Transform child in gObj.transform)
+        {
+            // Get mesh renderer
+            meshRenderer = child.GetComponent<MeshRenderer>();
+            // Set the new material on the GameObject
+            meshRenderer.material = material;
+        }
     }
 
     // need this method because sometimes i want to spawn an object with a certain GUID
