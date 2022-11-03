@@ -4,7 +4,17 @@ using UnityEngine;
 
 /*
  Store the paths to the folders even if I will not plan to use them
- */
+ 
+Example of a PrefabSpecs instance:
+
+- prefabName: cube
+- prefabPathResources: cube/cube
+- prefabFile: the actual cube.prefab file linked in the inspector
+- imagesPathResources: cube/images
+- images: [cube_red, Texture2D object linked in the inspector], [cube_blue, Texture2D object linked in the inspector]...
+- materialsPathResources: cube/materials
+- materials: [cube_red, Material object linked in the inspector], [cube_blue, Material object linked in the inspector]...
+*/
 
 public class PrefabSpecs 
 {

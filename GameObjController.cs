@@ -139,6 +139,10 @@ public class GameObjController : MonoBehaviour
 
         Transform = memento.GetTransform();
         TransformSerializer.AssignDeserTransformToOriginalTransform(gameObject.transform, Transform);
+
+        MaterialName = memento.GetMaterialName();
+        //todo assign material to object
+        PrefabManager.Instance.ChangeMaterial(ref gameObject, MaterialName);
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -211,8 +215,11 @@ public class GameObjController : MonoBehaviour
         Interactable interactableFive = buttonFive.GetComponent<Interactable>();
         interactableFive.OnClick.AddListener(() => DuplicateObj());
 
-        // Button 6
+        // Button 6 - Change color
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
+        Interactable interactableSix = buttonSix.GetComponent<Interactable>();
+        interactableSix.OnClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().PopulateSlate(PrefabName));
+        interactableSix.OnClick.AddListener(() => SlateColor.SetActive(true));
 
         //----------------------
 

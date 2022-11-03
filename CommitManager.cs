@@ -56,7 +56,7 @@ public class CommitManager : MonoBehaviour
         {
             // To fix probably
             // cioè che potrebbe avere l'oggetto in locale e non globale? ma può capitare o no? Da capire?
-            PrefabManager.Instance.UpdateObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform);
+            PrefabManager.Instance.UpdateObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
         }
         // If it does NOT have the object
         else

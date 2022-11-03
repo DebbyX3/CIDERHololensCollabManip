@@ -55,16 +55,15 @@ public class Memento
     public string GetPrefabName() {
         return PrefabName;
     }
-
-    public string GetMaterialName()
-    {
-        return MaterialName;
-    }
     */
 
     // The Originator (gobjcontroller) uses this method when restoring its transform
     public SerializableTransform GetTransform() {
         return Transform;
+    }
+    public string GetMaterialName()
+    {
+        return MaterialName;
     }
 
     // The rest of the methods are used by the Caretaker to display metadata.

@@ -69,7 +69,7 @@ public class PrefabManager : MonoBehaviour
             prefabMaterials = GetRelevantMaterialsByPrefab(prefabName);
 
             prefabSpecs = new PrefabSpecs(prefabName, prefabPathResources, currentPrefab, imagesPathResources, 
-                                          prefabImages, materialsPathResources,prefabMaterials);
+                                          prefabImages, materialsPathResources, prefabMaterials);
 
             PrefabCollection.Add(prefabSpecs);
         }
@@ -121,81 +121,6 @@ public class PrefabManager : MonoBehaviour
         return relevantMaterials;
     }
 
-    // forse è da cambiare perchè per ora pesca solo un mat dalla lista, mentre io voglio generarne uno nuovo ogni volta? da capire,
-    // forse devo solo copiarlo e ciaone- idem per la creazione in globale no? (anche se qua non mi intressa)
-    private GameObject InstantiateAndSetPrefabNameMaterialName(string prefabName, string materialName, Vector3 pos, Quaternion rot)
-    {
-        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabCollection);
-
-        // Get prefab and instantiate it
-        GameObject prefabToSpawn = prefabSpecs.PrefabFile;
-        GameObject newObj = Instantiate(prefabToSpawn, pos, rot);
-
-        // Find material to apply
-        Material material = prefabSpecs.GetMaterialByName(materialName);
-
-        // Change material of the object
-        ChangeMaterial(ref newObj, material);
-
-        // Set prefab and material name
-        newObj.GetComponent<GameObjController>().SetPrefabName(prefabName);
-        newObj.GetComponent<GameObjController>().SetMaterialName(materialName);
-
-        return newObj;
-    }
-
-    private void ChangeMaterial(ref GameObject gObj, Material material)
-    {
-        MeshRenderer meshRenderer;
-
-        if (gObj.transform.childCount > 0)
-        {
-            foreach (Transform child in gObj.transform)
-            {
-                // Get mesh renderer
-                meshRenderer = child.GetComponent<MeshRenderer>();
-
-                // If the child has a mesh, change the material
-                // I need to do this because a prefab has also other children, like the manipulation MRTK ones, and they don't have a Mesh
-                if (meshRenderer != null)
-                {
-                    // Set the new material on the GameObject
-                    meshRenderer.material = material;
-                }
-            }
-        }
-        else
-        {
-            // Get mesh renderer
-            meshRenderer = gObj.GetComponent<MeshRenderer>();
-            // Set the new material on the GameObject
-            meshRenderer.material = material;
-        }
-    }
-
-    // need this method because sometimes i want to spawn an object with a certain GUID
-    private GameObject CreateNewObject(Guid guid, string prefabName, string materialName, SerializableTransform transform)
-    {
-        GameObject newObj = CreateNewObject(prefabName, materialName, transform);
-        newObj.GetComponent<GameObjController>().SetGuid(guid);
-
-        return newObj;
-    }
-
-    private GameObject CreateNewObject(string prefabName, string materialName, SerializableTransform transform)
-    {
-        // NO need to modify or touch the scale property
-        // We want to keep the same scale as the original prefab! Otherwise the real world scale would not be correct!
-
-        SerializableVector position = transform.Position;
-        SerializableVector rotation = transform.Rotation;
-
-        Vector3 pos = new Vector3(position.X, position.Y, position.Z);
-        Quaternion rot = new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
-
-        return InstantiateAndSetPrefabNameMaterialName(prefabName, materialName, pos, rot);
-    }
-
     private GameObject CreateNewObjectShiftPos(string prefabName, string materialName)
     {
         // When creating an obj from scratch, shift it
@@ -212,6 +137,45 @@ public class PrefabManager : MonoBehaviour
         st.Rotation = (SerializableVector)Quaternion.identity;
 
         return CreateNewObject(prefabName, materialName, st);
+    }
+
+    // need this method because sometimes i want to spawn an object with a certain GUID
+    private GameObject CreateNewObject(Guid guid, string prefabName, string materialName, SerializableTransform transform)
+    {
+        GameObject newObj = CreateNewObject(prefabName, materialName, transform);
+        newObj.GetComponent<GameObjController>().SetGuid(guid);
+
+        return newObj;
+    }
+
+    // forse è da cambiare perchè per ora pesca solo un mat dalla lista, mentre io voglio generarne uno nuovo ogni volta? da capire,
+    // forse devo solo copiarlo e ciaone- idem per la creazione in globale no? (anche se qua non mi intressa)
+    private GameObject CreateNewObject(string prefabName, string materialName, SerializableTransform transform)
+    {
+        // NO need to modify or touch the scale property!
+        // We want to keep the same scale as the original prefab! Otherwise the real world scale would not be correct!
+
+        SerializableVector position = transform.Position;
+        SerializableVector rotation = transform.Rotation;
+
+        // Set position and rotation
+        Vector3 pos = new Vector3(position.X, position.Y, position.Z);
+        Quaternion rot = new Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W);
+
+        // Find prefab specifications by prefab name
+        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabCollection);
+
+        // Get prefab and instantiate it
+        GameObject newObj = Instantiate(prefabSpecs.PrefabFile, pos, rot);
+
+        // Change material of the object
+        ChangeMaterial(ref newObj, prefabSpecs, materialName);
+
+        // Set prefab and material name
+        newObj.GetComponent<GameObjController>().SetPrefabName(prefabName);
+        newObj.GetComponent<GameObjController>().SetMaterialName(materialName);
+
+        return newObj;
     }
 
     // -------------- PUBLIC --------------
@@ -256,7 +220,7 @@ public class PrefabManager : MonoBehaviour
         return gobj;
     }
 
-    public void UpdateObjectLocal(Guid guid, SerializableTransform transform) 
+    public void UpdateObjectLocal(Guid guid, SerializableTransform transform, string materialName) 
     {
         bool wasGlobalScene = false;
 
@@ -267,17 +231,25 @@ public class PrefabManager : MonoBehaviour
             wasGlobalScene = true;
         }
 
-        GameObject gobj = GUIDKeeper.GetGObjFromGuid(guid);
-        TransformSerializer.AssignDeserTransformToOriginalTransform(gobj.transform, transform);
+        GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
 
-        gobj.GetComponent<GameObjController>().SubscribeToLocalScene();
+        // Update 
+        TransformSerializer.AssignDeserTransformToOriginalTransform(gObj.transform, transform);
+
+        // Find material to apply
+        Material material = prefabSpecs.GetMaterialByName(materialName);
+
+        // Change material of the object
+        ChangeMaterial(ref gObj, material);
+
+        gObj.GetComponent<GameObjController>().SubscribeToLocalScene();
 
         // If the previous scene was the global one, reswitch to the global
         if (wasGlobalScene)
             CaretakerScene.Instance.ChangeSceneToGlobal();        
     }
 
-    public void UpdateObjectGlobal(Guid guid, SerializableTransform transform)
+    public void UpdateObjectGlobal(Guid guid, SerializableTransform transform, string materialName)
     {
         bool wasLocalScene = false;
 
@@ -296,5 +268,48 @@ public class PrefabManager : MonoBehaviour
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();       
+    }
+
+    public void ChangeMaterial(ref GameObject gObj, PrefabSpecs prefabSpecs, string materialName) //passagli il prefabspecs no? o un overload con il prefab specs, dopo se non lo uso ciccia, almeno ce l'ha
+    {
+        // Find material to apply
+        Material material = prefabSpecs.GetMaterialByName(materialName);
+        ChangeMaterial(ref gObj, material);
+    }
+
+    public void ChangeMaterial(ref GameObject gObj, string prefabName, string materialName) //passagli il prefabspecs no? o un overload con il prefab specs, dopo se non lo uso ciccia, almeno ce l'ha
+    {
+        // Find prefac specifications
+        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabCollection);
+        ChangeMaterial(ref gObj, prefabSpecs, materialName);
+    }
+
+    public void ChangeMaterial(ref GameObject gObj, Material material)
+    {
+        MeshRenderer meshRenderer;
+
+        if (gObj.transform.childCount > 0)
+        {
+            foreach (Transform child in gObj.transform)
+            {
+                // Get mesh renderer
+                meshRenderer = child.GetComponent<MeshRenderer>();
+
+                // If the child has a mesh, change the material
+                // I need to do this because a prefab has also other children, like the manipulation MRTK ones, and they don't have a Mesh
+                if (meshRenderer != null)
+                {
+                    // Set the new material on the GameObject
+                    meshRenderer.material = material;
+                }
+            }
+        }
+        else
+        {
+            // Get mesh renderer
+            meshRenderer = gObj.GetComponent<MeshRenderer>();
+            // Set the new material on the GameObject
+            meshRenderer.material = material;
+        }
     }
 }
