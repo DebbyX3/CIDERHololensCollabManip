@@ -226,6 +226,8 @@ public class CaretakerScene : MonoBehaviour
     }
 
 
+    // ma poi questi mi servono per davvero?
+    /*
     // mi sa che questi 3 li posso spostare in UIManager?
     public void ShowDialogOnGlobalScene(Dialog dialog)
     {
@@ -252,5 +254,5 @@ public class CaretakerScene : MonoBehaviour
             slate.gameObject.SetActive(false);
         }
     }
-
+    */
 }

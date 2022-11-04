@@ -169,7 +169,7 @@ public class PrefabManager : MonoBehaviour
         GameObject newObj = Instantiate(prefabSpecs.PrefabFile, pos, rot);
 
         // Change material of the object
-        ChangeMaterial(ref newObj, prefabSpecs, materialName);
+        ChangeMaterial(newObj, prefabSpecs, materialName);
 
         // Set prefab and material name
         newObj.GetComponent<GameObjController>().SetPrefabName(prefabName);
@@ -220,7 +220,7 @@ public class PrefabManager : MonoBehaviour
         return gobj;
     }
 
-    public void UpdateObjectLocal(Guid guid, SerializableTransform transform, string materialName) 
+    public void UpdateObjectLocal(Guid guid, SerializableTransform transform, String materialName) 
     {
         bool wasGlobalScene = false;
 
@@ -233,16 +233,13 @@ public class PrefabManager : MonoBehaviour
 
         GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
 
-        // Update 
+        // Update transform
         TransformSerializer.AssignDeserTransformToOriginalTransform(gObj.transform, transform);
 
-        // Find material to apply
-        Material material = prefabSpecs.GetMaterialByName(materialName);
-
         // Change material of the object
-        ChangeMaterial(ref gObj, material);
+        ChangeMaterial(gObj, , material);
 
-        gObj.GetComponent<GameObjController>().SubscribeToLocalScene();
+        gObj.GetComponent<GameObjController>().SubscribeToLocalScene(); //always
 
         // If the previous scene was the global one, reswitch to the global
         if (wasGlobalScene)
@@ -270,21 +267,24 @@ public class PrefabManager : MonoBehaviour
             CaretakerScene.Instance.ChangeSceneToLocal();       
     }
 
-    public void ChangeMaterial(ref GameObject gObj, PrefabSpecs prefabSpecs, string materialName) //passagli il prefabspecs no? o un overload con il prefab specs, dopo se non lo uso ciccia, almeno ce l'ha
+    public void ChangeMaterial()
+    { }
+
+    public void ChangeMaterial(GameObject gObj, string prefabName, string materialName)
+    {
+        // Find prefab specifications
+        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabCollection);
+        ChangeMaterial(gObj, prefabSpecs, materialName);
+    }
+
+    public void ChangeMaterial(GameObject gObj, PrefabSpecs prefabSpecs, string materialName)
     {
         // Find material to apply
         Material material = prefabSpecs.GetMaterialByName(materialName);
-        ChangeMaterial(ref gObj, material);
+        ChangeMaterial(gObj, material);
     }
 
-    public void ChangeMaterial(ref GameObject gObj, string prefabName, string materialName) //passagli il prefabspecs no? o un overload con il prefab specs, dopo se non lo uso ciccia, almeno ce l'ha
-    {
-        // Find prefac specifications
-        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabCollection);
-        ChangeMaterial(ref gObj, prefabSpecs, materialName);
-    }
-
-    public void ChangeMaterial(ref GameObject gObj, Material material)
+    public void ChangeMaterial(GameObject gObj, Material material)
     {
         MeshRenderer meshRenderer;
 

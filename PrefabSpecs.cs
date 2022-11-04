@@ -116,4 +116,23 @@ public class PrefabSpecs
 
         return prefabsNames;
     }
+
+    // Note: in case of a duplicate key (aka: same name for different material), the method adds only the first material, since adding a 
+    // duplicate key is not permitted, and also the case is not really an issue here, assuming the convention used to name the materials
+    // is followed
+    public static Dictionary<string, Material> GetAllMaterials(List<PrefabSpecs> prefabCollection)
+    {
+        Dictionary<string, Material> allMaterials = new Dictionary<string, Material>();
+
+        foreach (PrefabSpecs prefabSpec in prefabCollection)
+        {
+            foreach (KeyValuePair<string, Material> materialPair in prefabSpec.Materials)
+            {
+                if (!allMaterials.ContainsKey(materialPair.Key))
+                    allMaterials.Add(materialPair.Key, materialPair.Value);
+            }
+        }
+
+        return allMaterials;
+    }
 }

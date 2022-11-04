@@ -134,15 +134,14 @@ public class GameObjController : MonoBehaviour
         /*
         Guid = memento.GetGuid();
         PrefabName = memento.GetPrefabName();
-        MaterialName = memento.GetMaterialName();
          */
 
         Transform = memento.GetTransform();
         TransformSerializer.AssignDeserTransformToOriginalTransform(gameObject.transform, Transform);
 
-        MaterialName = memento.GetMaterialName();
         //todo assign material to object
-        PrefabManager.Instance.ChangeMaterial(ref gameObject, MaterialName);
+        MaterialName = memento.GetMaterialName(); 
+        PrefabManager.Instance.ChangeMaterial(gameObject, PrefabName, MaterialName);
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -271,8 +270,9 @@ public class GameObjController : MonoBehaviour
     // forse questo metodo va in Caretaker?
     private void CopyObjectInLocalAndChangeToLocal(GameObjController gobj)
     {
-        //se lo sto copiando, allora ce l'ho già nella lista completa dei guid!
-        PrefabManager.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform);
+        // Call the update object and not the create object, because if I have the obj it means it is already in the 'existing' obj
+        // in the guid list. So just update to make it local it and make it subscribe to the local scene
+        PrefabManager.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform, gobj.MaterialName);
         //CaretakerScene.Instance.ChangeSceneToLocal();
     }
 
