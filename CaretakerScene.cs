@@ -1,5 +1,3 @@
-using Microsoft.MixedReality.Toolkit.UI;
-using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -224,35 +222,4 @@ public class CaretakerScene : MonoBehaviour
     {
         Instance.SavePendingState(gObj);
     }
-
-
-    // ma poi questi mi servono per davvero?
-    /*
-    // mi sa che questi 3 li posso spostare in UIManager?
-    public void ShowDialogOnGlobalScene(Dialog dialog)
-    {
-        if (IsGlobalScene())
-        {
-            dialog.gameObject.SetActive(true);
-            dialog.GetComponent<SolverHandler>().enabled = true;
-        }
-    }
-
-    public void ShowSlateOnLocalScene(GameObject slate)
-    {
-        if (IsLocalScene())
-        {
-            slate.gameObject.SetActive(true);
-            slate.GetComponent<RadialView>().enabled = true;
-        }
-    }
-
-    public void HideSlateOnGlobalScene(GameObject slate)
-    {
-        if (IsGlobalScene())
-        {
-            slate.gameObject.SetActive(false);
-        }
-    }
-    */
 }

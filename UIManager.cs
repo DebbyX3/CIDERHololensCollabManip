@@ -1,5 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using Microsoft.MixedReality.Toolkit.UI;
+using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
 using TMPro;
 using UnityEngine;
 
@@ -51,4 +51,31 @@ public class UIManager : MonoBehaviour
     {
         NotificationButton.GetComponent<NotificationButtonController>().SetButtonStatus(active);
     }
+
+    public void ShowDialogOnGlobalScene(Dialog dialog)
+    {
+        if (CaretakerScene.Instance.IsGlobalScene())
+        {
+            dialog.gameObject.SetActive(true);
+            dialog.GetComponent<SolverHandler>().enabled = true;
+        }
+    }
+
+    public void ShowSlateOnLocalScene(GameObject slate)
+    {
+        if (CaretakerScene.Instance.IsLocalScene())
+        {
+            slate.gameObject.SetActive(true);
+            slate.GetComponent<RadialView>().enabled = true;
+        }
+    }
+
+    public void HideSlateOnGlobalScene(GameObject slate)
+    {
+        if (CaretakerScene.Instance.IsGlobalScene())
+        {
+            slate.gameObject.SetActive(false);
+        }
+    }
+
 }

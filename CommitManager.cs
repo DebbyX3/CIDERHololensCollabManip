@@ -43,10 +43,12 @@ public class CommitManager : MonoBehaviour
     // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica (sempre che si facciano insomma) ???
     public void OnCommitSent(GameObjController gObjCont)
     {
-        PrefabManager.Instance.UpdateObjectGlobal(gObjCont.Guid, gObjCont.Transform);
+        PrefabManager.Instance.UpdateObjectGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
     }
 
-    // forse questo metodo è da spostare in una classe più appropriata?
+    // todo forse questo metodo è da spostare in una classe più appropriata?
+    // cioè non dovrebbe essere la classe di commit che controlla se l'oggetto esiste già porca l'oca!!
+    // dovrebbe mica essere il caretaker? o il prefab manager?
     public void OnCommitReceived(GameObjMessage gObjMsg)
     {
         GameObjMessageInfo gObjMsgInfo = gObjMsg.GetMsgInfo();

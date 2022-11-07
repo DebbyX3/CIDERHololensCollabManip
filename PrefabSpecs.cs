@@ -119,7 +119,7 @@ public class PrefabSpecs
 
     // Note: in case of a duplicate key (aka: same name for different material), the method adds only the first material, since adding a 
     // duplicate key is not permitted, and also the case is not really an issue here, assuming the convention used to name the materials
-    // is followed
+    // is followed (also described in a txt in the resources folder)
     public static Dictionary<string, Material> GetAllMaterials(List<PrefabSpecs> prefabCollection)
     {
         Dictionary<string, Material> allMaterials = new Dictionary<string, Material>();

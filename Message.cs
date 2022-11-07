@@ -26,21 +26,21 @@ public abstract class Message
         MessageType = messageType;
     }
 
-    public Message(String id, System.Object info, MessageType messageType) 
+    public Message(string id, System.Object info, MessageType messageType) 
     {
         Id = Guid.Parse(id);
         Info = info;
         MessageType = messageType;
     }
 
-    public Message(System.Object info, MessageType messageType) 
+    public Message(object info, MessageType messageType) 
     {
         Id = Guid.NewGuid();
         Info = info;
         MessageType = messageType;
     }
 
-    public String getIdString() {
+    public string getIdString() {
         return Id.ToString();
     }
 

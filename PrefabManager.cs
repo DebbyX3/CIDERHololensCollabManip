@@ -21,13 +21,23 @@ using System;
 public class PrefabManager : MonoBehaviour
 {
     public static PrefabManager Instance { get; private set; }
+
+    // Collection that keeps prefabs, images and materials all together
     public List<PrefabSpecs> PrefabCollection { get; private set; } = new List<PrefabSpecs>();
 
     public List<GameObject> Prefabs;
     public List<Texture2D> Images;
     public List<Material> Materials;
 
-// -------------- PRIVATE --------------
+    // Dictionary that keeps all the materials indexed by material name.
+    // Please note that this 'list' is the best way I found to access all the materials without having to also provide
+    // the prefab name in the PrefabCollection. Infact, sometimes I need to access the material to assign just by its material name. 
+    // If the convention to name the materials for the prefabCollection is followed (also described in a txt in the resources folder)
+    // then there will not be overlapping/duplicate material names, and even if this is the case, as for the nature of a dictionary,
+    // it will just take the first one (a duplicate key is not permitted!)
+    private Dictionary<string, Material> AllMaterialsDict { get; set; } = new Dictionary<string, Material>();
+
+    // -------------- PRIVATE --------------
 
     private void Awake()
     {
@@ -44,6 +54,9 @@ public class PrefabManager : MonoBehaviour
 
         // Populate the collection that keeps prefabs, images and materials all together
         PopulatePrefabCollection();
+
+        // Populate the dictionary that keeps all the materials indexed by material name
+        AllMaterialsDict = PrefabSpecs.GetAllMaterials(PrefabCollection);
     }
 
     private void PopulatePrefabCollection()
@@ -139,7 +152,7 @@ public class PrefabManager : MonoBehaviour
         return CreateNewObject(prefabName, materialName, st);
     }
 
-    // need this method because sometimes i want to spawn an object with a certain GUID
+    // I need this method because sometimes I want to spawn an object with a certain GUID
     private GameObject CreateNewObject(Guid guid, string prefabName, string materialName, SerializableTransform transform)
     {
         GameObject newObj = CreateNewObject(prefabName, materialName, transform);
@@ -148,8 +161,6 @@ public class PrefabManager : MonoBehaviour
         return newObj;
     }
 
-    // forse è da cambiare perchè per ora pesca solo un mat dalla lista, mentre io voglio generarne uno nuovo ogni volta? da capire,
-    // forse devo solo copiarlo e ciaone- idem per la creazione in globale no? (anche se qua non mi intressa)
     private GameObject CreateNewObject(string prefabName, string materialName, SerializableTransform transform)
     {
         // NO need to modify or touch the scale property!
@@ -169,7 +180,7 @@ public class PrefabManager : MonoBehaviour
         GameObject newObj = Instantiate(prefabSpecs.PrefabFile, pos, rot);
 
         // Change material of the object
-        ChangeMaterial(newObj, prefabSpecs, materialName);
+        ChangeMaterial(newObj, materialName);
 
         // Set prefab and material name
         newObj.GetComponent<GameObjController>().SetPrefabName(prefabName);
@@ -220,7 +231,17 @@ public class PrefabManager : MonoBehaviour
         return gobj;
     }
 
-    public void UpdateObjectLocal(Guid guid, SerializableTransform transform, String materialName) 
+    public void UpdateObjectLocal(Guid guid, string materialName)
+    {
+        UpdateObjectLocal(guid, SerializableTransform.Default(), materialName);
+    }
+
+    public void UpdateObjectLocal(Guid guid, SerializableTransform transform)
+    {
+        UpdateObjectLocal(guid, transform, "");
+    }
+
+    public void UpdateObjectLocal(Guid guid, SerializableTransform transform, string materialName) 
     {
         bool wasGlobalScene = false;
 
@@ -233,11 +254,16 @@ public class PrefabManager : MonoBehaviour
 
         GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
 
-        // Update transform
-        TransformSerializer.AssignDeserTransformToOriginalTransform(gObj.transform, transform);
+        // Update transform - only if there is actually something to change - if it is a default value do not change
+        if (!transform.Equals(SerializableTransform.Default()))
+            TransformSerializer.AssignDeserTransformToOriginalTransform(gObj.transform, transform);
 
-        // Change material of the object
-        ChangeMaterial(gObj, , material);
+        // Change material of the object - only if there is actually something to change - if it is a default value do not change
+        if (!materialName.Equals(""))
+        {
+            ChangeMaterial(gObj, materialName);
+            gObj.GetComponent<GameObjController>().SetMaterialName(materialName); //maybe move this into ChangeMaterial?
+        }
 
         gObj.GetComponent<GameObjController>().SubscribeToLocalScene(); //always
 
@@ -257,37 +283,51 @@ public class PrefabManager : MonoBehaviour
             wasLocalScene = true;
         }
 
-        GameObject gobj = GUIDKeeper.GetGObjFromGuid(guid);
-        TransformSerializer.AssignDeserTransformToOriginalTransform(gobj.transform, transform);
+        GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
 
-        gobj.GetComponent<GameObjController>().SubscribeToGlobalScene();
+        // Update transform
+        TransformSerializer.AssignDeserTransformToOriginalTransform(gObj.transform, transform);
+
+        // Change material of the object
+        ChangeMaterial(gObj, materialName);
+
+        gObj.GetComponent<GameObjController>().SubscribeToGlobalScene();
 
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();       
     }
 
-    public void ChangeMaterial()
-    { }
+    // --------------- CHANGE MATERIAL METHODS SET --------------------------
 
-    public void ChangeMaterial(GameObject gObj, string prefabName, string materialName)
+    public void ChangeMaterial(Guid guid, string materialName)
     {
-        // Find prefab specifications
-        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabCollection);
-        ChangeMaterial(gObj, prefabSpecs, materialName);
+        GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
+        ChangeMaterial(gObj, materialName);
     }
 
-    public void ChangeMaterial(GameObject gObj, PrefabSpecs prefabSpecs, string materialName)
+    public void ChangeMaterial(Guid guid, Material material)
     {
-        // Find material to apply
-        Material material = prefabSpecs.GetMaterialByName(materialName);
+        GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
         ChangeMaterial(gObj, material);
+    }
+
+    public void ChangeMaterial(GameObject gObj, string materialName)
+    {
+        Material mat;
+
+        if (AllMaterialsDict.TryGetValue(materialName, out mat)) // If the material exists
+            ChangeMaterial(gObj, mat);
+        else
+            ChangeMaterial(gObj, PrefabCollection[0].GetAMaterial()); // if the material does not exists, then take whatever material
+                                                                      // (can also randomize it but i don't think it will be useful)
     }
 
     public void ChangeMaterial(GameObject gObj, Material material)
     {
         MeshRenderer meshRenderer;
 
+        // If the object has children, then loop on them and change each child
         if (gObj.transform.childCount > 0)
         {
             foreach (Transform child in gObj.transform)
@@ -304,6 +344,7 @@ public class PrefabManager : MonoBehaviour
                 }
             }
         }
+        // If it doesn't have children, then just change itself
         else
         {
             // Get mesh renderer
@@ -312,4 +353,6 @@ public class PrefabManager : MonoBehaviour
             meshRenderer.material = material;
         }
     }
+
+    // -----------------------------------------
 }

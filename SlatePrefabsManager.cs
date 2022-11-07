@@ -31,8 +31,6 @@ public class SlatePrefabsManager : MonoBehaviour
 
         // Display SlateColor
         buttonComponent.onClick.AddListener(() => SlateColor.SetActive(true));
-        // Delete all the buttons in the SlateColor (because of the previous color display)
-        buttonComponent.onClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().DestroyButtons());
         // Populate the SlateColor
         buttonComponent.onClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().PopulateSlate(prefabName));
         // Hide this slate

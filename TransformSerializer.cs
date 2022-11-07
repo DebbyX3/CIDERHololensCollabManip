@@ -6,7 +6,8 @@ using SysDiag = System.Diagnostics;
 
 //https://stackoverflow.com/questions/39345820/easy-way-to-write-and-read-some-transform-to-a-text-file-in-unity3d
 [Serializable]
-public struct SerializableVector {
+public struct SerializableVector : IEquatable<SerializableVector>
+{
     public float X, Y, Z, W;
 
     public SerializableVector(float x, float y, float z, float w = 0f) {
@@ -27,10 +28,34 @@ public struct SerializableVector {
     public override string ToString() {
         return "x = " + X + "\ny = " + Y + "\nz = " + Z + "\nw = " + W;
     }
+
+    public override bool Equals(object obj)
+    {
+        return obj is SerializableVector vector && Equals(vector);
+    }
+
+    public bool Equals(SerializableVector other)
+    {
+        return X.Equals(other.X) &&
+               Y.Equals(other.Y) &&
+               Z.Equals(other.Z) &&
+               W.Equals(other.W);
+    }
+
+    public override int GetHashCode()
+    {
+        int hashCode = 707706286;
+        hashCode = hashCode * -1521134295 + X.GetHashCode();
+        hashCode = hashCode * -1521134295 + Y.GetHashCode();
+        hashCode = hashCode * -1521134295 + Z.GetHashCode();
+        hashCode = hashCode * -1521134295 + W.GetHashCode();
+        return hashCode;
+    }
 }
 
 [Serializable]
-public struct SerializableTransform {
+public struct SerializableTransform : IEquatable<SerializableTransform>
+{
 
     public SerializableVector Position { get; set; }
     public SerializableVector Rotation { get; set; }
@@ -55,6 +80,36 @@ public struct SerializableTransform {
 
     public override string ToString() {
         return $"Position {Position}, Rotation {Rotation}, Scale {Scale}";
+    }
+
+    public static SerializableTransform Default()
+    {
+        return new SerializableTransform(Vector3.zero, Quaternion.identity, Vector3.zero);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return obj is SerializableTransform transform && Equals(transform);
+    }
+
+    public bool Equals(SerializableTransform other)
+    {
+        return Position.Equals(other.Position) &&
+               Rotation.Equals(other.Rotation) &&
+               Scale.Equals(other.Scale);
+
+        //return EqualityComparer<SerializableVector>.Default.Equals(Position, other.Position) &&
+        //       EqualityComparer<SerializableVector>.Default.Equals(Rotation, other.Rotation) &&
+        //       EqualityComparer<SerializableVector>.Default.Equals(Scale, other.Scale);
+    }
+
+    public override int GetHashCode()
+    {
+        int hashCode = 1352853554;
+        hashCode = hashCode * -1521134295 + Position.GetHashCode();
+        hashCode = hashCode * -1521134295 + Rotation.GetHashCode();
+        hashCode = hashCode * -1521134295 + Scale.GetHashCode();
+        return hashCode;
     }
 }
 

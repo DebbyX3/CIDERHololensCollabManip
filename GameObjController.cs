@@ -33,6 +33,8 @@ public class GameObjController : MonoBehaviour
     private GameObject nearLocalFollowingMenu;
     private GameObject nearGlobalFollowingMenu;
 
+    private GameObject SlateColor;
+
     private void Awake() 
     {
         // Generate new guid
@@ -70,6 +72,10 @@ public class GameObjController : MonoBehaviour
         */
         SetNearLocalFollowingMenu();
         SetNearGlobalFollowingMenu();
+
+        // I can also attach it from the inspector, but i feel like it's not the best for this controller
+        // (and also, the slate is always the same one)
+        SlateColor = GameObject.Find("SlateUGUI colors"); 
     }
 
     void Update() {
@@ -136,12 +142,13 @@ public class GameObjController : MonoBehaviour
         PrefabName = memento.GetPrefabName();
          */
 
+        // Assign transform
         Transform = memento.GetTransform();
         TransformSerializer.AssignDeserTransformToOriginalTransform(gameObject.transform, Transform);
 
-        //todo assign material to object
-        MaterialName = memento.GetMaterialName(); 
-        PrefabManager.Instance.ChangeMaterial(gameObject, PrefabName, MaterialName);
+        // Assign material
+        MaterialName = memento.GetMaterialName();
+        PrefabManager.Instance.ChangeMaterial(gameObject, MaterialName);
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -217,7 +224,7 @@ public class GameObjController : MonoBehaviour
         // Button 6 - Change color
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
         Interactable interactableSix = buttonSix.GetComponent<Interactable>();
-        interactableSix.OnClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().PopulateSlate(PrefabName));
+        interactableSix.OnClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().PopulateSlate(PrefabName, Guid));
         interactableSix.OnClick.AddListener(() => SlateColor.SetActive(true));
 
         //----------------------

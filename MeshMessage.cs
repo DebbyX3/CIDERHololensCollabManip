@@ -7,7 +7,7 @@ public class MeshMessage : Message
 {
     public MeshMessage(Guid id, Mesh mesh, MessageType messageType) : base(id, mesh, messageType) { }
     public MeshMessage(Mesh mesh, MessageType messageType) : base(mesh, messageType) { }
-    public MeshMessage(String id, Mesh mesh, MessageType messageType) : base(id, mesh, messageType) { }
+    public MeshMessage(string id, Mesh mesh, MessageType messageType) : base(id, mesh, messageType) { }
 
     public override void ExecuteMessage() 
     {

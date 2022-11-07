@@ -63,7 +63,7 @@ public static class GUIDKeeper
         return List.ContainsKey(guid);
     }
 
-    public static bool ContainsGuid(String guid) {
+    public static bool ContainsGuid(string guid) {
         return List.ContainsKey(Guid.Parse(guid));
     }
 
