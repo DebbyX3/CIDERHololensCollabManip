@@ -12,6 +12,8 @@ public class SlatePrefabsManager : MonoBehaviour
     private void Start()
     {
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
+        
+        // Put this call in Start because the slate needs to be populated only the first time! Otherwise, I would have put it in OnEnable
         PopulateSlate();
     }
 

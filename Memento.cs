@@ -61,6 +61,8 @@ public class Memento
     public SerializableTransform GetTransform() {
         return Transform;
     }
+
+    // The Originator (gobjcontroller) uses this method when restoring its material
     public string GetMaterialName()
     {
         return MaterialName;

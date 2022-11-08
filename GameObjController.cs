@@ -14,6 +14,10 @@ using MSUtilities = Microsoft.MixedReality.Toolkit.Utilities;
     This is because GameObjController needs an instance of CareTakerScene in the Awake, 
     and the operations that use this instance of CareTaker cannot be moved in the Start method of GameObjController   
     (it needs to attach listeners to events, so the Awake is necessary before the Start of the placed object is called)
+
+
+ PLEASE NOTE!
+    UIManager needs to be run BEFORE GameObjController, because GameObjController needs references to the object that UIManager has
  */
 
 public class GameObjController : MonoBehaviour
@@ -63,6 +67,11 @@ public class GameObjController : MonoBehaviour
         ObjectManipulator objManip = gameObject.GetComponent<ObjectManipulator>();
         objManip.OnManipulationStarted.AddListener(OnSelect);
 
+        // I can't attach it from the inspector, because the controlled is created at runtime! So I need to reference it using UIManager
+        // NOTE: set SlateColor BEFORE calling SetNearLocalFollowingMenu!
+        // Alternatively, I can just call UIManager.Instance.SlateColor when I need it, and not reference it using a field (but whatever)
+        SlateColor = UIManager.Instance.SlateColor;
+
         /* Create the menus
            Note: The menus need to stay in Awake because they are referred even when the gameobject is not active,
            for example in SetActiveLocalMenu. The said function will throw an error if the creations of the menu is done in the Start method,
@@ -72,10 +81,6 @@ public class GameObjController : MonoBehaviour
         */
         SetNearLocalFollowingMenu();
         SetNearGlobalFollowingMenu();
-
-        // I can also attach it from the inspector, but i feel like it's not the best for this controller
-        // (and also, the slate is always the same one)
-        SlateColor = GameObject.Find("SlateUGUI colors"); 
     }
 
     void Update() {
@@ -224,8 +229,9 @@ public class GameObjController : MonoBehaviour
         // Button 6 - Change color
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
         Interactable interactableSix = buttonSix.GetComponent<Interactable>();
-        interactableSix.OnClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().PopulateSlate(PrefabName, Guid));
+        // Important: set slate active before populating - so onEnable & Awake (1st time) are called
         interactableSix.OnClick.AddListener(() => SlateColor.SetActive(true));
+        interactableSix.OnClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().PopulateSlate(PrefabName, Guid));
 
         //----------------------
 
@@ -248,15 +254,15 @@ public class GameObjController : MonoBehaviour
 
         GameObject buttonCollection = nearGlobalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
-        // Button 1 - Forced Commit
+        // Button 1 - Copy object in local scene
         GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
         Interactable interactableOne = buttonOne.GetComponent<Interactable>();
         interactableOne.OnClick.AddListener(() => CopyObjectInLocalAndChangeToLocal(this));
 
-        // Button 2 - Voting Commit
+        // Button 2 -
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
 
-        // Button 3 - Close Menu
+        // Button 3 - 
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
 
         //----------------------

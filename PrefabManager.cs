@@ -288,8 +288,10 @@ public class PrefabManager : MonoBehaviour
         // Update transform
         TransformSerializer.AssignDeserTransformToOriginalTransform(gObj.transform, transform);
 
+
         // Change material of the object
         ChangeMaterial(gObj, materialName);
+        gObj.GetComponent<GameObjController>().SetMaterialName(materialName); //maybe move this into ChangeMaterial?
 
         gObj.GetComponent<GameObjController>().SubscribeToGlobalScene();
 

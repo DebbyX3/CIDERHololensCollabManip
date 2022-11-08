@@ -12,12 +12,19 @@ public class SlateColorsManager : MonoBehaviour
     PrefabSpecs PrefabSpecs;
 
     //-------------------- PRIVATE --------------------
-
     private void Awake()
     {
-        // Need to to this operation at awake, because it is used in one of the other called method
+        // Need to to this operation here because it is used in one of the other called method from outside!
         // (so I need to make sure that is already assigned)
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
+    }
+
+    private void OnEnable()
+    {
+        // Delete all the buttons in the SlateColor before repopulating the colors (because of the previous color display)
+        // This operation is well suited in the OnEnable because I have to do it at each 'respawn'
+        foreach (Transform child in UGUIButtons.transform)
+            Destroy(child.gameObject);
     }
 
     private void AddButton(string prefabName, string imageName, Texture2D image, Guid guid = new Guid())
@@ -65,20 +72,10 @@ public class SlateColorsManager : MonoBehaviour
     //-------------------- PUBLIC --------------------
 
     public void PopulateSlate(string prefabName, Guid guid = new Guid())
-    {
-        // Delete all the buttons in the SlateColor (because of the previous color display)
-        DestroyButtons();
-
+    {        
         PrefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabManager.Instance.PrefabCollection);
 
         foreach (KeyValuePair<string, Texture2D> images in PrefabSpecs.Images)
             AddButton(prefabName, images.Key, images.Value, guid);
-    }
-
-    // Delete all buttons before repopulating the colors
-    public void DestroyButtons()
-    {
-        foreach (Transform child in UGUIButtons.transform)
-            Destroy(child.gameObject);
     }
 }

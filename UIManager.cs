@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
+    /*
+      PLEASE NOTE!
+        UIManager needs to be run BEFORE GameObjController, because GameObjController needs references to the object that UIManager has
+     */
+
     public static UIManager Instance { get; private set; }
 
     public TMP_Text SceneStateText;
@@ -14,6 +19,9 @@ public class UIManager : MonoBehaviour
 
     public AudioSource NotificationSound;
     public AudioSource CommitSentSound;
+
+    public GameObject SlateColor;
+    public GameObject SlatePrefab;
 
     private string LogString = "";
 
