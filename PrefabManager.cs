@@ -16,6 +16,7 @@ using System;
     Foy my project, I decided to drag and drop all the prefabs, materials and images, but I may change and load everything at startup by
     reading the folders using Resources.LoadAll. I want to do this just because the contents of the folders could change, 
     and dragging & dropping in the inspector in this case would be not the idea (what if i miss a file?)
+
  */
 
 public class PrefabManager : MonoBehaviour

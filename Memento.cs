@@ -3,22 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Location : int {
-    LocalLayer,
-    GlobalLayer
-    //BothLocalGlobal // non so se ha senso, forse basta mettere due enum:
-                    // uno per local e uno per global, poi se esiste local
-                    // allora metto local e le sue cose, se esiste global
-                    // metto global e le sue cose. quando faccio switch scena
-                    // cerco se esiste lo stato dell'oggetto in quella scena,
-                    // se c'è bene, altrimenti niente, non lo metto! non so se funziona?
-}
-
-/*
- oppure posso provare a fare una lista diversa per ogni scena, quindi è la lista che si tiene chi c'è in ogni scena, e non l'oggetto stesso? 
- o entrambi? boh??? quindi è tipo il caretaker che dice chi c'è in quale scena!! potrebbe funzionarex
- */
-
 public class Memento
 {
     // originator (gobjcontroller) info
@@ -29,7 +13,7 @@ public class Memento
 
     // memento info
     private DateTime Date;
-    private Location ObjectLocation;
+    private ObjectLocation ObjectLocation;
 
     public Memento(Guid guid, string prefabName, string materialName, SerializableTransform transform) {
         Guid = guid;
@@ -40,7 +24,7 @@ public class Memento
     }
 
     // Call the less demanding constructor + add assignment to the field
-    public Memento(Guid guid, string prefabName, string materialName, SerializableTransform transform, Location objectLocation) 
+    public Memento(Guid guid, string prefabName, string materialName, SerializableTransform transform, ObjectLocation objectLocation) 
                    : this(guid, prefabName, materialName, transform)
     {
         ObjectLocation = objectLocation;
@@ -77,7 +61,7 @@ public class Memento
     public DateTime GetDate() {
         return Date;
     }
-    public Location GetObjectLocation() {
+    public ObjectLocation GetObjectLocation() {
         return ObjectLocation;
     }
 }

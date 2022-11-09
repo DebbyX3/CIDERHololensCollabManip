@@ -20,12 +20,25 @@ using MSUtilities = Microsoft.MixedReality.Toolkit.Utilities;
     UIManager needs to be run BEFORE GameObjController, because GameObjController needs references to the object that UIManager has
  */
 
+/*
+ A Flag enum is useful because I can combine the flags together to get a combination.
+ In this case I can have both global and local as the object location (Global + Local = 3)
+ */
+[Flags]
+public enum ObjectLocation
+{
+    None = 0,
+    Local = 1,
+    Global = 2
+}
+
 public class GameObjController : MonoBehaviour
 {
     public Guid Guid { get; private set; }
     public string PrefabName { get; private set; }
     public string MaterialName { get; private set; }
     public SerializableTransform Transform;
+    public ObjectLocation ObjectLocation = ObjectLocation.None;
 
     // Need to keep the references to the unity actions in order to disable them
     private UnityAction saveGlobalStateAction;
@@ -121,8 +134,8 @@ public class GameObjController : MonoBehaviour
     }
 
     public void SetGuid(Guid guid) {
-        Guid oldGuid = this.Guid;
-        this.Guid = guid;
+        Guid oldGuid = Guid;
+        Guid = guid;
 
         if (GUIDKeeper.ContainsGuid(guid)) {
             GUIDKeeper.RemoveFromList(oldGuid);
@@ -164,8 +177,11 @@ public class GameObjController : MonoBehaviour
         CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(restoreGlobalStateAction);
         CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveManipulation(false));
 
-        // untoggle local menu
+        // Untoggle local menu
         CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveLocalMenu(false));
+
+        // Add global location to object location
+        AddFlagLocation(ObjectLocation.Global);
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -178,23 +194,32 @@ public class GameObjController : MonoBehaviour
 
         // untoggle global menu
         CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(() => SetActiveGlobalMenu(false));
+
+        // Add local location to object location
+        AddFlagLocation(ObjectLocation.Local);
     }
     public void UnsubscribeFromGlobalScene()
     {
         CaretakerScene.Instance.SaveGlobalStateEvent.RemoveListener(saveGlobalStateAction);
         CaretakerScene.Instance.RestoreGlobalStateEvent.RemoveListener(restoreGlobalStateAction);
+
+        // Remove local location from object global
+        RemoveFlagLocation(ObjectLocation.Global);
     }
 
     public void UnsubscribeFromLocalScene()
     {
         CaretakerScene.Instance.SaveLocalStateEvent.RemoveListener(saveLocalStateAction);
         CaretakerScene.Instance.RestoreLocalStateEvent.RemoveListener(restoreLocalStateAction);
+
+        // Remove local location from object location
+        RemoveFlagLocation(ObjectLocation.Local);
     }
 
     // Always hide the object on change scene!
     public void HideObject()
     {
-        this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     private void SetNearLocalFollowingMenu()
@@ -216,10 +241,10 @@ public class GameObjController : MonoBehaviour
         Interactable interactableThree = buttonThree.GetComponent<Interactable>();
         interactableThree.OnClick.AddListener(() => CloseMenu());
 
-        // Button 4 - Remove
+        // Button 4 - Remove from local
         GameObject buttonFour = buttonCollection.transform.Find("ButtonFour").gameObject;
         Interactable interactableFour = buttonFour.GetComponent<Interactable>();
-        interactableFour.OnClick.AddListener(() => RemoveGObj());
+        interactableFour.OnClick.AddListener(() => DeleteObject(ObjectLocation.Local));
 
         // Button 5 - Duplicate
         GameObject buttonFive = buttonCollection.transform.Find("ButtonFive").gameObject;
@@ -277,28 +302,71 @@ public class GameObjController : MonoBehaviour
         // The parent of the menu is the gameobject
         nearGlobalFollowingMenu.transform.SetParent(gameObject.transform);
 
-        //todo maybe: set scale to the same for every menu (so it doesn't become too small or too big)
+        //todo: set scale to the same for every menu (so it doesn't become too small or too big)
     }
 
-    // forse questo metodo va in Caretaker?
+    // todo forse questo metodo va in Caretaker?
+
+    // todo questa funzione è da vedere meglio perchè fa un po' le bizze
+    // (soprattutto sulla posizione, sul colore sembra andare bene?)
     private void CopyObjectInLocalAndChangeToLocal(GameObjController gobj)
     {
         // Call the update object and not the create object, because if I have the obj it means it is already in the 'existing' obj
         // in the guid list. So just update to make it local it and make it subscribe to the local scene
-        PrefabManager.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform, gobj.MaterialName);
+        PrefabManager.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform, gobj.MaterialName); 
+        
         //CaretakerScene.Instance.ChangeSceneToLocal();
     }
 
-    // TODO bisogna toglierlo anche dalla global e local list mementos!!!!!!!!!
-    private void RemoveGObj()
+    // fromScene: tells in which scene we want to delete the object 
+    private void DeleteObject(ObjectLocation fromScene)
     {
-        GUIDKeeper.RemoveFromList(this.Guid);
+        switch (fromScene)
+        {
+            case ObjectLocation.Local: // Delete it from the Local scene
+            {
+                // If the object is only in the local scene - Completely delete it!
+                if (ContainsOnlyFlag(ObjectLocation.Local))
+                {
+                    UnsubscribeFromLocalScene();
+                    CaretakerScene.Instance.RemoveFromLocalList(Guid);
+                    GUIDKeeper.RemoveFromList(Guid);
+                    Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
+                }
+                // If the object is both in the local and global scene
+                else if (ObjectLocation.HasFlag(ObjectLocation.Local | ObjectLocation.Global))
+                {
+                    // lo tolgo dal locale e basta, non cancello niente dal guid keeper, nè dal globale, no?
+                    // ma allora posso unire i casi sopra!!
+                    UnsubscribeFromLocalScene();
+                    CaretakerScene.Instance.RemoveFromLocalList(Guid);
+                }
 
-        //should remove from local scene or also global? TODO
+                break;    
+            }
 
-        //CaretakerScene.Instance.RemoveFromExistingMementos(this);
+            // attenzione in questo caso!
+            // todo: mandare la cancellazione in rete!!!!!!!!!!!!
+            case ObjectLocation.Global: // Delete it from the Global scene
+            {
+                // If the object is only in the global scene - Make it easier for the user: copy it in the local scene?
+                if (ContainsOnlyFlag(ObjectLocation.Global))
+                {
+                    UnsubscribeFromGlobalScene();
+                    CaretakerScene.Instance.RemoveFromGlobalList(Guid);
+                    // todo ??????????????
+                }
+                // If the object is both in the local and global scene
+                else if (ObjectLocation.HasFlag(ObjectLocation.Local | ObjectLocation.Global))
+                {
+                    UnsubscribeFromGlobalScene();
+                    CaretakerScene.Instance.RemoveFromGlobalList(Guid);
+                }
+                break;
+            }
 
-        Destroy(gameObject); //also destroy its children, e.g.: buttons
+            default: break;
+        }
     }
 
     // Duplicate obj with a slight movement of 0.1f on axis X and Y
@@ -361,5 +429,22 @@ public class GameObjController : MonoBehaviour
     private void SetActiveGlobalMenu(bool active)
     {
         nearGlobalFollowingMenu.SetActive(active);
+    }
+
+    // ------------------ FLAGS ------------------
+
+    private void AddFlagLocation(ObjectLocation flagToAdd)
+    {
+        ObjectLocation |= flagToAdd;
+    }
+
+    private void RemoveFlagLocation(ObjectLocation flagToRemove)
+    {
+        ObjectLocation &= ~flagToRemove;
+    }
+
+    public bool ContainsOnlyFlag(ObjectLocation flag)
+    {
+        return ObjectLocation == flag;
     }
 }

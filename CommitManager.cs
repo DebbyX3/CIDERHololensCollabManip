@@ -48,7 +48,7 @@ public class CommitManager : MonoBehaviour
 
     // todo forse questo metodo è da spostare in una classe più appropriata?
     // cioè non dovrebbe essere la classe di commit che controlla se l'oggetto esiste già porca l'oca!!
-    // dovrebbe mica essere il caretaker? o il prefab manager?
+    // dovrebbe mica essere il caretaker? o il prefab manager? forse il caretaker?
     public void OnCommitReceived(GameObjMessage gObjMsg)
     {
         GameObjMessageInfo gObjMsgInfo = gObjMsg.GetMsgInfo();
@@ -56,7 +56,7 @@ public class CommitManager : MonoBehaviour
         // If the receiver already has the object in one or both scenes
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
-            // To fix probably
+            // todo To fix probably
             // cioè che potrebbe avere l'oggetto in locale e non globale? ma può capitare o no? Da capire?
             PrefabManager.Instance.UpdateObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
         }

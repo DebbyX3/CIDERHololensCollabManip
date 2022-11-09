@@ -14,9 +14,25 @@ using UnityEngine.Events;
     (it needs to attach listeners to events, so the Awake is necessary before the Start of the placed object is called)
  */
 
+public enum Location : int
+{
+    LocalLayer,
+    GlobalLayer
+}
+
 public class CaretakerScene : MonoBehaviour
 {
     public static CaretakerScene Instance { get; private set; }
+
+    /*
+    Note: I've considered keeping the 2 Global and Local lists as just one list because having 2 lists that 
+    specify the behavior and meaning of the object location is not the best, also because I have the ObjectLocation
+    enum inside every gobjcontroller, and a mishmatch of flag and list belonging could be a disaster! 
+    So I must be VERY careful
+
+    But I can't keep the 2 lists together, because when I want to retrive the global (or local) state, I don't want to
+    overwrite the previous state (and that happens for sure since the key is the guid!)
+    */
 
     // keeps mementos of global scene
     private Dictionary<Guid, Memento> GlobalListMementos { get; } = new Dictionary<Guid, Memento>();
@@ -27,11 +43,10 @@ public class CaretakerScene : MonoBehaviour
     // not sure about the use of a Memento object here
     private Dictionary<Guid, Memento> PendingListRequests { get; } = new Dictionary<Guid, Memento>();
 
-    // don't really know if i should keep this variable here
     private Location SceneState = Location.LocalLayer;
 
-    // need 4 events, because the save and restore are done in different moments:
-    // save is done always before the restore, and some objs may not be in both scenes
+    // Need 4 events, because the save and restore are done in different moments:
+    // Save is done always before the restore, and some objs may not be in both scenes
     public UnityEvent SaveGlobalStateEvent = new UnityEvent();
     public UnityEvent SaveLocalStateEvent = new UnityEvent();
 
@@ -210,6 +225,20 @@ public class CaretakerScene : MonoBehaviour
             Debug.Log("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
             UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
         }
+    }
+
+    public void RemoveFromLocalList(Guid guid)
+    {
+        // Check if object is in local list
+        if (LocalListMementos.ContainsKey(guid))
+            LocalListMementos.Remove(guid);            
+    }
+
+    public void RemoveFromGlobalList(Guid guid)
+    {
+        // Check if object is in local list
+        if (GlobalListMementos.ContainsKey(guid))
+            GlobalListMementos.Remove(guid);
     }
 
     public void ExecuteForcedCommit(GameObjController gObj)
