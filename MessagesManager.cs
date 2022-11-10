@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CommitManager : MonoBehaviour
+public class MessagesManager : MonoBehaviour
 {
-    public static CommitManager Instance { get; private set; }
+    public static MessagesManager Instance { get; private set; }
 
     private void Awake()
     {

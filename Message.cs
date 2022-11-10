@@ -9,7 +9,8 @@ public enum MessageType : int {
     BaseMessage,
     GameObjMessage,
     MeshMessage,
-    StateMessage
+    StateMessage,
+    DeletionMessage
 }
 
 [Serializable]

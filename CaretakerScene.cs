@@ -230,15 +230,19 @@ public class CaretakerScene : MonoBehaviour
     public void RemoveFromLocalList(Guid guid)
     {
         // Check if object is in local list
-        if (LocalListMementos.ContainsKey(guid))
-            LocalListMementos.Remove(guid);            
+        //if (LocalListMementos.ContainsKey(guid)) 
+        LocalListMementos.Remove(guid);                 // If the dict does not contain an element with the
+                                                        // specified key, the dict remains unchanged.
+                                                        // No exception is thrown.
     }
 
     public void RemoveFromGlobalList(Guid guid)
     {
-        // Check if object is in local list
-        if (GlobalListMementos.ContainsKey(guid))
-            GlobalListMementos.Remove(guid);
+        // Check if object is in global list
+        //if (GlobalListMementos.ContainsKey(guid))
+        GlobalListMementos.Remove(guid);                // If the dict does not contain an element with the
+                                                        // specified key, the dict remains unchanged.
+                                                        // No exception is thrown.
     }
 
     public void ExecuteForcedCommit(GameObjController gObj)

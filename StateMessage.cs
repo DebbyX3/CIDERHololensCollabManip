@@ -4,7 +4,7 @@ using System;
 
 public enum UserState : int {
     InLocalScene,
-    InGlobalScsene,
+    InGlobalScene,
     WaitingConnection
 }
 

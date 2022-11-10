@@ -55,7 +55,7 @@ public class GameObjMessage : Message {
 
     public override void ExecuteMessage() 
     {
-        CommitManager.Instance.OnCommitReceived(this);
+        MessagesManager.Instance.OnCommitReceived(this);
     }
 
     public GameObjMessageInfo GetMsgInfo() {
