@@ -237,12 +237,7 @@ public class PrefabManager : MonoBehaviour
         UpdateObjectLocal(guid, SerializableTransform.Default(), materialName);
     }
 
-    public void UpdateObjectLocal(Guid guid, SerializableTransform transform)
-    {
-        UpdateObjectLocal(guid, transform, "");
-    }
-
-    public void UpdateObjectLocal(Guid guid, SerializableTransform transform, string materialName) 
+    public void UpdateObjectLocal(Guid guid, SerializableTransform transform, string materialName = "") 
     {
         bool wasGlobalScene = false;
 
@@ -257,7 +252,7 @@ public class PrefabManager : MonoBehaviour
 
         // Update transform - only if there is actually something to change - if it is a default value do not change
         if (!transform.Equals(SerializableTransform.Default()))
-            TransformSerializer.AssignDeserTransformToOriginalTransform(gObj.transform, transform);
+            gObj.transform.AssignDeserTransformToOriginalTransform(transform);
 
         // Change material of the object - only if there is actually something to change - if it is a default value do not change
         if (!materialName.Equals(""))
@@ -287,7 +282,7 @@ public class PrefabManager : MonoBehaviour
         GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
 
         // Update transform
-        TransformSerializer.AssignDeserTransformToOriginalTransform(gObj.transform, transform);
+        gObj.transform.AssignDeserTransformToOriginalTransform(transform);
 
 
         // Change material of the object

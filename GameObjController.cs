@@ -96,7 +96,8 @@ public class GameObjController : MonoBehaviour
         SetNearGlobalFollowingMenu();
     }
 
-    void Update() {
+    private void Update() 
+    {
         // Can be done better but not really urgent
         if (Transform.Position.X != gameObject.transform.position.x ||
             Transform.Position.Y != gameObject.transform.position.y ||
@@ -144,7 +145,7 @@ public class GameObjController : MonoBehaviour
         GUIDKeeper.AddToList(Guid, gameObject);
     }
 
-    /* METHODS FOR 'MEMENTO' PATTERN */
+    // ---------------------- BEGIN METHODS FOR 'MEMENTO' PATTERN ----------------------
 
     public Memento Save() {
         return new Memento(Guid, PrefabName, MaterialName, Transform);
@@ -162,12 +163,16 @@ public class GameObjController : MonoBehaviour
 
         // Assign transform
         Transform = memento.GetTransform();
-        TransformSerializer.AssignDeserTransformToOriginalTransform(gameObject.transform, Transform);
+        gameObject.transform.AssignDeserTransformToOriginalTransform(transform);
 
         // Assign material
         MaterialName = memento.GetMaterialName();
         PrefabManager.Instance.ChangeMaterial(gameObject, MaterialName);
     }
+
+    // ---------------------- END MEMENTO METHODS ----------------------
+
+    // ---------------------- BEGIN UN/SUB METHODS ----------------------
 
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToGlobalScene()
@@ -222,6 +227,26 @@ public class GameObjController : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    // ---------------------- END UN/SUB METHODS ----------------------
+
+    // ---------------------- PRIVATE ----------------------
+
+    private void OnSelect(ManipulationEventData data)
+    {
+        // Toggle global or local menu on object selection
+
+        if (CaretakerScene.Instance.IsGlobalScene())
+        {
+            nearGlobalFollowingMenu.SetActive(true);
+            nearGlobalFollowingMenu.GetComponent<RadialView>().enabled = true;
+        }
+        else if (CaretakerScene.Instance.IsLocalScene())
+        {
+            nearLocalFollowingMenu.SetActive(true);
+            nearLocalFollowingMenu.GetComponent<RadialView>().enabled = true;
+        }
+    }
+
     private void SetNearLocalFollowingMenu()
     {
         nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2"), Vector3.zero, Quaternion.identity);
@@ -244,7 +269,7 @@ public class GameObjController : MonoBehaviour
         // Button 4 - Remove from local
         GameObject buttonFour = buttonCollection.transform.Find("ButtonFour").gameObject;
         Interactable interactableFour = buttonFour.GetComponent<Interactable>();
-        interactableFour.OnClick.AddListener(() => DeleteObject(ObjectLocation.Local));
+        interactableFour.OnClick.AddListener(() => DeleteObject(this, ObjectLocation.Local, UserType.Sender));
 
         // Button 5 - Duplicate
         GameObject buttonFive = buttonCollection.transform.Find("ButtonFive").gameObject;
@@ -313,13 +338,14 @@ public class GameObjController : MonoBehaviour
     {
         // Call the update object and not the create object, because if I have the obj it means it is already in the 'existing' obj
         // in the guid list. So just update to make it local it and make it subscribe to the local scene
-        PrefabManager.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform, gobj.MaterialName); 
-        
+        PrefabManager.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform, gobj.MaterialName);
+
         //CaretakerScene.Instance.ChangeSceneToLocal();
     }
 
-    // fromScene: tells in which scene we want to delete the object 
-    private void DeleteObject(ObjectLocation fromScene)
+    // fromScene: tells in which scene we want to delete the object
+    // userType: tells if the user is the sender of the deletion message or the receiver
+    public void DeleteObject(GameObjController gObj, ObjectLocation fromScene, UserType userType)
     {
         switch (fromScene)
         {
@@ -329,9 +355,9 @@ public class GameObjController : MonoBehaviour
                 if (ContainsOnlyFlag(ObjectLocation.Local))
                 {
                     UnsubscribeFromLocalScene();
-                    CaretakerScene.Instance.RemoveFromLocalList(Guid);
-                    GUIDKeeper.RemoveFromList(Guid);
-                    Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
+                    CaretakerScene.Instance.RemoveFromLocalList(gObj.Guid);
+                    GUIDKeeper.RemoveFromList(gObj.Guid);
+                    Destroy(gObj.gameObject); //also destroy its children, e.g.: menus/buttons
                 }
                 // If the object is both in the local and global scene
                 else if (ObjectLocation.HasFlag(ObjectLocation.Local | ObjectLocation.Global))
@@ -339,35 +365,55 @@ public class GameObjController : MonoBehaviour
                     // lo tolgo dal locale e basta, non cancello niente dal guid keeper, nè dal globale, no?
                     // ma allora posso unire i casi sopra!!
                     UnsubscribeFromLocalScene();
-                    CaretakerScene.Instance.RemoveFromLocalList(Guid);
+                    CaretakerScene.Instance.RemoveFromLocalList(gObj.Guid);
                 }
 
-                break;    
+                break;
             }
 
-            // attenzione in questo caso!
-            // todo: mandare la cancellazione in rete!!!!!!!!!!!!
             case ObjectLocation.Global: // Delete it from the Global scene
             {
-                // If the object is only in the global scene - Make it easier for the user: copy it in the local scene?
+                // If the object is only in the global scene - Make it easier for the user: copy it in the local scene
                 if (ContainsOnlyFlag(ObjectLocation.Global))
                 {
                     UnsubscribeFromGlobalScene();
-                    CaretakerScene.Instance.RemoveFromGlobalList(Guid);
-                    // todo ??????????????
+                    CaretakerScene.Instance.RemoveFromGlobalList(gObj.Guid);
+
+                    // todo: copy it in the local scene to make it easier for the user
+                    if (userType.Equals(UserType.Sender))
+                        CopyObjectInLocalAndChangeToLocal(this); // todo to review!
+
+                    if (userType.Equals(UserType.Receiver))
+                    {
+                        GUIDKeeper.RemoveFromList(gObj.Guid);
+                        Destroy(gObj.gameObject); //also destroy its children, e.g.: menus/buttons    
+                    }
+
                 }
                 // If the object is both in the local and global scene
                 else if (ObjectLocation.HasFlag(ObjectLocation.Local | ObjectLocation.Global))
                 {
+                    // ma allora posso unire i casi sopra!!
                     UnsubscribeFromGlobalScene();
-                    CaretakerScene.Instance.RemoveFromGlobalList(Guid);
+                    CaretakerScene.Instance.RemoveFromGlobalList(gObj.Guid);
                 }
+
+                if (userType.Equals(UserType.Sender))
+                    MessagesManager.Instance.SendGlobalDeletionMessage(this);
+
                 break;
             }
 
+            case ObjectLocation.None:
+                break;
+
             default: break;
         }
+
+        HideObject();
     }
+
+
 
     // Duplicate obj with a slight movement of 0.1f on axis X and Y
     private void DuplicateObj()
@@ -400,25 +446,11 @@ public class GameObjController : MonoBehaviour
 
         // If manip is not active (false), then also lock y axis (so lock every axis)
         if (!active)
-            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = MSUtilities.AxisFlags.YAxis | MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
+            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = 
+                MSUtilities.AxisFlags.YAxis | MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
         else // If manip is active (true), then do not lock y axis (only lock axis x and z) 
-            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
-    }
-
-    public void OnSelect(ManipulationEventData data)
-    {
-        // Toggle global or local menu on object selection
-
-        if (CaretakerScene.Instance.IsGlobalScene())
-        {
-            nearGlobalFollowingMenu.SetActive(true);
-            nearGlobalFollowingMenu.GetComponent<RadialView>().enabled = true;
-        }
-        else if (CaretakerScene.Instance.IsLocalScene())
-        {
-            nearLocalFollowingMenu.SetActive(true);
-            nearLocalFollowingMenu.GetComponent<RadialView>().enabled = true;
-        }        
+            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = 
+                MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
     }
 
     private void SetActiveLocalMenu(bool active)

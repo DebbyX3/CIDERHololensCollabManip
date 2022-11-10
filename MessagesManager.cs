@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum UserType
+{ 
+    Sender,
+    Receiver
+}
+
 public class MessagesManager : MonoBehaviour
 {
     public static MessagesManager Instance { get; private set; }
@@ -19,6 +25,8 @@ public class MessagesManager : MonoBehaviour
         }
     }
 
+    // -------------------------- COMMITS --------------------------
+
     public void SendForcedCommit(GameObjController gObjCont)
     {
         CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
@@ -33,7 +41,7 @@ public class MessagesManager : MonoBehaviour
         // Play sound on commit
         UIManager.Instance.CommitSentSound.Play();
 
-        // maybe display a dialog/confirmation box?
+        // todo maybe display a dialog/confirmation box?
 
         // Do things
         OnCommitSent(gObjCont);
@@ -70,6 +78,63 @@ public class MessagesManager : MonoBehaviour
         }
 
         // Notify the user that a new commit has arrived
+
+        // Play notification sound
+        UIManager.Instance.NotificationSound.Play();
+
+        // Send commit notification to this device
+        UIManager.Instance.SetNotificationButtonActive(true);
+    }
+
+    // -------------------------- DELETION --------------------------
+
+    public void SendGlobalDeletionMessage(GameObjController gObjCont)
+    {
+        // Create message to send (serialize it)
+        DeletionMessage msg = new DeletionMessage(new DeletionMessageInfo(gObjCont.Guid));
+        byte[] serializedMsg = msg.Serialize();
+
+        // Send message
+        NetworkHandler.Instance.Send(serializedMsg);
+
+        // Play sound
+        UIManager.Instance.CommitSentSound.Play();
+
+        // todo maybe display a dialog/confirmation box?
+    }
+
+    /*
+     * Note: 
+     * I don't have to check if the object exists in the global scene to delete it, because the object is shared, and if one user
+     * deletes it, the other necessarily has to have it. To make it clear, let's cover the cases:
+     * 
+     * Deletion:
+     * 1) User1 (U1) wants to delete a global obj. It issues the related command and sends the message to User2 (U2)
+     * 2) U2 receives the message, and deletes the object from its global scene
+     * 
+     * So now both have a deleted object. But what assures me that both have the same obj in the global scene to begin off?
+     * 
+     * Addition:
+     * 1) U1 wants to commit an object to the global scene. U2 does not have it
+     * 2) U1 issues a commit
+     * 3) U2 receives the commit and adds the object to its global scene
+     * 
+     * Now both have a new shared object
+     * 
+     * I proved that if the obj exists in the global scene for U1, it also exists in the global scene for U2
+     * So in the deletion I don't have to check if the object exists in the global scene  
+     */
+    public void OnDeletionReceived(DeletionMessage deletionMsg)
+    {
+        DeletionMessageInfo deletionMsgInfo = deletionMsg.GetMsgInfo();
+
+        GameObjController gObjController =  GUIDKeeper.GetGObjFromGuid(deletionMsgInfo.GameObjectGuid)
+                                            .GetComponent<GameObjController>();
+
+        gObjController.DeleteObject(gObjController, ObjectLocation.Global, UserType.Receiver); 
+        //todo: come mai sto extensione method non funziona??
+
+        // Notify the user that a new thing has arrived
 
         // Play notification sound
         UIManager.Instance.NotificationSound.Play();

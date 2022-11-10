@@ -2,33 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public enum UserState : int
-{
-    InLocalScene,
-    InGlobalScene,
-    WaitingConnection
-}
+/*
+ * Send this message to signal the other user to delete the object from the global scene
+ * When this message is received, the object has to be removed/deleted from the global scene
+*/
 
 [Serializable]
 public struct DeletionMessageInfo
 {
-    public UserState UserState { get; private set; }
+    public Guid GameObjectGuid { get; private set; }
 
-    public DeletionMessageInfo(UserState userState)
+    public DeletionMessageInfo(Guid guid)
     {
-        this.UserState = userState;
+        GameObjectGuid = guid;
     }
 }
 
 [Serializable]
 public class DeletionMessage : Message
 {
-    public DeletionMessage(Guid id, StateMessageInfo info) : base(id, info, MessageType.StateMessage) { }
-    public DeletionMessage(StateMessageInfo info) : base(info, MessageType.StateMessage) { }
-    public DeletionMessage(string id, StateMessageInfo info) : base(id, info, MessageType.StateMessage) { }
+    public DeletionMessage(Guid id, DeletionMessageInfo info) : base(id, info, MessageType.DeletionMessage) { }
+    public DeletionMessage(DeletionMessageInfo info) : base(info, MessageType.DeletionMessage) { }
+    public DeletionMessage(string id, DeletionMessageInfo info) : base(id, info, MessageType.DeletionMessage) { }
 
     public override void ExecuteMessage()
     {
-        throw new System.NotImplementedException();
+        MessagesManager.Instance.OnDeletionReceived(this);
+    }
+
+    public DeletionMessageInfo GetMsgInfo()
+    {
+        return (DeletionMessageInfo)Info;
     }
 }

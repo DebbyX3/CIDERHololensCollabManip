@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
+/*
+ * Send this message to notify the other user in which scene this user is 
+ */
+
 public enum UserState : int {
     InLocalScene,
     InGlobalScene,
@@ -9,11 +13,12 @@ public enum UserState : int {
 }
 
 [Serializable]
-public struct StateMessageInfo {
+public struct StateMessageInfo 
+{
     public UserState UserState { get; private set; }
 
     public StateMessageInfo(UserState userState) {
-        this.UserState = userState;
+        UserState = userState;
     }
 }
 
