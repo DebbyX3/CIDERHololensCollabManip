@@ -138,11 +138,11 @@ public class GameObjController : MonoBehaviour
         Guid oldGuid = Guid;
         Guid = guid;
 
-        if (GUIDKeeper.ContainsGuid(guid)) {
+        if (GUIDKeeper.ContainsGuid(oldGuid)) { //era guid 
             GUIDKeeper.RemoveFromList(oldGuid);
         }
 
-        GUIDKeeper.AddToList(Guid, gameObject);
+        GUIDKeeper.AddToList(guid, gameObject);
     }
 
     // ---------------------- BEGIN METHODS FOR 'MEMENTO' PATTERN ----------------------
@@ -269,7 +269,7 @@ public class GameObjController : MonoBehaviour
         // Button 4 - Remove from local
         GameObject buttonFour = buttonCollection.transform.Find("ButtonFour").gameObject;
         Interactable interactableFour = buttonFour.GetComponent<Interactable>();
-        interactableFour.OnClick.AddListener(() => DeleteObject(this, ObjectLocation.Local, UserType.Sender));
+        interactableFour.OnClick.AddListener(() => DeleteObject(ObjectLocation.Local, UserType.Sender));
 
         // Button 5 - Duplicate
         GameObject buttonFive = buttonCollection.transform.Find("ButtonFive").gameObject;
@@ -311,6 +311,8 @@ public class GameObjController : MonoBehaviour
 
         // Button 2 -
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
+        Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
+        interactableTwo.OnClick.AddListener(() => DeleteObject(ObjectLocation.Global, UserType.Sender));
 
         // Button 3 - 
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
@@ -345,7 +347,7 @@ public class GameObjController : MonoBehaviour
 
     // fromScene: tells in which scene we want to delete the object
     // userType: tells if the user is the sender of the deletion message or the receiver
-    public void DeleteObject(GameObjController gObj, ObjectLocation fromScene, UserType userType)
+    public void DeleteObject(ObjectLocation fromScene, UserType userType)
     {
         switch (fromScene)
         {
@@ -355,9 +357,9 @@ public class GameObjController : MonoBehaviour
                 if (ContainsOnlyFlag(ObjectLocation.Local))
                 {
                     UnsubscribeFromLocalScene();
-                    CaretakerScene.Instance.RemoveFromLocalList(gObj.Guid);
-                    GUIDKeeper.RemoveFromList(gObj.Guid);
-                    Destroy(gObj.gameObject); //also destroy its children, e.g.: menus/buttons
+                    CaretakerScene.Instance.RemoveFromLocalList(Guid);
+                    GUIDKeeper.RemoveFromList(Guid);
+                    Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
                 }
                 // If the object is both in the local and global scene
                 else if (ObjectLocation.HasFlag(ObjectLocation.Local | ObjectLocation.Global))
@@ -365,7 +367,7 @@ public class GameObjController : MonoBehaviour
                     // lo tolgo dal locale e basta, non cancello niente dal guid keeper, nè dal globale, no?
                     // ma allora posso unire i casi sopra!!
                     UnsubscribeFromLocalScene();
-                    CaretakerScene.Instance.RemoveFromLocalList(gObj.Guid);
+                    CaretakerScene.Instance.RemoveFromLocalList(Guid);
                 }
 
                 break;
@@ -377,7 +379,7 @@ public class GameObjController : MonoBehaviour
                 if (ContainsOnlyFlag(ObjectLocation.Global))
                 {
                     UnsubscribeFromGlobalScene();
-                    CaretakerScene.Instance.RemoveFromGlobalList(gObj.Guid);
+                    CaretakerScene.Instance.RemoveFromGlobalList(Guid);
 
                     // todo: copy it in the local scene to make it easier for the user
                     if (userType.Equals(UserType.Sender))
@@ -385,8 +387,8 @@ public class GameObjController : MonoBehaviour
 
                     if (userType.Equals(UserType.Receiver))
                     {
-                        GUIDKeeper.RemoveFromList(gObj.Guid);
-                        Destroy(gObj.gameObject); //also destroy its children, e.g.: menus/buttons    
+                        GUIDKeeper.RemoveFromList(Guid);
+                        Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
                     }
 
                 }
@@ -395,7 +397,7 @@ public class GameObjController : MonoBehaviour
                 {
                     // ma allora posso unire i casi sopra!!
                     UnsubscribeFromGlobalScene();
-                    CaretakerScene.Instance.RemoveFromGlobalList(gObj.Guid);
+                    CaretakerScene.Instance.RemoveFromGlobalList(Guid);
                 }
 
                 if (userType.Equals(UserType.Sender))

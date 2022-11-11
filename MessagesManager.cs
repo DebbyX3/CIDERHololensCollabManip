@@ -131,8 +131,7 @@ public class MessagesManager : MonoBehaviour
         GameObjController gObjController =  GUIDKeeper.GetGObjFromGuid(deletionMsgInfo.GameObjectGuid)
                                             .GetComponent<GameObjController>();
 
-        gObjController.DeleteObject(gObjController, ObjectLocation.Global, UserType.Receiver); 
-        //todo: come mai sto extensione method non funziona??
+        gObjController.DeleteObject(ObjectLocation.Global, UserType.Receiver);
 
         // Notify the user that a new thing has arrived
 
