@@ -7,11 +7,6 @@ using System.IO;
 using SysDiag = System.Diagnostics;
 using System.Runtime.Serialization;
 
-public enum CommitType : int {
-    ForcedCommit,
-    RequestCommit
-}
-
 [Serializable]
 public struct GameObjMessageInfo {
     public Guid GameObjectGuid { get; private set; }

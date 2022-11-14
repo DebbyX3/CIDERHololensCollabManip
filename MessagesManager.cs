@@ -7,6 +7,11 @@ public enum UserType
     Sender,
     Receiver
 }
+public enum CommitType : int
+{
+    ForcedCommit,
+    VotingCommit
+}
 
 public class MessagesManager : MonoBehaviour
 {
@@ -25,14 +30,23 @@ public class MessagesManager : MonoBehaviour
         }
     }
 
+    // Based on the type of message, compose the object to send and then send it
+    private void CreateAndSendMessage(MessageType messageType)
+    {
+    }
+
     // -------------------------- COMMITS --------------------------
+
+    // todo: potrei unire i send dando come parametro solo il tipo di commit con l'enum
+    // (tanto il send è abbastanza straight forward)
 
     public void SendForcedCommit(GameObjController gObjCont)
     {
         CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
 
         // Create message to send (serialize it)
-        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, CommitType.ForcedCommit));
+        GameObjMessage msg = new GameObjMessage(
+            new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, CommitType.ForcedCommit));
         byte[] serializedMsg = msg.Serialize();
 
         // Send message
@@ -41,17 +55,76 @@ public class MessagesManager : MonoBehaviour
         // Play sound on commit
         UIManager.Instance.CommitSentSound.Play();
 
-        // todo maybe display a dialog/confirmation box?
+        // Todo maybe display a dialog/confirmation box? forse uno che va via da solo dopo tot tempo?
 
         // Do things
-        OnCommitSent(gObjCont);
+        OnForcedCommitSent(gObjCont);
+    }
+
+    public void SendVotingCommit(GameObjController gObjCont)
+    {
+        CaretakerScene.Instance.ExecuteVotingCommit(gObjCont);
+
+        // Create message to send (serialize it)
+        GameObjMessage msg = new GameObjMessage(
+            new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, CommitType.VotingCommit));
+        byte[] serializedMsg = msg.Serialize();
+
+        // Send message
+        NetworkHandler.Instance.Send(serializedMsg);
+
+        // Play sound on commit
+        UIManager.Instance.CommitSentSound.Play();
+
+        // Todo maybe display a dialog/confirmation box? forse uno che va via da solo dopo tot tempo?
+
+        // Do things
+        OnForcedCommitSent(gObjCont);
+    }
+
+    public void SendCommit(GameObjController gObjCont, CommitType commitType)
+    {
+        switch (commitType)
+        {
+            case CommitType.ForcedCommit:
+                CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
+                break;
+                
+            case CommitType.VotingCommit:
+                CaretakerScene.Instance.ExecuteVotingCommit(gObjCont);
+                break;
+                
+            default:
+                break;
+        }        
+
+        // Create message to send (serialize it)
+        GameObjMessage msg = new GameObjMessage(
+            new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, commitType));
+        byte[] serializedMsg = msg.Serialize();
+
+        // Send message
+        NetworkHandler.Instance.Send(serializedMsg);
+
+        // Play sound on commit
+        UIManager.Instance.CommitSentSound.Play();
+
+        // Todo maybe display a dialog/confirmation box? forse uno che va via da solo dopo tot tempo?
+
+        // Do things
+        OnForcedCommitSent(gObjCont);
     }
 
     // per ora questo metodo funziona bene solo con i commit forzati. con quelli di voting è più complicato
     // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica (sempre che si facciano insomma) ???
-    public void OnCommitSent(GameObjController gObjCont)
+    public void OnForcedCommitSent(GameObjController gObjCont)
     {
         PrefabManager.Instance.UpdateObjectGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
+    }
+
+    public void OnVotingCommitSent(GameObjController gObjCont)
+    {
+        // da fare qualcosa che boh
     }
 
     // todo forse questo metodo è da spostare in una classe più appropriata?
