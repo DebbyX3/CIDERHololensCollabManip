@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 
 /*
- * Send this message to signal the other user to delete the object from the global scene
+ * Send this message to signal the other user to delete the object from the GLOBAL scene
  * When this message is received, the object has to be removed/deleted from the global scene
 */
 

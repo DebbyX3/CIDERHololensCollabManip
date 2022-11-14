@@ -140,5 +140,10 @@ public class MessagesManager : MonoBehaviour
 
         // Send commit notification to this device
         UIManager.Instance.SetNotificationButtonActive(true);
+
+        //todo: show the user a notification in case the global deletion generates a new local obj
+        // potrei farlo che il delete obj mi torna un valore X, dove se X corrisponde a 'ho cancellato
+        // da globale ma messo in locale' allora mostro la notifica
+        // NON MOSTRARE NOTIFICA IN CONTROLLER!!! MA FARLO QUA EH!!!
     }
 }

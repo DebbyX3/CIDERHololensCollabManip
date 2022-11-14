@@ -381,11 +381,10 @@ public class GameObjController : MonoBehaviour
                     UnsubscribeFromGlobalScene();
                     CaretakerScene.Instance.RemoveFromGlobalList(Guid);
 
-                    // todo: copy it in the local scene to make it easier for the user
-                    if (userType.Equals(UserType.Sender))
+                    if (userType.Equals(UserType.Receiver)) // prima era il sender che lo faceva, ora è il receiver
                         CopyObjectInLocalAndChangeToLocal(this); // todo to review!
 
-                    if (userType.Equals(UserType.Receiver))
+                    if (userType.Equals(UserType.Sender))
                     {
                         GUIDKeeper.RemoveFromList(Guid);
                         Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
@@ -415,8 +414,6 @@ public class GameObjController : MonoBehaviour
         HideObject();
     }
 
-
-
     // Duplicate obj with a slight movement of 0.1f on axis X and Y
     private void DuplicateObj()
     {
@@ -439,7 +436,8 @@ public class GameObjController : MonoBehaviour
         nearLocalFollowingMenu.SetActive(false);
     }
 
-    private void SetActiveManipulation(bool active)
+    // todo check this function because sometimes i can move objects in the global scene!
+    private void SetActiveManipulation(bool active) 
     {      
         // Want to just spawn the object menu on manipulation, so lock rotations and movements
 
