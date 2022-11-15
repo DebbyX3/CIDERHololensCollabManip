@@ -57,20 +57,6 @@ public class SocketServer : NetworkHandler
         }
     }
 
-    //nota: questo metodo è identico a SendObject di SocketClient, cambia solo che passo l'handler di socket diverso (giustamente)!
-    //Da capire se delegarlo a network? boh? (penso di no)
-
-    // ****************** METODO DA RIVEDERE, PROBABILMENTE DA BUTTARE!
-    public void SendObject(GameObject gameObject) 
-    {
-        GameObjController controller = gameObject.GetComponent<GameObjController>();
-
-        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(controller.Guid, gameObject.transform, controller.PrefabName, controller.MaterialName, CommitType.ForcedCommit));
-        byte[] serializedMsg = msg.Serialize();
-
-        NetworkHandler.Instance.Send(serializedMsg);
-    }
-
     protected void CreateServerListener() 
     {
         // IP on where the server should listen to incoming connections/requests

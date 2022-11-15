@@ -7,8 +7,10 @@ public enum UserType
     Sender,
     Receiver
 }
+
 public enum CommitType : int
 {
+    None,
     ForcedCommit,
     VotingCommit
 }
@@ -31,58 +33,62 @@ public class MessagesManager : MonoBehaviour
     }
 
     // Based on the type of message, compose the object to send and then send it
-    private void CreateAndSendMessage(MessageType messageType)
+    private void CreateAndSendMessage(GameObjController gObjCont, MessageType messageType, CommitType commitType = CommitType.None)
     {
+        Message msg = null;
+
+        switch (messageType)
+        {
+            case MessageType.DeletionMessage:
+            {
+                // Create message
+                msg = new DeletionMessage(new DeletionMessageInfo(gObjCont.Guid));
+                break;
+            }
+
+            case MessageType.GameObjMessage:
+            {
+                // Create message
+                if (commitType != CommitType.None)
+                {
+                    msg = new GameObjMessage(new GameObjMessageInfo
+                        (gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, commitType));
+                }
+                break;
+            }
+
+            default:
+                break;
+        }
+
+        if (msg != null)
+        {
+            // Serialize
+            byte[] serializedMsg = msg.Serialize();
+
+            // Send message
+            NetworkHandler.Instance.Send(serializedMsg);
+        }
+        else
+        {
+            Debug.Log("Message is null: nothing was sent");
+            UIManager.Instance.PrintMessages("Message is null: nothing was sent");
+        }
     }
 
     // -------------------------- COMMITS --------------------------
 
-    // todo: potrei unire i send dando come parametro solo il tipo di commit con l'enum
-    // (tanto il send è abbastanza straight forward)
-
     public void SendForcedCommit(GameObjController gObjCont)
     {
-        CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
-
-        // Create message to send (serialize it)
-        GameObjMessage msg = new GameObjMessage(
-            new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, CommitType.ForcedCommit));
-        byte[] serializedMsg = msg.Serialize();
-
-        // Send message
-        NetworkHandler.Instance.Send(serializedMsg);
-
-        // Play sound on commit
-        UIManager.Instance.CommitSentSound.Play();
-
-        // Todo maybe display a dialog/confirmation box? forse uno che va via da solo dopo tot tempo?
-
-        // Do things
-        OnForcedCommitSent(gObjCont);
+        SendCommit(gObjCont, CommitType.ForcedCommit);
     }
 
     public void SendVotingCommit(GameObjController gObjCont)
     {
-        CaretakerScene.Instance.ExecuteVotingCommit(gObjCont);
-
-        // Create message to send (serialize it)
-        GameObjMessage msg = new GameObjMessage(
-            new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, CommitType.VotingCommit));
-        byte[] serializedMsg = msg.Serialize();
-
-        // Send message
-        NetworkHandler.Instance.Send(serializedMsg);
-
-        // Play sound on commit
-        UIManager.Instance.CommitSentSound.Play();
-
-        // Todo maybe display a dialog/confirmation box? forse uno che va via da solo dopo tot tempo?
-
-        // Do things
-        OnForcedCommitSent(gObjCont);
+        SendCommit(gObjCont, CommitType.VotingCommit);
     }
 
-    public void SendCommit(GameObjController gObjCont, CommitType commitType)
+    private void SendCommit(GameObjController gObjCont, CommitType commitType)
     {
         switch (commitType)
         {
@@ -96,15 +102,9 @@ public class MessagesManager : MonoBehaviour
                 
             default:
                 break;
-        }        
+        }
 
-        // Create message to send (serialize it)
-        GameObjMessage msg = new GameObjMessage(
-            new GameObjMessageInfo(gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, commitType));
-        byte[] serializedMsg = msg.Serialize();
-
-        // Send message
-        NetworkHandler.Instance.Send(serializedMsg);
+        CreateAndSendMessage(gObjCont, MessageType.GameObjMessage, commitType);
 
         // Play sound on commit
         UIManager.Instance.CommitSentSound.Play();
@@ -163,12 +163,7 @@ public class MessagesManager : MonoBehaviour
 
     public void SendGlobalDeletionMessage(GameObjController gObjCont)
     {
-        // Create message to send (serialize it)
-        DeletionMessage msg = new DeletionMessage(new DeletionMessageInfo(gObjCont.Guid));
-        byte[] serializedMsg = msg.Serialize();
-
-        // Send message
-        NetworkHandler.Instance.Send(serializedMsg);
+        CreateAndSendMessage(gObjCont, MessageType.DeletionMessage);
 
         // Play sound
         UIManager.Instance.CommitSentSound.Play();

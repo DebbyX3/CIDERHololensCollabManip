@@ -20,14 +20,17 @@ public abstract class Message
     public object Info { get; private set; }
     public MessageType MessageType { get; private set; } = MessageType.BaseMessage;
 
-    public Message(Guid id, System.Object info, MessageType messageType)
+    public Message()
+    { }
+
+    public Message(Guid id, object info, MessageType messageType)
     {
         Id = id;
         Info = info;
         MessageType = messageType;
     }
 
-    public Message(string id, System.Object info, MessageType messageType) 
+    public Message(string id, object info, MessageType messageType) 
     {
         Id = Guid.Parse(id);
         Info = info;
