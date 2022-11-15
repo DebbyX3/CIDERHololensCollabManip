@@ -6,37 +6,16 @@ using System.Security;
 using System.Threading;
 using UnityEngine;
 
-public class NetworkHandler : MonoBehaviour 
+public class NetworkManager : MonoBehaviour 
 {
-    public static NetworkHandler Instance { get; private set; }
+    public static NetworkManager Instance { get; private set; }
     public static ConcurrentQueue<Message> Messages = new ConcurrentQueue<Message>();
 
     // Socket to send/receive - inherited by subclasses
     protected Socket ConnectionHandler;
     protected volatile bool ConnectionEstablished = false; // volatile: field might be changed by multiple threads
 
-    /*private void Start()
-    {
-        // If there is an instance, and it's not me, delete myself.
-
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-        }
-        else
-        {
-            Instance = this;
-        }
-
-        Debug.Log("awake net", gameObject);
-    }
-
-    private void OnEnable()
-    {
-        Debug.Log("enable net", gameObject);
-    }*/
-
-    protected void SetInstance(NetworkHandler instance)
+    protected void SetInstance(NetworkManager instance)
     {
         Instance = instance;
     }
@@ -94,7 +73,7 @@ public class NetworkHandler : MonoBehaviour
 
     public void Receive(Socket handler, bool connectionEstablished) 
     {
-        bool keepReading = true; // not sure, in SocketServer era attributo della classe, non so bene come mai, da rivedere!
+        bool keepReading = true; // todo not sure, in SocketServer era attributo della classe, non so bene come mai, da rivedere!
         byte[] bytes; // Data buffer for incoming data.
         int bytesRec = 0;
 
@@ -158,6 +137,8 @@ public class NetworkHandler : MonoBehaviour
             catch (Exception e) {
                 Debug.Log(e.ToString());
                 UIManager.Instance.PrintMessages(e.ToString());
+
+                keepReading = false;
             }
         }
         /*

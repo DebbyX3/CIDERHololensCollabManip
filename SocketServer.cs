@@ -5,7 +5,7 @@ using System.Threading;
 using UnityEngine;
 using TMPro;
 
-public class SocketServer : NetworkHandler 
+public class SocketServer : NetworkManager 
 {
     // can be changed in unity inspector
     public int PortToListen = 60000;
@@ -24,8 +24,8 @@ public class SocketServer : NetworkHandler
         WaitingForConnectionsThread.IsBackground = true;
         WaitingForConnectionsThread.Start();
 
-        //attach this object to NetworkHandler
-        //NetworkHandler.Instance.SetNetworkPeer(this);
+        //attach this object to NetworkManager
+        //NetworkManager.Instance.SetNetworkPeer(this);
     }
 
     private void WaitingForConnections() 
@@ -47,7 +47,7 @@ public class SocketServer : NetworkHandler
                 ConnectionEstablished = true;
 
                 //create thread to handle request
-                HandleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(ConnectionHandler, ConnectionEstablished));
+                HandleIncomingRequestThread = new Thread(() => NetworkManager.Instance.Receive(ConnectionHandler, ConnectionEstablished));
                 HandleIncomingRequestThread.IsBackground = true;
                 HandleIncomingRequestThread.Start();
             }
@@ -109,7 +109,7 @@ public class SocketServer : NetworkHandler
     protected void StopServer() 
     {
         if (ConnectionHandler != null && ConnectionHandler.Connected) {
-            // there's no need of shutdown and disconnect a listener socket
+            // there's no need of shutdown and disconnect a listener socket, unlike SocketClient
             Listener.Close();
 
             ConnectionHandler.Shutdown(SocketShutdown.Both);

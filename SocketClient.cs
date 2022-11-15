@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Net.Sockets;
 using System.Threading;
 
-public class SocketClient: NetworkHandler
+public class SocketClient: NetworkManager
 {
     public string IpToSend = "0.0.0.0"; //to be changed in the Unity Inspector
     public int PortToSend = 60000;
@@ -17,12 +17,12 @@ public class SocketClient: NetworkHandler
         ConnectionHandler.Connect(IpToSend, PortToSend);
 
         //create thread to handle request
-        HandleIncomingRequestThread = new Thread(() => NetworkHandler.Instance.Receive(ConnectionHandler, ConnectionEstablished));
+        HandleIncomingRequestThread = new Thread(() => NetworkManager.Instance.Receive(ConnectionHandler, ConnectionEstablished));
         HandleIncomingRequestThread.IsBackground = true;
         HandleIncomingRequestThread.Start();
 
-        //attach this object to NetworkHandler
-        //NetworkHandler.Instance.SetNetworkPeer(this);
+        //attach this object to NetworkManager
+        //NetworkManager.Instance.SetNetworkPeer(this);
 
         if (!ConnectionHandler.Connected) {
             Debug.LogError("Connection Failed");

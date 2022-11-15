@@ -67,7 +67,7 @@ public class MessagesManager : MonoBehaviour
             byte[] serializedMsg = msg.Serialize();
 
             // Send message
-            NetworkHandler.Instance.Send(serializedMsg);
+            NetworkManager.Instance.Send(serializedMsg);
         }
         else
         {
