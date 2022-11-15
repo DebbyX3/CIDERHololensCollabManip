@@ -183,16 +183,6 @@ public class CaretakerScene : MonoBehaviour
         PendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public void EmptyAllPendingStates()
-    {
-        PendingListRequests.Clear();
-    }
-
-    public void RemoveFromPendingStates(GameObjController gObj)
-    {
-        PendingListRequests.Remove(gObj.Guid);
-    }
-
     public void RestoreGlobalState(GameObjController gObj)
     {
         Memento value;
@@ -227,6 +217,25 @@ public class CaretakerScene : MonoBehaviour
         }
     }
 
+    public void RestorePendingState(GameObjController gObj)
+    {
+        Memento value;
+
+        if (PendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the pending list, restore it
+        {
+            // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
+            gObj.gameObject.SetActive(true);
+            gObj.Restore(value);
+            PrefabManager.Instance.ChangeMaterialPendingState(gObj.gameObject);
+            // todo: change material of object, but do not change the field! so
+        }
+        else
+        {
+            Debug.Log("Key " + gObj.Guid + " not found in dictionary PendingListRequests");
+            UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary PendingListRequests");
+        }
+    }
+
     public void RemoveFromLocalList(Guid guid)
     {
         // Check if object is in local list
@@ -243,6 +252,16 @@ public class CaretakerScene : MonoBehaviour
         GlobalListMementos.Remove(guid);                // If the dict does not contain an element with the
                                                         // specified key, the dict remains unchanged.
                                                         // No exception is thrown.
+    }
+
+    public void RemoveFromPendingStates(GameObjController gObj)
+    {
+        PendingListRequests.Remove(gObj.Guid);
+    }
+
+    public void EmptyAllPendingStates()
+    {
+        PendingListRequests.Clear();
     }
 
     public void ExecuteForcedCommit(GameObjController gObj)

@@ -55,6 +55,7 @@ public class UIManager : MonoBehaviour
         SceneStateText.text = "Current scene: " + info;
     }
 
+    // TODO huge! rifare una schemata notifiche decente plis
     public void SetNotificationButtonActive(bool active)
     {
         NotificationButton.GetComponent<NotificationButtonController>().SetButtonStatus(active);

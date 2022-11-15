@@ -116,10 +116,15 @@ public class MessagesManager : MonoBehaviour
     }
 
     // per ora questo metodo funziona bene solo con i commit forzati. con quelli di voting è più complicato
-    // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica (sempre che si facciano insomma) ???
+    // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica 
     public void OnForcedCommitSent(GameObjController gObjCont)
     {
+        // ?????? ma che cavolo fa qua sta funzione??? non fa niente??
         PrefabManager.Instance.UpdateObjectGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
+        // l'unico motico per cui è qua è che fa il subscribe al global, ma scusa, lo fa già prima di iniviare il commit! 
+        // chiamando ExecuteForcedCommit giusramente! PErò spe, ExecuteForcedCommit non contiene il subscribe, quindi è per quello
+        // che chiamo UpdateObjectGlobal hmhm
+        // TODO da migliorare sta cosa oscena
     }
 
     public void OnVotingCommitSent(GameObjController gObjCont)
@@ -137,8 +142,6 @@ public class MessagesManager : MonoBehaviour
         // If the receiver already has the object in one or both scenes
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
-            // todo To fix probably
-            // cioè che potrebbe avere l'oggetto in locale e non globale? ma può capitare o no? Da capire?
             PrefabManager.Instance.UpdateObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
         }
         // If it does NOT have the object
@@ -158,6 +161,32 @@ public class MessagesManager : MonoBehaviour
         // Send commit notification to this device
         UIManager.Instance.SetNotificationButtonActive(true);
     }
+
+    public void OnVotingCommitReceived(GameObjMessage gObjMsg)
+    {
+        /*
+         controlla se l'oggetto esiste? ma non lo fa già oncommitreceived?
+        se esiste, allora fai il subscribe al pending list, ma con le sue info aggiornate
+        se non esiste, prima lo crei (dove? nel global? ma poi devi subito ritoglierlo? ma se invece faccio create 
+        in pending? meglio no?) e poi fai il sub al pending - se però faccio create in pending non devo rifare il sub gh
+
+        poi prendi l'oggetto in questione e cambiagli materiale in quello di pending (vediamo come mhm 
+        magari riciclando change material ma chimando sopra un altro metodo)
+
+        se è nel pending, rendi attivo un bottone del menu global dove si può scegliere se tenere sto oggetto o meno. l'oggetto tenuto  
+        è come se ne facessi un forced commit, o no??
+
+         */
+
+        GameObjMessageInfo gObjMsgInfo = gObjMsg.GetMsgInfo();
+
+        if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
+        {
+        }
+
+    }
+
+    //todo magari un metodo generico oncommitreceived? boh?
 
     // -------------------------- DELETION --------------------------
 

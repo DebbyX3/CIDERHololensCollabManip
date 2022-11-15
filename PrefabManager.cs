@@ -30,6 +30,8 @@ public class PrefabManager : MonoBehaviour
     public List<Texture2D> Images;
     public List<Material> Materials;
 
+    public Material pendingStateMaterial;
+
     // Dictionary that keeps all the materials indexed by material name.
     // Please note that this 'list' is the best way I found to access all the materials without having to also provide
     // the prefab name in the PrefabCollection. Infact, sometimes I need to access the material to assign just by its material name. 
@@ -258,7 +260,7 @@ public class PrefabManager : MonoBehaviour
         if (!materialName.Equals(""))
         {
             ChangeMaterial(gObj, materialName);
-            gObj.GetComponent<GameObjController>().SetMaterialName(materialName); //maybe move this into ChangeMaterial?
+            gObj.GetComponent<GameObjController>().SetMaterialName(materialName); // Do not move this into ChangeMaterial
         }
 
         gObj.GetComponent<GameObjController>().SubscribeToLocalScene(); //always
@@ -284,10 +286,9 @@ public class PrefabManager : MonoBehaviour
         // Update transform
         gObj.transform.AssignDeserTransformToOriginalTransform(transform);
 
-
         // Change material of the object
         ChangeMaterial(gObj, materialName);
-        gObj.GetComponent<GameObjController>().SetMaterialName(materialName); //maybe move this into ChangeMaterial?
+        gObj.GetComponent<GameObjController>().SetMaterialName(materialName); // Do not move this into ChangeMaterial
 
         gObj.GetComponent<GameObjController>().SubscribeToGlobalScene();
 
@@ -350,6 +351,11 @@ public class PrefabManager : MonoBehaviour
             // Set the new material on the GameObject
             meshRenderer.material = material;
         }
+    }
+
+    public void ChangeMaterialPendingState(GameObject gObj)
+    {
+        ChangeMaterial(gObj, pendingStateMaterial);
     }
 
     // -----------------------------------------

@@ -47,6 +47,9 @@ public class GameObjController : MonoBehaviour
     private UnityAction saveLocalStateAction;
     private UnityAction restoreLocalStateAction;
 
+    private UnityAction savePendingStateAction;
+    private UnityAction restorePendingStateAction;
+
     private GameObject nearLocalFollowingMenu;
     private GameObject nearGlobalFollowingMenu;
 
@@ -71,6 +74,9 @@ public class GameObjController : MonoBehaviour
 
         saveLocalStateAction = () => CaretakerScene.Instance.SaveLocalState(this);
         restoreLocalStateAction = () => CaretakerScene.Instance.RestoreLocalState(this);
+
+        savePendingStateAction = () => CaretakerScene.Instance.SavePendingState(this);
+        restorePendingStateAction = () => CaretakerScene.Instance.RestorePendingState(this);
 
         // Subscribe to event to hide the object at each scene change
         // no need to use an unityaction (I think) because i don't need to unsubscribe from this event! it's fixed
@@ -148,17 +154,18 @@ public class GameObjController : MonoBehaviour
     // ---------------------- BEGIN METHODS FOR 'MEMENTO' PATTERN ----------------------
 
     public Memento Save() {
-        return new Memento(Guid, PrefabName, MaterialName, Transform);
+        return new Memento(Guid, PrefabName, MaterialName, Transform, ObjectLocation);
     }
 
     public void Restore(Memento memento) 
     {
-        // These 2 are commented because a memento should not touch or restore the object guid and its prefab name
+        // These 3 are commented because a memento should not touch or restore the object guid, its prefab name and location
         // It just needs to change the propreties, like position/rot/scale, or colors etc...
 
         /*
         Guid = memento.GetGuid();
         PrefabName = memento.GetPrefabName();
+        ObjectLocation = memento.GetObjectLocation();
          */
 
         // Assign transform
@@ -260,6 +267,8 @@ public class GameObjController : MonoBehaviour
 
         // Button 2 - Voting Commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
+        Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
+        interactableTwo.OnClick.AddListener(() => MessagesManager.Instance.SendVotingCommit(this));
 
         // Button 3 - Close Menu
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
