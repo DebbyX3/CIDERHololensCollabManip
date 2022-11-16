@@ -93,13 +93,13 @@ public class GameObjController : MonoBehaviour
 
         /* Create the menus
            Note: The menus need to stay in Awake because they are referred even when the gameobject is not active,
-           for example in SetActiveLocalMenu. The said function will throw an error if the creations of the menu is done in the Start method,
-           because Start is called only when the gameobject is active, but not before
+           for example in SetActiveLocalMenu. The said function will throw an error if the creations of the menu 
+           is done in the Start method, because Start is called only when the gameobject is active, but not before
        
            Long story short: keep these 2 methods here
         */
-        SetNearLocalFollowingMenu();
-        SetNearGlobalFollowingMenu();
+        CreateNearLocalFollowingMenu();
+        CreateNearGlobalFollowingMenu();
     }
 
     private void Update() 
@@ -254,102 +254,27 @@ public class GameObjController : MonoBehaviour
         }
     }
 
-    private void SetNearLocalFollowingMenu()
+    private void CreateNearLocalFollowingMenu()
     {
         nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2"), Vector3.zero, Quaternion.identity);
-
-        GameObject buttonCollection = nearLocalFollowingMenu.transform.Find("ButtonCollection").gameObject;
-
-        // Button 1 - Forced Commit
-        GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
-        Interactable interactableOne = buttonOne.GetComponent<Interactable>();
-        interactableOne.OnClick.AddListener(() => MessagesManager.Instance.SendForcedCommit(this));
-
-        // Button 2 - Voting Commit
-        GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
-        Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
-        interactableTwo.OnClick.AddListener(() => MessagesManager.Instance.SendVotingCommit(this));
-
-        // Button 3 - Close Menu
-        GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
-        Interactable interactableThree = buttonThree.GetComponent<Interactable>();
-        interactableThree.OnClick.AddListener(() => CloseMenu());
-
-        // Button 4 - Remove from local
-        GameObject buttonFour = buttonCollection.transform.Find("ButtonFour").gameObject;
-        Interactable interactableFour = buttonFour.GetComponent<Interactable>();
-        interactableFour.OnClick.AddListener(() => DeleteObject(ObjectLocation.Local, UserType.Sender));
-
-        // Button 5 - Duplicate
-        GameObject buttonFive = buttonCollection.transform.Find("ButtonFive").gameObject;
-        Interactable interactableFive = buttonFive.GetComponent<Interactable>();
-        interactableFive.OnClick.AddListener(() => DuplicateObj());
-
-        // Button 6 - Change color
-        GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
-        Interactable interactableSix = buttonSix.GetComponent<Interactable>();
-        // Important: set slate active before populating - so onEnable & Awake (1st time) are called
-        interactableSix.OnClick.AddListener(() => SlateColor.SetActive(true));
-        interactableSix.OnClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().PopulateSlate(PrefabName, Guid));
-
-        //----------------------
-
-        SolverHandler sh = nearLocalFollowingMenu.GetComponent<SolverHandler>();
-        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        sh.TransformOverride = gameObject.transform;
-
-        // Hide it
-        nearLocalFollowingMenu.SetActive(false);
-
-        // The parent of the menu is the gameobject
-        nearLocalFollowingMenu.transform.SetParent(gameObject.transform);
-
-        // todo Maybe:  set scale to the same for every menu (so it doesn't become too small or too big)
+        UIManager.Instance.SetNearLocalFollowingMenu(nearLocalFollowingMenu, this);
     }
 
-    private void SetNearGlobalFollowingMenu()
+    private void CreateNearGlobalFollowingMenu()
     {
         nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Global obj"), Vector3.zero, Quaternion.identity);
-
-        GameObject buttonCollection = nearGlobalFollowingMenu.transform.Find("ButtonCollection").gameObject;
-
-        // Button 1 - Copy object in local scene
-        GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
-        Interactable interactableOne = buttonOne.GetComponent<Interactable>();
-        interactableOne.OnClick.AddListener(() => CopyObjectInLocalAndChangeToLocal(this));
-
-        // Button 2 -
-        GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
-        Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
-        interactableTwo.OnClick.AddListener(() => DeleteObject(ObjectLocation.Global, UserType.Sender));
-
-        // Button 3 - 
-        GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
-
-        //----------------------
-
-        SolverHandler sh = nearGlobalFollowingMenu.GetComponent<SolverHandler>();
-        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        sh.TransformOverride = gameObject.transform;
-
-        // Hide it
-        nearGlobalFollowingMenu.SetActive(false);
-
-        // The parent of the menu is the gameobject
-        nearGlobalFollowingMenu.transform.SetParent(gameObject.transform);
-
-        //todo: set scale to the same for every menu (so it doesn't become too small or too big)
+        UIManager.Instance.SetNearGlobalFollowingMenu(nearGlobalFollowingMenu, this);
     }
 
     // todo forse questo metodo va in Caretaker?
 
     // todo questa funzione è da vedere meglio perchè fa un po' le bizze
     // (soprattutto sulla posizione, sul colore sembra andare bene?)
-    private void CopyObjectInLocalAndChangeToLocal(GameObjController gobj)
+    public void CopyObjectInLocalAndChangeToLocal()
     {
         // Call the update object and not the create object, because if I have the obj it means it is already in the 'existing' obj
         // in the guid list. So just update to make it local it and make it subscribe to the local scene
-        PrefabManager.Instance.UpdateObjectLocal(gobj.Guid, gobj.Transform, gobj.MaterialName);
+        PrefabManager.Instance.PutExistingObjectInLocal(Guid, Transform, MaterialName);
 
         //CaretakerScene.Instance.ChangeSceneToLocal();
     }
@@ -362,21 +287,15 @@ public class GameObjController : MonoBehaviour
         {
             case ObjectLocation.Local: // Delete it from the Local scene
             {
+                // Always run these 
+                UnsubscribeFromLocalScene();
+                CaretakerScene.Instance.RemoveFromLocalList(Guid);
+
                 // If the object is only in the local scene - Completely delete it!
                 if (ContainsOnlyFlag(ObjectLocation.Local))
-                {
-                    UnsubscribeFromLocalScene();
-                    CaretakerScene.Instance.RemoveFromLocalList(Guid);
+                {                    
                     GUIDKeeper.RemoveFromList(Guid);
                     Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
-                }
-                // If the object is both in the local and global scene
-                else if (ObjectLocation.HasFlag(ObjectLocation.Local | ObjectLocation.Global))
-                {
-                    // lo tolgo dal locale e basta, non cancello niente dal guid keeper, nè dal globale, no?
-                    // ma allora posso unire i casi sopra!!
-                    UnsubscribeFromLocalScene();
-                    CaretakerScene.Instance.RemoveFromLocalList(Guid);
                 }
 
                 break;
@@ -384,32 +303,26 @@ public class GameObjController : MonoBehaviour
 
             case ObjectLocation.Global: // Delete it from the Global scene
             {
-                // If the object is only in the global scene - Make it easier for the user: copy it in the local scene
+                // Always run these 
+                UnsubscribeFromGlobalScene();
+                CaretakerScene.Instance.RemoveFromGlobalList(Guid);
+
+                // If the object is only in the global scene - Make it easier for the other user: copy it in the local scene
                 if (ContainsOnlyFlag(ObjectLocation.Global))
                 {
-                    UnsubscribeFromGlobalScene();
-                    CaretakerScene.Instance.RemoveFromGlobalList(Guid);
-
                     if (userType.Equals(UserType.Receiver)) // prima era il sender che lo faceva, ora è il receiver
-                        CopyObjectInLocalAndChangeToLocal(this); // todo to review!
-
-                    if (userType.Equals(UserType.Sender))
+                    {
+                        CopyObjectInLocalAndChangeToLocal(); // todo to review!
+                    }
+                    else if (userType.Equals(UserType.Sender))
                     {
                         GUIDKeeper.RemoveFromList(Guid);
                         Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
                     }
-
-                }
-                // If the object is both in the local and global scene
-                else if (ObjectLocation.HasFlag(ObjectLocation.Local | ObjectLocation.Global))
-                {
-                    // ma allora posso unire i casi sopra!!
-                    UnsubscribeFromGlobalScene();
-                    CaretakerScene.Instance.RemoveFromGlobalList(Guid);
                 }
 
                 if (userType.Equals(UserType.Sender))
-                    MessagesManager.Instance.SendGlobalDeletionMessage(this);
+                    MessagesManager.Instance.SendGlobalDeletionMessage(this); // Send deletion message
 
                 break;
             }
@@ -424,25 +337,9 @@ public class GameObjController : MonoBehaviour
     }
 
     // Duplicate obj with a slight movement of 0.1f on axis X and Y
-    private void DuplicateObj()
+    public void DuplicateObj()
     {
-        // I think I don't need to do all of this when the CreateNewObject method does kinda the same thing
-        /*
-        SerializableTransform st = Transform; 
-        SerializableVector sv = new SerializableVector(
-            st.Position.x + 0.1f,
-            st.Position.y,
-            st.Position.z);
-
-        st.Position = sv;
-        */
-
-        PrefabManager.Instance.CreateNewObjectLocal(PrefabName, MaterialName);
-    }
-
-    private void CloseMenu()
-    {
-        nearLocalFollowingMenu.SetActive(false);
+        PrefabManager.Instance.CreateNewObjectInLocal(PrefabName, MaterialName);
     }
 
     // todo check this function because sometimes i can move objects in the global scene!

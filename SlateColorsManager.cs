@@ -40,13 +40,13 @@ public class SlateColorsManager : MonoBehaviour
         {
             // Create object specifying the material
             // Remember: image name and material name is the same!
-            buttonComponent.onClick.AddListener(() => PrefabManager.Instance.CreateNewObjectLocal(prefabName, imageName));
+            buttonComponent.onClick.AddListener(() => PrefabManager.Instance.CreateNewObjectInLocal(prefabName, imageName));
         }
         else // if the guid is specified, then the object exists! Just modify the material
         {
             // Edit object's material
             // Remember: image name and material name is the same!
-            buttonComponent.onClick.AddListener(() => PrefabManager.Instance.UpdateObjectLocal(guid, imageName));
+            buttonComponent.onClick.AddListener(() => PrefabManager.Instance.PutExistingObjectInLocal(guid, imageName));
         }
 
         //Hide this slate

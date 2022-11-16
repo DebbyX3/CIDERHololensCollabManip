@@ -137,10 +137,21 @@ public class PrefabManager : MonoBehaviour
         return relevantMaterials;
     }
 
-    private GameObject CreateNewObjectShiftPos(string prefabName, string materialName)
+    // I need this method because sometimes I want to spawn an object with a certain GUID
+    private GameObject CreateNewObject(Guid guid, string prefabName, string materialName, SerializableTransform transform)
     {
-        // When creating an obj from scratch, shift it
+        GameObject newObj = CreateNewObject(prefabName, materialName, transform);
+        newObj.GetComponent<GameObjController>().SetGuid(guid);
+
+        return newObj;
+    }
+
+    // If the transform is not provided, use a shifted positions from the user POV (camera)
+    private GameObject CreateNewObject(string prefabName, string materialName)
+    {
+        // When creating an obj from scratch, shift it from the user POV
         SerializableTransform st = Camera.main.transform;
+
         SerializableVector sv = new SerializableVector(
             st.Position.X + 0.5f,
             st.Position.Y,
@@ -155,18 +166,9 @@ public class PrefabManager : MonoBehaviour
         return CreateNewObject(prefabName, materialName, st);
     }
 
-    // I need this method because sometimes I want to spawn an object with a certain GUID
-    private GameObject CreateNewObject(Guid guid, string prefabName, string materialName, SerializableTransform transform)
-    {
-        GameObject newObj = CreateNewObject(prefabName, materialName, transform);
-        newObj.GetComponent<GameObjController>().SetGuid(guid);
-
-        return newObj;
-    }
-
     private GameObject CreateNewObject(string prefabName, string materialName, SerializableTransform transform)
     {
-        // NO need to modify or touch the scale property!
+        // DO NOT modify or touch the scale property!
         // We want to keep the same scale as the original prefab! Otherwise the real world scale would not be correct!
 
         SerializableVector position = transform.Position;
@@ -194,7 +196,7 @@ public class PrefabManager : MonoBehaviour
 
     // -------------- PUBLIC --------------
 
-    public void CreateNewObjectLocal(string prefabName, string materialName)
+    public void CreateNewObjectInLocal(string prefabName, string materialName)
     {
         bool wasGlobalScene = false;
 
@@ -205,7 +207,7 @@ public class PrefabManager : MonoBehaviour
             wasGlobalScene = true;
         }
 
-        GameObject gobj = CreateNewObjectShiftPos(prefabName, materialName);
+        GameObject gobj = CreateNewObject(prefabName, materialName);
         gobj.GetComponent<GameObjController>().SubscribeToLocalScene();
 
         // If the previous scene was the global one, reswitch to the global
@@ -213,7 +215,7 @@ public class PrefabManager : MonoBehaviour
             CaretakerScene.Instance.ChangeSceneToGlobal();
     }
 
-    public GameObject CreateNewObjectGlobal(Guid guid, string prefabName, string materialName, SerializableTransform transform)
+    public GameObject CreateNewObjectInGlobal(Guid guid, string prefabName, string materialName, SerializableTransform transform)
     {
         bool wasLocalScene = false;
 
@@ -234,12 +236,12 @@ public class PrefabManager : MonoBehaviour
         return gobj;
     }
 
-    public void UpdateObjectLocal(Guid guid, string materialName)
+    public void PutExistingObjectInLocal(Guid guid, string materialName)
     {
-        UpdateObjectLocal(guid, SerializableTransform.Default(), materialName);
+        PutExistingObjectInLocal(guid, SerializableTransform.Default(), materialName);
     }
 
-    public void UpdateObjectLocal(Guid guid, SerializableTransform transform, string materialName = "") 
+    public void PutExistingObjectInLocal(Guid guid, SerializableTransform transform, string materialName = "") 
     {
         bool wasGlobalScene = false;
 
@@ -270,7 +272,7 @@ public class PrefabManager : MonoBehaviour
             CaretakerScene.Instance.ChangeSceneToGlobal();        
     }
 
-    public void UpdateObjectGlobal(Guid guid, SerializableTransform transform, string materialName)
+    public void PutExistingObjectInGlobal(Guid guid, SerializableTransform transform, string materialName)
     {
         bool wasLocalScene = false;
 
@@ -319,7 +321,7 @@ public class PrefabManager : MonoBehaviour
             ChangeMaterial(gObj, mat);
         else
             ChangeMaterial(gObj, PrefabCollection[0].GetAMaterial()); // if the material does not exists, then take whatever material
-                                                                      // (can also randomize it but i don't think it will be useful)
+                                                                      // (can also be randomized it but i don't think it will be useful)
     }
 
     public void ChangeMaterial(GameObject gObj, Material material)
@@ -335,7 +337,8 @@ public class PrefabManager : MonoBehaviour
                 meshRenderer = child.GetComponent<MeshRenderer>();
 
                 // If the child has a mesh, change the material
-                // I need to do this because a prefab has also other children, like the manipulation MRTK ones, and they don't have a Mesh
+                // I need to do this because a prefab has also other children, like the manipulation MRTK ones,
+                // and they don't have a Mesh
                 if (meshRenderer != null)
                 {
                     // Set the new material on the GameObject
@@ -356,6 +359,11 @@ public class PrefabManager : MonoBehaviour
     public void ChangeMaterialPendingState(GameObject gObj)
     {
         ChangeMaterial(gObj, pendingStateMaterial);
+    }
+
+    public void ChangeMaterialPendingState(Guid guid)
+    {
+        ChangeMaterial(guid, pendingStateMaterial);
     }
 
     // -----------------------------------------

@@ -119,8 +119,7 @@ public class MessagesManager : MonoBehaviour
     // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica 
     public void OnForcedCommitSent(GameObjController gObjCont)
     {
-        // ?????? ma che cavolo fa qua sta funzione??? non fa niente??
-        PrefabManager.Instance.UpdateObjectGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
+        PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
         // l'unico motico per cui è qua è che fa il subscribe al global, ma scusa, lo fa già prima di iniviare il commit! 
         // chiamando ExecuteForcedCommit giusramente! PErò spe, ExecuteForcedCommit non contiene il subscribe, quindi è per quello
         // che chiamo UpdateObjectGlobal hmhm
@@ -142,13 +141,13 @@ public class MessagesManager : MonoBehaviour
         // If the receiver already has the object in one or both scenes
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
-            PrefabManager.Instance.UpdateObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
+            PrefabManager.Instance.PutExistingObjectInGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
         }
         // If it does NOT have the object
         else
         {
             // Spawn the obj in a specific pos & rot and make it subscribe to the global scene events
-            PrefabManager.Instance.CreateNewObjectGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.MaterialName, gObjMsgInfo.Transform);
+            PrefabManager.Instance.CreateNewObjectInGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.MaterialName, gObjMsgInfo.Transform);
 
             // Note: the instance is added in the GUIDKeeper.List in the Awake directly at object creation!
         }
@@ -173,8 +172,8 @@ public class MessagesManager : MonoBehaviour
         poi prendi l'oggetto in questione e cambiagli materiale in quello di pending (vediamo come mhm 
         magari riciclando change material ma chimando sopra un altro metodo)
 
-        se è nel pending, rendi attivo un bottone del menu global dove si può scegliere se tenere sto oggetto o meno. l'oggetto tenuto  
-        è come se ne facessi un forced commit, o no??
+        se è nel pending, rendi attivo un bottone del menu global dove si può scegliere se tenere sto oggetto o meno. una volta
+        accettato l'oggetto tenuto è come se ne facessi un forced commit, o no??
 
          */
 
