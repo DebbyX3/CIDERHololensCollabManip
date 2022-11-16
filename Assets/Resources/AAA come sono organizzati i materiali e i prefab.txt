@@ -1,0 +1,32 @@
+Ogni prefab è nella cartella che si chiama come il prefab stesso.
+Inoltre, contiene anche l'immagine per quello generico da mostrare subito: "nomePrefab.png" 
+Ci sono poi due sottocartelle: images e materials
+
+images contiene tutti i png dei vari colori, seguendo questa logica:
+- "nomePrefab-colore" per ogni colore di materiale disponibile di quel dato prefab (quindi ne avrò tanti di questi)
+
+in materials ci sono i materiali per ogni variazione di colore del prefab, seguendo questa logica:
+- "nomePrefab-colore" per ogni materiale associato al prefab di quel colore
+
+NOTA BENE: se nome dell'img in images NON corrisponde al nome del materiale in materials e viceversa, allora non va niente! 
+I nomi devono corrispondere!!
+
+--------------
+
+Esempio:
+
+couch
+|
+|---- couch.png (img base)
+|---- couch.prefab
+|---- couch.fbx (opzionale?)
+|---- images
+|	|
+|	|---- couch-red.png (img per il materiale couch-red)
+|
+|---- materials
+|	|
+|	|---- couch-red.mat (materiale associato all'immagine couch-red)
+|	|---- material-vario.mat (materiale che serve per altri pezzi del modello, ma che non devo toccare/cambiare)
+
+
