@@ -145,7 +145,7 @@ public class UIManager : MonoBehaviour
         // The parent of the menu is the gameobject
         nearLocalFollowingMenu.transform.SetParent(gObjContr.gameObject.transform);
 
-        // todo Maybe:  set scale to the same for every menu (so it doesn't become too small or too big)
+        // todo: set scale to the same for every menu (so it doesn't become too small or too big)
     }
 
     public void SetNearGlobalFollowingMenu(GameObject nearGlobalFollowingMenu, GameObjController gObjContr)
@@ -161,12 +161,6 @@ public class UIManager : MonoBehaviour
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
         Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
         interactableTwo.OnClick.AddListener(() => gObjContr.DeleteObject(ObjectLocation.Global, UserType.Sender));
-
-        // todo! Accept or decline commit
-        // Button 3 - Accept or decline commit
-        GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
-        Interactable interactableThree = buttonThree.GetComponent<Interactable>();
-        //interactableThree.OnClick.AddListener(() => DeleteObject(ObjectLocation.Global, UserType.Sender));
 
         // Button 6 - Close menu
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
@@ -184,6 +178,36 @@ public class UIManager : MonoBehaviour
 
         // The parent of the menu is the gameobject
         nearGlobalFollowingMenu.transform.SetParent(gObjContr.gameObject.transform);
+
+        //todo: set scale to the same for every menu (so it doesn't become too small or too big)}
+    }
+
+    public void SetNearPendingFollowingMenu(GameObject nearPendingFollowingMenu, GameObjController gObjContr)
+    {
+        GameObject buttonCollection = nearPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
+
+        // todo! Accept or decline commit
+        // Button 3 - Accept or decline commit
+        GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
+        Interactable interactableThree = buttonThree.GetComponent<Interactable>();
+        //interactableThree.OnClick.AddListener(() => DeleteObject(ObjectLocation.Global, UserType.Sender));
+
+        // Button 6 - Close menu
+        GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
+        Interactable interactableSix = buttonSix.GetComponent<Interactable>();
+        interactableSix.OnClick.AddListener(() => CloseMenu(nearPendingFollowingMenu));
+
+        //----------------------
+
+        SolverHandler sh = nearPendingFollowingMenu.GetComponent<SolverHandler>();
+        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
+        sh.TransformOverride = gObjContr.gameObject.transform;
+
+        // Hide it
+        nearPendingFollowingMenu.SetActive(false);
+
+        // The parent of the menu is the gameobject
+        nearPendingFollowingMenu.transform.SetParent(gObjContr.gameObject.transform);
 
         //todo: set scale to the same for every menu (so it doesn't become too small or too big)}
     }

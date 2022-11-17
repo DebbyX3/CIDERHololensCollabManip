@@ -47,13 +47,13 @@ public class GameObjController : MonoBehaviour
     private UnityAction saveLocalStateAction;
     private UnityAction restoreLocalStateAction;
 
-    private UnityAction savePendingStateAction;
-    private UnityAction restorePendingStateAction;
+    private UnityAction savePendingListAction;
+    private UnityAction restorePendingListAction;
 
     private GameObject nearLocalFollowingMenu;
     private GameObject nearGlobalFollowingMenu;
 
-    private GameObject SlateColor;
+    //private GameObject SlateColor;
 
     private void Awake() 
     {
@@ -68,15 +68,10 @@ public class GameObjController : MonoBehaviour
         Transform.Rotation = (SerializableVector)gameObject.transform.rotation;
         Transform.Scale = gameObject.transform.lossyScale;
 
-        // Set global and local UnityActions
-        saveGlobalStateAction = () => CaretakerScene.Instance.SaveGlobalState(this);
-        restoreGlobalStateAction = () => CaretakerScene.Instance.RestoreGlobalState(this);
-
-        saveLocalStateAction = () => CaretakerScene.Instance.SaveLocalState(this);
-        restoreLocalStateAction = () => CaretakerScene.Instance.RestoreLocalState(this);
-
-        savePendingStateAction = () => CaretakerScene.Instance.SavePendingState(this);
-        restorePendingStateAction = () => CaretakerScene.Instance.RestorePendingState(this);
+        // Set UnityActions
+        SetGlobalUnityActions();
+        SetLocalUnityActions();
+        SetPendingUnityActions();
 
         // Subscribe to event to hide the object at each scene change
         // no need to use an unityaction (I think) because i don't need to unsubscribe from this event! it's fixed
@@ -89,7 +84,7 @@ public class GameObjController : MonoBehaviour
         // I can't attach it from the inspector, because the controlled is created at runtime! So I need to reference it using UIManager
         // NOTE: set SlateColor BEFORE calling SetNearLocalFollowingMenu!
         // Alternatively, I can just call UIManager.Instance.SlateColor when I need it, and not reference it using a field (but whatever)
-        SlateColor = UIManager.Instance.SlateColor;
+        //SlateColor = UIManager.Instance.SlateColor;
 
         /* Create the menus
            Note: The menus need to stay in Awake because they are referred even when the gameobject is not active,
@@ -181,16 +176,48 @@ public class GameObjController : MonoBehaviour
 
     // ---------------------- BEGIN UN/SUB METHODS ----------------------
 
+    private void SetGlobalUnityActions()
+    {
+        // Just set them, not attach to a listener yet
+        saveGlobalStateAction += () => CaretakerScene.Instance.SaveGlobalState(this);
+
+        restoreGlobalStateAction += () => CaretakerScene.Instance.RestoreGlobalState(this);
+        restoreGlobalStateAction += () => SetActiveManipulation(false);
+        restoreGlobalStateAction += () => SetActiveLocalMenu(false); // Untoggle local menu
+
+        //CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveManipulation(false));        
+        //CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveLocalMenu(false)); // Untoggle local menu
+    }
+
+    private void SetLocalUnityActions()
+    {
+        // Just set them, not attach to a listener yet
+        saveLocalStateAction += () => CaretakerScene.Instance.SaveLocalState(this);
+
+        restoreLocalStateAction += () => CaretakerScene.Instance.RestoreLocalState(this);
+        restoreLocalStateAction += () => SetActiveManipulation(true);
+        restoreLocalStateAction += () => SetActiveGlobalMenu(false); // untoggle global menu
+
+        //CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(() => SetActiveManipulation(true));        
+        //CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(() => SetActiveGlobalMenu(false)); // untoggle global menu
+    }
+
+    private void SetPendingUnityActions()
+    {
+        // Just set them, not attach to a listener yet
+        savePendingListAction += () => CaretakerScene.Instance.SavePendingState(this);
+
+        restorePendingListAction += () => CaretakerScene.Instance.RestorePendingState(this);
+        restorePendingListAction += () => SetActiveManipulation(false); // Untoggle local menu
+
+        //CaretakerScene.Instance.RestorePendingListEvent.AddListener(() => SetActiveManipulation(false)); // Untoggle local menu
+    }
+
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToGlobalScene()
     {
         CaretakerScene.Instance.SaveGlobalStateEvent.AddListener(saveGlobalStateAction);
-       
         CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(restoreGlobalStateAction);
-        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveManipulation(false));
-
-        // Untoggle local menu
-        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveLocalMenu(false));
 
         // Add global location to object location
         AddFlagLocation(ObjectLocation.Global);
@@ -200,22 +227,25 @@ public class GameObjController : MonoBehaviour
     public void SubscribeToLocalScene()
     {
         CaretakerScene.Instance.SaveLocalStateEvent.AddListener(saveLocalStateAction);
-        
         CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(restoreLocalStateAction);
-        CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(() => SetActiveManipulation(true));
-
-        // untoggle global menu
-        CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(() => SetActiveGlobalMenu(false));
 
         // Add local location to object location
         AddFlagLocation(ObjectLocation.Local);
     }
+
+    // Adding multiple identical listeners results in only a single call being made.
+    public void SubscribeToPendingList()
+    {
+        CaretakerScene.Instance.SavePendingListEvent.AddListener(savePendingListAction);
+        CaretakerScene.Instance.RestorePendingListEvent.AddListener(restorePendingListAction);        
+    }
+
     public void UnsubscribeFromGlobalScene()
     {
         CaretakerScene.Instance.SaveGlobalStateEvent.RemoveListener(saveGlobalStateAction);
         CaretakerScene.Instance.RestoreGlobalStateEvent.RemoveListener(restoreGlobalStateAction);
 
-        // Remove local location from object global
+        // Remove global location from object location
         RemoveFlagLocation(ObjectLocation.Global);
     }
 
@@ -228,7 +258,13 @@ public class GameObjController : MonoBehaviour
         RemoveFlagLocation(ObjectLocation.Local);
     }
 
-    // Always hide the object on change scene!
+    public void UnsubscribeFromPendingList()
+    {
+        CaretakerScene.Instance.SavePendingListEvent.RemoveListener(savePendingListAction);
+        CaretakerScene.Instance.RestorePendingListEvent.RemoveListener(restorePendingListAction);
+    }
+
+    // Always hide the object on scene change!
     public void HideObject()
     {
         gameObject.SetActive(false);
@@ -256,13 +292,13 @@ public class GameObjController : MonoBehaviour
 
     private void CreateNearLocalFollowingMenu()
     {
-        nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2"), Vector3.zero, Quaternion.identity);
+        nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), Vector3.zero, Quaternion.identity);
         UIManager.Instance.SetNearLocalFollowingMenu(nearLocalFollowingMenu, this);
     }
 
     private void CreateNearGlobalFollowingMenu()
     {
-        nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Global obj"), Vector3.zero, Quaternion.identity);
+        nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), Vector3.zero, Quaternion.identity);
         UIManager.Instance.SetNearGlobalFollowingMenu(nearGlobalFollowingMenu, this);
     }
 

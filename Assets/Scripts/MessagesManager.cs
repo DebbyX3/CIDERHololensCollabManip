@@ -128,7 +128,7 @@ public class MessagesManager : MonoBehaviour
 
     public void OnVotingCommitSent(GameObjController gObjCont)
     {
-        // da fare qualcosa che boh
+        // todo da fare qualcosa che boh
     }
 
     // todo forse questo metodo è da spostare in una classe più appropriata?
@@ -181,6 +181,7 @@ public class MessagesManager : MonoBehaviour
 
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
+
         }
 
     }

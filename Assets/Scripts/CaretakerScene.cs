@@ -49,9 +49,11 @@ public class CaretakerScene : MonoBehaviour
     // Save is done always before the restore, and some objs may not be in both scenes
     public UnityEvent SaveGlobalStateEvent = new UnityEvent();
     public UnityEvent SaveLocalStateEvent = new UnityEvent();
+    public UnityEvent SavePendingListEvent = new UnityEvent();
 
     public UnityEvent RestoreGlobalStateEvent = new UnityEvent();
     public UnityEvent RestoreLocalStateEvent = new UnityEvent();
+    public UnityEvent RestorePendingListEvent = new UnityEvent();
 
     public UnityEvent HideObjectEvent = new UnityEvent();
 
@@ -227,7 +229,7 @@ public class CaretakerScene : MonoBehaviour
             gObj.gameObject.SetActive(true);
             gObj.Restore(value);
             PrefabManager.Instance.ChangeMaterialPendingState(gObj.gameObject);
-            // todo: change material of object, but do not change the field! so
+            // todo: change material of object, but do not change the field!
         }
         else
         {
