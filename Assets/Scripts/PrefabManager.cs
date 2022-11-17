@@ -236,6 +236,27 @@ public class PrefabManager : MonoBehaviour
         return gobj;
     }
 
+    public GameObject CreateNewObjectInPending(Guid guid, string prefabName, SerializableTransform transform)
+    {
+        bool wasLocalScene = false;
+
+        // Want to spawn object in the global scene, so check and switch to it. Then re-switch to the local one if that's the case
+        if (CaretakerScene.Instance.IsLocalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+            wasLocalScene = true;
+        }
+
+        GameObject gobj = CreateNewObject(guid, prefabName, pendingStateMaterial.name, transform);
+        gobj.GetComponent<GameObjController>().SubscribeToPendingList();
+
+        // If the previous scene was the local one, reswitch to the local
+        if (wasLocalScene)
+            CaretakerScene.Instance.ChangeSceneToLocal();
+
+        return gobj;
+    }
+
     public void PutExistingObjectInLocal(Guid guid, string materialName)
     {
         PutExistingObjectInLocal(guid, SerializableTransform.Default(), materialName);
@@ -299,6 +320,34 @@ public class PrefabManager : MonoBehaviour
             CaretakerScene.Instance.ChangeSceneToLocal();       
     }
 
+    public void PutExistingObjectInPending(Guid guid, SerializableTransform transform)
+    {
+        bool wasLocalScene = false;
+
+        // Want to spawn object in the global scene, so check and switch to it. Then re-switch to the local one if that's the case
+        if (CaretakerScene.Instance.IsLocalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+            wasLocalScene = true;
+        }
+
+        GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
+
+        // Update transform
+        gObj.transform.AssignDeserTransformToOriginalTransform(transform);
+
+        // Change material of the object
+        ChangeMaterialPendingState(gObj);
+        // todo non sono sicura, intanto tienilo:
+        gObj.GetComponent<GameObjController>().SetMaterialName(pendingStateMaterial.name);
+
+        gObj.GetComponent<GameObjController>().SubscribeToPendingList();
+
+        // If the previous scene was the local one, reswitch to the local
+        if (wasLocalScene)
+            CaretakerScene.Instance.ChangeSceneToLocal();
+    }
+
     // --------------- CHANGE MATERIAL METHODS SET --------------------------
 
     public void ChangeMaterial(Guid guid, string materialName)
@@ -319,6 +368,8 @@ public class PrefabManager : MonoBehaviour
 
         if (AllMaterialsDict.TryGetValue(materialName, out mat)) // If the material exists
             ChangeMaterial(gObj, mat);
+        else if (materialName.Equals(pendingStateMaterial.name)) //todo probabilmente da sistemare?
+            ChangeMaterialPendingState(gObj);
         else
             ChangeMaterial(gObj, PrefabCollection[0].GetAMaterial()); // if the material does not exists, then take whatever material
                                                                       // (can also be randomized it but i don't think it will be useful)

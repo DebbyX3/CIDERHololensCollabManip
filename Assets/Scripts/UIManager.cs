@@ -187,7 +187,13 @@ public class UIManager : MonoBehaviour
         GameObject buttonCollection = nearPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // todo! Accept or decline commit
-        // Button 3 - Accept or decline commit
+
+        // Button 2 - Accept commit
+        GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
+        Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
+        //interactableTwo.OnClick.AddListener(() => DeleteObject(ObjectLocation.Global, UserType.Sender));
+
+        // Button 3 - Decline commit
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
         Interactable interactableThree = buttonThree.GetComponent<Interactable>();
         //interactableThree.OnClick.AddListener(() => DeleteObject(ObjectLocation.Global, UserType.Sender));

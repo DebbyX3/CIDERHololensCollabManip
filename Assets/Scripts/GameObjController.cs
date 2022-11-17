@@ -29,7 +29,8 @@ public enum ObjectLocation
 {
     None = 0,
     Local = 1,
-    Global = 2
+    Global = 2,
+    Pending = 4
 }
 
 public class GameObjController : MonoBehaviour
@@ -52,6 +53,7 @@ public class GameObjController : MonoBehaviour
 
     private GameObject nearLocalFollowingMenu;
     private GameObject nearGlobalFollowingMenu;
+    private GameObject nearPendingFollowingMenu;
 
     //private GameObject SlateColor;
 
@@ -95,6 +97,7 @@ public class GameObjController : MonoBehaviour
         */
         CreateNearLocalFollowingMenu();
         CreateNearGlobalFollowingMenu();
+        CreateNearPendingFollowingMenu();
     }
 
     private void Update() 
@@ -184,9 +187,6 @@ public class GameObjController : MonoBehaviour
         restoreGlobalStateAction += () => CaretakerScene.Instance.RestoreGlobalState(this);
         restoreGlobalStateAction += () => SetActiveManipulation(false);
         restoreGlobalStateAction += () => SetActiveLocalMenu(false); // Untoggle local menu
-
-        //CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveManipulation(false));        
-        //CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(() => SetActiveLocalMenu(false)); // Untoggle local menu
     }
 
     private void SetLocalUnityActions()
@@ -197,9 +197,6 @@ public class GameObjController : MonoBehaviour
         restoreLocalStateAction += () => CaretakerScene.Instance.RestoreLocalState(this);
         restoreLocalStateAction += () => SetActiveManipulation(true);
         restoreLocalStateAction += () => SetActiveGlobalMenu(false); // untoggle global menu
-
-        //CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(() => SetActiveManipulation(true));        
-        //CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(() => SetActiveGlobalMenu(false)); // untoggle global menu
     }
 
     private void SetPendingUnityActions()
@@ -209,8 +206,6 @@ public class GameObjController : MonoBehaviour
 
         restorePendingListAction += () => CaretakerScene.Instance.RestorePendingState(this);
         restorePendingListAction += () => SetActiveManipulation(false); // Untoggle local menu
-
-        //CaretakerScene.Instance.RestorePendingListEvent.AddListener(() => SetActiveManipulation(false)); // Untoggle local menu
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -237,7 +232,9 @@ public class GameObjController : MonoBehaviour
     public void SubscribeToPendingList()
     {
         CaretakerScene.Instance.SavePendingListEvent.AddListener(savePendingListAction);
-        CaretakerScene.Instance.RestorePendingListEvent.AddListener(restorePendingListAction);        
+        CaretakerScene.Instance.RestorePendingListEvent.AddListener(restorePendingListAction);
+
+        AddFlagLocation(ObjectLocation.Pending);
     }
 
     public void UnsubscribeFromGlobalScene()
@@ -262,6 +259,8 @@ public class GameObjController : MonoBehaviour
     {
         CaretakerScene.Instance.SavePendingListEvent.RemoveListener(savePendingListAction);
         CaretakerScene.Instance.RestorePendingListEvent.RemoveListener(restorePendingListAction);
+
+        RemoveFlagLocation(ObjectLocation.Pending);
     }
 
     // Always hide the object on scene change!
@@ -280,8 +279,16 @@ public class GameObjController : MonoBehaviour
 
         if (CaretakerScene.Instance.IsGlobalScene())
         {
-            nearGlobalFollowingMenu.SetActive(true);
-            nearGlobalFollowingMenu.GetComponent<RadialView>().enabled = true;
+            if (ObjectLocation.HasFlag(ObjectLocation.Global) && !ObjectLocation.HasFlag(ObjectLocation.Pending))
+            {
+                nearGlobalFollowingMenu.SetActive(true);
+                nearGlobalFollowingMenu.GetComponent<RadialView>().enabled = true;
+            }
+            else if (ObjectLocation.HasFlag(ObjectLocation.Pending))
+            {
+                nearPendingFollowingMenu.SetActive(true);
+                nearPendingFollowingMenu.GetComponent<RadialView>().enabled = true;
+            }
         }
         else if (CaretakerScene.Instance.IsLocalScene())
         {
@@ -300,6 +307,12 @@ public class GameObjController : MonoBehaviour
     {
         nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), Vector3.zero, Quaternion.identity);
         UIManager.Instance.SetNearGlobalFollowingMenu(nearGlobalFollowingMenu, this);
+    }
+
+    private void CreateNearPendingFollowingMenu()
+    {
+        nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), Vector3.zero, Quaternion.identity);
+        UIManager.Instance.SetNearPendingFollowingMenu(nearPendingFollowingMenu, this);
     }
 
     // todo forse questo metodo va in Caretaker?

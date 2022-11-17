@@ -111,8 +111,19 @@ public class MessagesManager : MonoBehaviour
 
         // Todo maybe display a dialog/confirmation box? forse uno che va via da solo dopo tot tempo?
 
-        // Do things
-        OnForcedCommitSent(gObjCont);
+        switch (commitType)
+        {
+            case CommitType.ForcedCommit:
+                OnForcedCommitSent(gObjCont);
+                break;
+
+            case CommitType.VotingCommit:
+                OnVotingCommitSent(gObjCont);
+                break;
+
+            default:
+                break;
+        }
     }
 
     // per ora questo metodo funziona bene solo con i commit forzati. con quelli di voting è più complicato
@@ -128,6 +139,7 @@ public class MessagesManager : MonoBehaviour
 
     public void OnVotingCommitSent(GameObjController gObjCont)
     {
+        PrefabManager.Instance.PutExistingObjectInPending(gObjCont.Guid, gObjCont.Transform);
         // todo da fare qualcosa che boh
     }
 
@@ -138,16 +150,26 @@ public class MessagesManager : MonoBehaviour
     {
         GameObjMessageInfo gObjMsgInfo = gObjMsg.GetMsgInfo();
 
+        if (gObjMsgInfo.CommitType.Equals(CommitType.ForcedCommit))
+            OnForcedCommitReceived(gObjMsgInfo);
+        else if (gObjMsgInfo.CommitType.Equals(CommitType.VotingCommit))
+            OnVotingCommitReceived(gObjMsgInfo);
+    }
+
+    public void OnForcedCommitReceived(GameObjMessageInfo gObjMsgInfo)
+    {
         // If the receiver already has the object in one or both scenes
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
-            PrefabManager.Instance.PutExistingObjectInGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
+            PrefabManager.Instance.PutExistingObjectInGlobal(gObjMsgInfo.GameObjectGuid, 
+                gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
         }
         // If it does NOT have the object
         else
         {
             // Spawn the obj in a specific pos & rot and make it subscribe to the global scene events
-            PrefabManager.Instance.CreateNewObjectInGlobal(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.PrefabName, gObjMsgInfo.MaterialName, gObjMsgInfo.Transform);
+            PrefabManager.Instance.CreateNewObjectInGlobal(gObjMsgInfo.GameObjectGuid, 
+                gObjMsgInfo.PrefabName, gObjMsgInfo.MaterialName, gObjMsgInfo.Transform);
 
             // Note: the instance is added in the GUIDKeeper.List in the Awake directly at object creation!
         }
@@ -161,7 +183,7 @@ public class MessagesManager : MonoBehaviour
         UIManager.Instance.SetNotificationButtonActive(true);
     }
 
-    public void OnVotingCommitReceived(GameObjMessage gObjMsg)
+    public void OnVotingCommitReceived(GameObjMessageInfo gObjMsgInfo)
     {
         /*
          controlla se l'oggetto esiste? ma non lo fa già oncommitreceived?
@@ -169,19 +191,21 @@ public class MessagesManager : MonoBehaviour
         se non esiste, prima lo crei (dove? nel global? ma poi devi subito ritoglierlo? ma se invece faccio create 
         in pending? meglio no?) e poi fai il sub al pending - se però faccio create in pending non devo rifare il sub gh
 
-        poi prendi l'oggetto in questione e cambiagli materiale in quello di pending (vediamo come mhm 
-        magari riciclando change material ma chimando sopra un altro metodo)
+        poi prendi l'oggetto in questione e cambiagli materiale in quello di pending 
 
         se è nel pending, rendi attivo un bottone del menu global dove si può scegliere se tenere sto oggetto o meno. una volta
         accettato l'oggetto tenuto è come se ne facessi un forced commit, o no??
 
          */
 
-        GameObjMessageInfo gObjMsgInfo = gObjMsg.GetMsgInfo();
-
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
-
+            PrefabManager.Instance.PutExistingObjectInPending(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform);
+        }
+        else 
+        {
+            PrefabManager.Instance.CreateNewObjectInPending(gObjMsgInfo.GameObjectGuid,
+                gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
         }
 
     }
