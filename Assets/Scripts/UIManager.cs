@@ -137,13 +137,13 @@ public class UIManager : MonoBehaviour
 
         SolverHandler sh = nearLocalFollowingMenu.GetComponent<SolverHandler>();
         sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        sh.TransformOverride = gameObject.transform;
+        sh.TransformOverride = gObjContr.gameObject.transform;
 
         // Hide it
         nearLocalFollowingMenu.SetActive(false);
 
         // The parent of the menu is the gameobject
-        nearLocalFollowingMenu.transform.SetParent(gameObject.transform);
+        nearLocalFollowingMenu.transform.SetParent(gObjContr.gameObject.transform);
 
         // todo Maybe:  set scale to the same for every menu (so it doesn't become too small or too big)
     }
@@ -177,13 +177,13 @@ public class UIManager : MonoBehaviour
 
         SolverHandler sh = nearGlobalFollowingMenu.GetComponent<SolverHandler>();
         sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        sh.TransformOverride = gameObject.transform;
+        sh.TransformOverride = gObjContr.gameObject.transform;
 
         // Hide it
         nearGlobalFollowingMenu.SetActive(false);
 
         // The parent of the menu is the gameobject
-        nearGlobalFollowingMenu.transform.SetParent(gameObject.transform);
+        nearGlobalFollowingMenu.transform.SetParent(gObjContr.gameObject.transform);
 
         //todo: set scale to the same for every menu (so it doesn't become too small or too big)}
     }
