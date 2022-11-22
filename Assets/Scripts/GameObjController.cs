@@ -186,7 +186,9 @@ public class GameObjController : MonoBehaviour
 
         restoreGlobalStateAction += () => CaretakerScene.Instance.RestoreGlobalState(this);
         restoreGlobalStateAction += () => SetActiveManipulation(false);
+
         restoreGlobalStateAction += () => SetActiveLocalMenu(false); // Untoggle local menu
+        restoreGlobalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
     }
 
     private void SetLocalUnityActions()
@@ -196,7 +198,9 @@ public class GameObjController : MonoBehaviour
 
         restoreLocalStateAction += () => CaretakerScene.Instance.RestoreLocalState(this);
         restoreLocalStateAction += () => SetActiveManipulation(true);
+
         restoreLocalStateAction += () => SetActiveGlobalMenu(false); // untoggle global menu
+        restoreLocalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
     }
 
     private void SetPendingUnityActions()
@@ -205,7 +209,10 @@ public class GameObjController : MonoBehaviour
         savePendingListAction += () => CaretakerScene.Instance.SavePendingState(this);
 
         restorePendingListAction += () => CaretakerScene.Instance.RestorePendingState(this);
-        restorePendingListAction += () => SetActiveManipulation(false); // Untoggle local menu
+        restorePendingListAction += () => SetActiveManipulation(false);
+
+        restorePendingListAction += () => SetActiveLocalMenu(false); // Untoggle local menu
+        restorePendingListAction += () => SetActiveGlobalMenu(false); // untoggle global menu
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -281,18 +288,18 @@ public class GameObjController : MonoBehaviour
         {
             if (ObjectLocation.HasFlag(ObjectLocation.Global) && !ObjectLocation.HasFlag(ObjectLocation.Pending))
             {
-                nearGlobalFollowingMenu.SetActive(true);
+                SetActiveGlobalMenu(true);
                 nearGlobalFollowingMenu.GetComponent<RadialView>().enabled = true;
             }
             else if (ObjectLocation.HasFlag(ObjectLocation.Pending))
             {
-                nearPendingFollowingMenu.SetActive(true);
+                SetActivePendingMenu(true);
                 nearPendingFollowingMenu.GetComponent<RadialView>().enabled = true;
             }
         }
         else if (CaretakerScene.Instance.IsLocalScene())
         {
-            nearLocalFollowingMenu.SetActive(true);
+            SetActiveLocalMenu(true);
             nearLocalFollowingMenu.GetComponent<RadialView>().enabled = true;
         }
     }
@@ -416,6 +423,11 @@ public class GameObjController : MonoBehaviour
     private void SetActiveGlobalMenu(bool active)
     {
         nearGlobalFollowingMenu.SetActive(active);
+    }
+
+    private void SetActivePendingMenu(bool active)
+    {
+        nearPendingFollowingMenu.SetActive(active);
     }
 
     // ------------------ FLAGS ------------------

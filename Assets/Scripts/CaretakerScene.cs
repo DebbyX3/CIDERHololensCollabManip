@@ -79,9 +79,10 @@ public class CaretakerScene : MonoBehaviour
         SaveGlobalStateEvent.Invoke();
     }
 
-    private void SaveGlobalRestoreLocal()
+    private void SaveGlobalAndPendingRestoreLocal()
     {
-        // before changing to local, save the global one
+        // before changing to local, save the global and pending scene
+        SavePendingListEvent.Invoke();
         SaveGlobalStateEvent.Invoke();
 
         // hide all objects (each obj is subscribed to this event)
@@ -91,7 +92,7 @@ public class CaretakerScene : MonoBehaviour
         RestoreLocalStateEvent.Invoke();
     }
 
-    private void SaveLocalRestoreGlobal()
+    private void SaveLocalRestoreGlobalAndPending()
     {
         //before changing to global, save the local one
         SaveLocalStateEvent.Invoke();
@@ -99,8 +100,9 @@ public class CaretakerScene : MonoBehaviour
         // hide all objects (each obj is subscribed to this event)
         HideObjectEvent.Invoke();
 
-        // change to global
+        // change to global and pending
         RestoreGlobalStateEvent.Invoke();
+        RestorePendingListEvent.Invoke();
     }
 
     private void FlipSceneState()
@@ -140,9 +142,9 @@ public class CaretakerScene : MonoBehaviour
         //la funzione di salvataggio legge in che scena l'utente è e salva nella lista corrispondente (tipo se sono in local, salvo in local)
 
         if (SceneState.Equals(Location.GlobalLayer))
-            SaveGlobalRestoreLocal();
+            SaveGlobalAndPendingRestoreLocal();
         else if (SceneState.Equals(Location.LocalLayer))
-            SaveLocalRestoreGlobal();
+            SaveLocalRestoreGlobalAndPending();
 
         //la funzione di flip fa il cambio da global a local e viceversa
         FlipSceneState();
@@ -152,7 +154,7 @@ public class CaretakerScene : MonoBehaviour
     {
         if (SceneState.Equals(Location.LocalLayer))
         {
-            SaveLocalRestoreGlobal();
+            SaveLocalRestoreGlobalAndPending();
             ChangeSceneState(Location.GlobalLayer);
             UIManager.Instance.ChangeSceneStateText(SceneState);
         }
@@ -162,7 +164,7 @@ public class CaretakerScene : MonoBehaviour
     {
         if (SceneState.Equals(Location.GlobalLayer))
         {
-            SaveGlobalRestoreLocal();
+            SaveGlobalAndPendingRestoreLocal();
             ChangeSceneState(Location.LocalLayer);
             UIManager.Instance.ChangeSceneStateText(SceneState);
         }
@@ -229,7 +231,7 @@ public class CaretakerScene : MonoBehaviour
             gObj.gameObject.SetActive(true);
             gObj.Restore(value);
             PrefabManager.Instance.ChangeMaterialPendingState(gObj.gameObject);
-            // todo: change material of object, but do not change the field!
+            // todo: change material of object, but do not change the field! maybe?
         }
         else
         {
@@ -274,6 +276,6 @@ public class CaretakerScene : MonoBehaviour
 
     public void ExecuteVotingCommit(GameObjController gObj)
     {
-        Instance.SavePendingState(gObj);
+        //Instance.SavePendingState(gObj);
     }
 }

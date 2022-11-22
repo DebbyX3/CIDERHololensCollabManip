@@ -377,34 +377,17 @@ public class PrefabManager : MonoBehaviour
 
     public void ChangeMaterial(GameObject gObj, Material material)
     {
-        MeshRenderer meshRenderer;
-
         // If the object has children, then loop on them and change each child
         if (gObj.transform.childCount > 0)
         {
             foreach (Transform child in gObj.transform)
             {
-                // Get mesh renderer
-                meshRenderer = child.GetComponent<MeshRenderer>();
-
-                // If the child has a mesh, change the material
-                // I need to do this because a prefab has also other children, like the manipulation MRTK ones,
-                // and they don't have a Mesh
-                if (meshRenderer != null)
-                {
-                    // Set the new material on the GameObject
-                    meshRenderer.material = material;
-                }
+                ChangeOneMaterial(child.gameObject, material);
             }
         }
-        // If it doesn't have children, then just change itself
-        else
-        {
-            // Get mesh renderer
-            meshRenderer = gObj.GetComponent<MeshRenderer>();
-            // Set the new material on the GameObject
-            meshRenderer.material = material;
-        }
+
+        // Sometimes, the object has its own meshRenderer to change
+        ChangeOneMaterial(gObj, material);
     }
 
     public void ChangeMaterialPendingState(GameObject gObj)
@@ -415,6 +398,37 @@ public class PrefabManager : MonoBehaviour
     public void ChangeMaterialPendingState(Guid guid)
     {
         ChangeMaterial(guid, pendingStateMaterial);
+    }
+
+    private void ChangeOneMaterial(GameObject gObj, Material material)
+    {
+        MeshRenderer meshRenderer;
+
+        // Get mesh renderer
+        meshRenderer = gObj.GetComponent<MeshRenderer>();
+
+        // If the gobj has a mesh, change the material
+        // I need to do this because a prefab has also other children, like the manipulation MRTK ones,
+        // and they don't have a Mesh
+        if (meshRenderer != null)
+        {
+            // if the material is the pending one, change every material
+            if (material.Equals(pendingStateMaterial))
+            {
+                Material[] mat;
+
+                mat = meshRenderer.materials;
+
+                for (int i = 0; i < meshRenderer.materials.Length; i++)
+                    mat[i] = material; // Set the new material on the GameObject
+
+                meshRenderer.materials = mat;         
+            }
+            else // if it is a common material, just change the first submesh material
+            {
+                meshRenderer.material = material;
+            }
+        }
     }
 
     // -----------------------------------------
