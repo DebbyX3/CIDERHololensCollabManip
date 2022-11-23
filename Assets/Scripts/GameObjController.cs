@@ -168,7 +168,7 @@ public class GameObjController : MonoBehaviour
 
         // Assign transform
         Transform = memento.GetTransform();
-        gameObject.transform.AssignDeserTransformToOriginalTransform(transform);
+        gameObject.transform.AssignDeserTransformToOriginalTransform(Transform);
 
         // Assign material
         MaterialName = memento.GetMaterialName();
@@ -286,13 +286,16 @@ public class GameObjController : MonoBehaviour
 
         if (CaretakerScene.Instance.IsGlobalScene())
         {
+            // If the object is ONLY in the global scene and not in the pending list
             if (ObjectLocation.HasFlag(ObjectLocation.Global) && !ObjectLocation.HasFlag(ObjectLocation.Pending))
             {
                 SetActiveGlobalMenu(true);
                 nearGlobalFollowingMenu.GetComponent<RadialView>().enabled = true;
             }
+            // If the object is also in the pending list
             else if (ObjectLocation.HasFlag(ObjectLocation.Pending))
             {
+                // Show pending menu only if the pending obj was RECEIVED
                 SetActivePendingMenu(true);
                 nearPendingFollowingMenu.GetComponent<RadialView>().enabled = true;
             }
@@ -306,20 +309,21 @@ public class GameObjController : MonoBehaviour
 
     private void CreateNearLocalFollowingMenu()
     {
-        nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), Vector3.zero, Quaternion.identity);
-        UIManager.Instance.SetNearLocalFollowingMenu(nearLocalFollowingMenu, this);
+        nearLocalFollowingMenu = UIManager.Instance.SetNearLocalFollowingMenu(this);
+        //nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), Vector3.zero, Quaternion.identity);
     }
 
     private void CreateNearGlobalFollowingMenu()
     {
-        nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), Vector3.zero, Quaternion.identity);
-        UIManager.Instance.SetNearGlobalFollowingMenu(nearGlobalFollowingMenu, this);
+        nearGlobalFollowingMenu = UIManager.Instance.SetNearGlobalFollowingMenu(this);
+        //nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), Vector3.zero, Quaternion.identity);
     }
 
     private void CreateNearPendingFollowingMenu()
     {
-        nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), Vector3.zero, Quaternion.identity);
-        UIManager.Instance.SetNearPendingFollowingMenu(nearPendingFollowingMenu, this);
+        nearPendingFollowingMenu = UIManager.Instance.SetNearPendingFollowingMenu(this);
+        //nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), Vector3.zero, Quaternion.identity, false);
+
     }
 
     // todo forse questo metodo va in Caretaker?
@@ -396,6 +400,14 @@ public class GameObjController : MonoBehaviour
     public void DuplicateObj()
     {
         PrefabManager.Instance.CreateNewObjectInLocal(PrefabName, MaterialName);
+    }
+
+    public void DeclineCommit()
+    {
+        UnsubscribeFromPendingList();
+        CaretakerScene.Instance.RemoveFromPendingList(Guid);
+
+        HideObject();
     }
 
     // todo check this function because sometimes i can move objects in the global scene!

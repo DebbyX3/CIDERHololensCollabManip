@@ -77,6 +77,33 @@ public class CaretakerScene : MonoBehaviour
 
         SaveLocalStateEvent.Invoke();
         SaveGlobalStateEvent.Invoke();
+
+        InvokeRepeating("PrintLists", 1.0f, 1.0f);
+    }
+
+    private void PrintLists()
+    {
+        string toPrint = "";
+
+        if(GlobalListMementos.Count > 0)
+            toPrint += "\n----------- Global List\n";
+
+        foreach (KeyValuePair<Guid, Memento> kvp in GlobalListMementos)
+            toPrint += "Guid = " + kvp.Key + "\n" + kvp.Value;
+
+        if (LocalListMementos.Count > 0)
+            toPrint += "\n----------- Local List\n";
+
+        foreach (KeyValuePair<Guid, Memento> kvp in LocalListMementos)
+            toPrint += "Guid = " + kvp.Key + "\n" + kvp.Value;
+
+        if (PendingListRequests.Count > 0)
+            toPrint += "\n----------- Pending List\n";
+
+        foreach (KeyValuePair<Guid, Memento> kvp in PendingListRequests)
+            toPrint += "Guid = " + kvp.Key + "\n" + kvp.Value;
+
+        Debug.Log(toPrint);
     }
 
     private void SaveGlobalAndPendingRestoreLocal()
@@ -258,9 +285,9 @@ public class CaretakerScene : MonoBehaviour
                                                         // No exception is thrown.
     }
 
-    public void RemoveFromPendingStates(GameObjController gObj)
+    public void RemoveFromPendingList(Guid guid)
     {
-        PendingListRequests.Remove(gObj.Guid);
+        PendingListRequests.Remove(guid);
     }
 
     public void EmptyAllPendingStates()

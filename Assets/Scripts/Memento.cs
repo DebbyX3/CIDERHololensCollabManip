@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Memento
 {
+
     // originator (gobjcontroller) info
     private Guid Guid;
     private string PrefabName;
@@ -18,7 +19,7 @@ public class Memento
         Guid = guid;
         PrefabName = prefabName;
         MaterialName = materialName;
-        Transform = transform;
+        Transform = new SerializableTransform(transform);
         ObjectLocation = objectLocation;
     }
 
@@ -47,5 +48,14 @@ public class Memento
     public string GetMaterialName()
     {
         return MaterialName;
-    }    
+    }
+
+    public override string ToString()
+    {
+        return "Hash: " + GetHashCode() +
+            "\nPrefabName: " + PrefabName +
+            "\nMaterialName: " + MaterialName +
+            "\nTransform: " + Transform +
+            "\nTransformHash: " + Transform.GetHashCode();
+    }
 }

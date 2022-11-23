@@ -17,6 +17,14 @@ public struct SerializableVector : IEquatable<SerializableVector>
         W = w;
     }
 
+    public SerializableVector(SerializableVector sv)
+    {
+        X = sv.X;
+        Y = sv.Y;
+        Z = sv.Z;
+        W = sv.W;
+    }
+
     public SerializableVector(Vector3 vector, float w = 0f)
     {
         X = vector.x;
@@ -70,18 +78,23 @@ public struct SerializableVector : IEquatable<SerializableVector>
 }
 
 [Serializable]
-public class SerializableTransform : IEquatable<SerializableTransform>
+public struct SerializableTransform : IEquatable<SerializableTransform>
 {
-    public SerializableVector Position { get; set; } = new SerializableVector(Vector3.zero);
-    public SerializableVector Rotation { get; set; } = new SerializableVector(Quaternion.identity);
-    public SerializableVector Scale { get; set; } = new SerializableVector(Vector3.zero);
-
-    public SerializableTransform() { }
+    public SerializableVector Position { get; set; } 
+    public SerializableVector Rotation { get; set; } 
+    public SerializableVector Scale { get; set; }
 
     public SerializableTransform(Transform tr) {
         Position = tr.position;
         Rotation = (SerializableVector) tr.rotation;
         Scale = tr.lossyScale;
+    }
+
+    public SerializableTransform(SerializableTransform st)
+    {
+        Position = new SerializableVector(st.Position);
+        Rotation = new SerializableVector(st.Rotation);
+        Scale = new SerializableVector(st.Scale);
     }
 
     public SerializableTransform(Vector3 position, Quaternion rotation, Vector3 scale) {
@@ -101,7 +114,7 @@ public class SerializableTransform : IEquatable<SerializableTransform>
 
     public static SerializableTransform Default()
     {
-        return new SerializableTransform();
+        return new SerializableTransform(Vector3.zero, Quaternion.identity, Vector3.zero);
     }
 
     public override bool Equals(object obj)

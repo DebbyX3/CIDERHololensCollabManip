@@ -126,8 +126,6 @@ public class MessagesManager : MonoBehaviour
         }
     }
 
-    // per ora questo metodo funziona bene solo con i commit forzati. con quelli di voting è più complicato
-    // visto che serve prima la risposta dell'altro utente che accetta o meno la modifica 
     public void OnForcedCommitSent(GameObjController gObjCont)
     {
         PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
@@ -208,6 +206,13 @@ public class MessagesManager : MonoBehaviour
                 gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
         }
 
+        // Notify the user that a new commit has arrived
+
+        // Play notification sound
+        UIManager.Instance.NotificationSound.Play();
+
+        // Send commit notification to this device
+        UIManager.Instance.SetNotificationButtonActive(true);
     }
 
     //todo magari un metodo generico oncommitreceived? boh?

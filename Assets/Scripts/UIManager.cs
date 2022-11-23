@@ -96,8 +96,10 @@ public class UIManager : MonoBehaviour
         menu.SetActive(false);
     }
 
-    public void SetNearLocalFollowingMenu(GameObject nearLocalFollowingMenu, GameObjController gObjContr)
+    public GameObject SetNearLocalFollowingMenu(GameObjController gObjContr)
     {
+        // The parent of the menu is the gameobject -  important: set false as argument
+        GameObject nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), gObjContr.gameObject.transform, false);
         GameObject buttonCollection = nearLocalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // Button 1 - Forced Commit
@@ -142,14 +144,15 @@ public class UIManager : MonoBehaviour
         // Hide it
         nearLocalFollowingMenu.SetActive(false);
 
-        // The parent of the menu is the gameobject
-        nearLocalFollowingMenu.transform.SetParent(gObjContr.gameObject.transform);
+        return nearLocalFollowingMenu;
 
         // todo: set scale to the same for every menu (so it doesn't become too small or too big)
     }
 
-    public void SetNearGlobalFollowingMenu(GameObject nearGlobalFollowingMenu, GameObjController gObjContr)
+    public GameObject SetNearGlobalFollowingMenu(GameObjController gObjContr)
     {
+        // The parent of the menu is the gameobject -  important: set false as argument
+        GameObject nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), gObjContr.gameObject.transform, false);
         GameObject buttonCollection = nearGlobalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // Button 1 - Copy object in local scene
@@ -176,14 +179,16 @@ public class UIManager : MonoBehaviour
         // Hide it
         nearGlobalFollowingMenu.SetActive(false);
 
-        // The parent of the menu is the gameobject
-        nearGlobalFollowingMenu.transform.SetParent(gObjContr.gameObject.transform);
-
         //todo: set scale to the same for every menu (so it doesn't become too small or too big)}
+
+        return nearGlobalFollowingMenu;
     }
 
-    public void SetNearPendingFollowingMenu(GameObject nearPendingFollowingMenu, GameObjController gObjContr)
+    public GameObject SetNearPendingFollowingMenu(GameObjController gObjContr)
     {
+        // The parent of the menu is the gameobject -  important: set false as argument
+        GameObject nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), gObjContr.gameObject.transform, false);
+        
         GameObject buttonCollection = nearPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // todo! Accept or decline commit
@@ -191,12 +196,12 @@ public class UIManager : MonoBehaviour
         // Button 2 - Accept commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
         Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
-        //interactableTwo.OnClick.AddListener(() => DeleteObject(ObjectLocation.Global, UserType.Sender));
+        interactableTwo.OnClick.AddListener(() => MessagesManager.Instance.SendForcedCommit(gObjContr));
 
         // Button 3 - Decline commit
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
         Interactable interactableThree = buttonThree.GetComponent<Interactable>();
-        //interactableThree.OnClick.AddListener(() => DeleteObject(ObjectLocation.Global, UserType.Sender));
+        interactableThree.OnClick.AddListener(() => gObjContr.DeclineCommit());
 
         // Button 6 - Close menu
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
@@ -212,9 +217,8 @@ public class UIManager : MonoBehaviour
         // Hide it
         nearPendingFollowingMenu.SetActive(false);
 
-        // The parent of the menu is the gameobject
-        nearPendingFollowingMenu.transform.SetParent(gObjContr.gameObject.transform);
-
         //todo: set scale to the same for every menu (so it doesn't become too small or too big)}
+
+        return nearPendingFollowingMenu;
     }
 }
