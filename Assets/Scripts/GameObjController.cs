@@ -39,23 +39,24 @@ public class GameObjController : MonoBehaviour
     public string PrefabName { get; private set; }
     public string MaterialName { get; private set; }
     public SerializableTransform Transform;
-    public ObjectLocation ObjectLocation = ObjectLocation.None;
+    public ObjectLocation ObjectLocation { get; private set; } = ObjectLocation.None;
+
+    // Indicates if the pending obj was received or sent
+    public UserType PendingObjectUserType { get; private set; } = UserType.None;
 
     // Need to keep the references to the unity actions in order to disable them
-    private UnityAction saveGlobalStateAction;
-    private UnityAction restoreGlobalStateAction;
+    private UnityAction SaveGlobalStateAction;
+    private UnityAction RestoreGlobalStateAction;
 
-    private UnityAction saveLocalStateAction;
-    private UnityAction restoreLocalStateAction;
+    private UnityAction SaveLocalStateAction;
+    private UnityAction RestoreLocalStateAction;
 
-    private UnityAction savePendingListAction;
-    private UnityAction restorePendingListAction;
+    private UnityAction SavePendingListAction;
+    private UnityAction RestorePendingListAction;
 
-    private GameObject nearLocalFollowingMenu;
-    private GameObject nearGlobalFollowingMenu;
-    private GameObject nearPendingFollowingMenu;
-
-    //private GameObject SlateColor;
+    private GameObject NearLocalFollowingMenu;
+    private GameObject NearGlobalFollowingMenu;
+    private GameObject NearPendingFollowingMenu;
 
     private void Awake() 
     {
@@ -126,10 +127,7 @@ public class GameObjController : MonoBehaviour
         }
     }
 
-    public string GetGuidString() {
-        return Guid.ToString();
-    }
-
+    // TODO ha senso mettere questi metodi quando basta mettere il set pubblico dei campi in alto?? boh
     public void SetPrefabName(string prefabName) {
         PrefabName = prefabName;
     }
@@ -138,15 +136,109 @@ public class GameObjController : MonoBehaviour
         MaterialName = materialName;
     }
 
-    public void SetGuid(Guid guid) {
+    public void SetPendingObjectUserType(UserType pendingObjectUserType)
+    {
+        PendingObjectUserType = pendingObjectUserType;
+    }
+
+    public void SetGuid(Guid guid)
+    {
         Guid oldGuid = Guid;
         Guid = guid;
 
-        if (GUIDKeeper.ContainsGuid(oldGuid)) { //era guid 
+        if (GUIDKeeper.ContainsGuid(oldGuid))
+        { //era guid 
             GUIDKeeper.RemoveFromList(oldGuid);
         }
 
         GUIDKeeper.AddToList(guid, gameObject);
+    }
+
+    // todo forse questo metodo va in Caretaker?
+
+    // todo questa funzione è da vedere meglio perchè fa un po' le bizze
+    // (soprattutto sulla posizione, sul colore sembra andare bene?)
+    public void CopyObjectInLocalAndChangeToLocal()
+    {
+        // Call the update object and not the create object, because if I have the obj it means it is already in the 'existing' obj
+        // in the guid list. So just update to make it local it and make it subscribe to the local scene
+        PrefabManager.Instance.PutExistingObjectInLocal(Guid, Transform, MaterialName);
+
+        //CaretakerScene.Instance.ChangeSceneToLocal();
+    }
+
+    // fromScene: tells in which scene we want to delete the object
+    // userType: tells if the user is the sender of the deletion message or the receiver
+    public void DeleteObject(ObjectLocation fromScene, UserType userType)
+    {
+        switch (fromScene)
+        {
+            case ObjectLocation.Local: // Delete it from the Local scene
+                {
+                    // Always run it 
+                    UnsubscribeFromLocalScene();
+
+                    // If the object is only in the local scene - Completely delete it!
+                    if (ContainsOnlyFlag(ObjectLocation.Local))
+                    {
+                        GUIDKeeper.RemoveFromList(Guid);
+                        Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
+                    }
+
+                    break;
+                }
+
+            case ObjectLocation.Global: // Delete it from the Global scene
+                {
+                    // Always run these 
+                    UnsubscribeFromGlobalScene();
+
+                    // If the object is only in the global scene - Make it easier for the other user: copy it in the local scene
+                    if (ContainsOnlyFlag(ObjectLocation.Global))
+                    {
+                        if (userType.Equals(UserType.Receiver)) // prima era il sender che lo faceva, ora è il receiver
+                        {
+                            CopyObjectInLocalAndChangeToLocal(); // todo to review!
+                        }
+                        else if (userType.Equals(UserType.Sender))
+                        {
+                            GUIDKeeper.RemoveFromList(Guid);
+                            Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
+                        }
+                    }
+
+                    if (userType.Equals(UserType.Sender))
+                        MessagesManager.Instance.SendGlobalDeletionMessage(this); // Send deletion message
+
+                    break;
+                }
+
+            case ObjectLocation.None:
+                break;
+
+            default: break;
+        }
+
+        HideObject();
+    }
+
+    // Duplicate obj with a slight movement of 0.1f on axis X and Y
+    public void DuplicateObj()
+    {
+        PrefabManager.Instance.CreateNewObjectInLocal(PrefabName, MaterialName);
+    }
+
+    public void DeclineCommit()
+    { 
+
+    }
+
+    public void DeclineCommit()
+    {
+        UnsubscribeFromPendingList();
+        PendingObjectUserType = UserType.None;
+
+        HideObject();
     }
 
     // ---------------------- BEGIN METHODS FOR 'MEMENTO' PATTERN ----------------------
@@ -182,44 +274,44 @@ public class GameObjController : MonoBehaviour
     private void SetGlobalUnityActions()
     {
         // Just set them, not attach to a listener yet
-        saveGlobalStateAction += () => CaretakerScene.Instance.SaveGlobalState(this);
+        SaveGlobalStateAction += () => CaretakerScene.Instance.SaveGlobalState(this);
 
-        restoreGlobalStateAction += () => CaretakerScene.Instance.RestoreGlobalState(this);
-        restoreGlobalStateAction += () => SetActiveManipulation(false);
+        RestoreGlobalStateAction += () => CaretakerScene.Instance.RestoreGlobalState(this);
+        RestoreGlobalStateAction += () => SetActiveManipulation(false);
 
-        restoreGlobalStateAction += () => SetActiveLocalMenu(false); // Untoggle local menu
-        restoreGlobalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
+        RestoreGlobalStateAction += () => SetActiveLocalMenu(false); // Untoggle local menu
+        RestoreGlobalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
     }
 
     private void SetLocalUnityActions()
     {
         // Just set them, not attach to a listener yet
-        saveLocalStateAction += () => CaretakerScene.Instance.SaveLocalState(this);
+        SaveLocalStateAction += () => CaretakerScene.Instance.SaveLocalState(this);
 
-        restoreLocalStateAction += () => CaretakerScene.Instance.RestoreLocalState(this);
-        restoreLocalStateAction += () => SetActiveManipulation(true);
+        RestoreLocalStateAction += () => CaretakerScene.Instance.RestoreLocalState(this);
+        RestoreLocalStateAction += () => SetActiveManipulation(true);
 
-        restoreLocalStateAction += () => SetActiveGlobalMenu(false); // untoggle global menu
-        restoreLocalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
+        RestoreLocalStateAction += () => SetActiveGlobalMenu(false); // untoggle global menu
+        RestoreLocalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
     }
 
     private void SetPendingUnityActions()
     {
         // Just set them, not attach to a listener yet
-        savePendingListAction += () => CaretakerScene.Instance.SavePendingState(this);
+        SavePendingListAction += () => CaretakerScene.Instance.SavePendingState(this);
 
-        restorePendingListAction += () => CaretakerScene.Instance.RestorePendingState(this);
-        restorePendingListAction += () => SetActiveManipulation(false);
+        RestorePendingListAction += () => CaretakerScene.Instance.RestorePendingState(this);
+        RestorePendingListAction += () => SetActiveManipulation(false);
 
-        restorePendingListAction += () => SetActiveLocalMenu(false); // Untoggle local menu
-        restorePendingListAction += () => SetActiveGlobalMenu(false); // untoggle global menu
+        RestorePendingListAction += () => SetActiveLocalMenu(false); // Untoggle local menu
+        RestorePendingListAction += () => SetActiveGlobalMenu(false); // untoggle global menu
     }
 
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToGlobalScene()
     {
-        CaretakerScene.Instance.SaveGlobalStateEvent.AddListener(saveGlobalStateAction);
-        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(restoreGlobalStateAction);
+        CaretakerScene.Instance.SaveGlobalStateEvent.AddListener(SaveGlobalStateAction);
+        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(RestoreGlobalStateAction);
 
         // Add global location to object location
         AddFlagLocation(ObjectLocation.Global);
@@ -228,8 +320,8 @@ public class GameObjController : MonoBehaviour
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToLocalScene()
     {
-        CaretakerScene.Instance.SaveLocalStateEvent.AddListener(saveLocalStateAction);
-        CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(restoreLocalStateAction);
+        CaretakerScene.Instance.SaveLocalStateEvent.AddListener(SaveLocalStateAction);
+        CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(RestoreLocalStateAction);
 
         // Add local location to object location
         AddFlagLocation(ObjectLocation.Local);
@@ -238,16 +330,18 @@ public class GameObjController : MonoBehaviour
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToPendingList()
     {
-        CaretakerScene.Instance.SavePendingListEvent.AddListener(savePendingListAction);
-        CaretakerScene.Instance.RestorePendingListEvent.AddListener(restorePendingListAction);
+        CaretakerScene.Instance.SavePendingListEvent.AddListener(SavePendingListAction);
+        CaretakerScene.Instance.RestorePendingListEvent.AddListener(RestorePendingListAction);
 
         AddFlagLocation(ObjectLocation.Pending);
     }
 
     public void UnsubscribeFromGlobalScene()
     {
-        CaretakerScene.Instance.SaveGlobalStateEvent.RemoveListener(saveGlobalStateAction);
-        CaretakerScene.Instance.RestoreGlobalStateEvent.RemoveListener(restoreGlobalStateAction);
+        CaretakerScene.Instance.SaveGlobalStateEvent.RemoveListener(SaveGlobalStateAction);
+        CaretakerScene.Instance.RestoreGlobalStateEvent.RemoveListener(RestoreGlobalStateAction);
+
+        CaretakerScene.Instance.RemoveFromGlobalList(Guid);
 
         // Remove global location from object location
         RemoveFlagLocation(ObjectLocation.Global);
@@ -255,8 +349,10 @@ public class GameObjController : MonoBehaviour
 
     public void UnsubscribeFromLocalScene()
     {
-        CaretakerScene.Instance.SaveLocalStateEvent.RemoveListener(saveLocalStateAction);
-        CaretakerScene.Instance.RestoreLocalStateEvent.RemoveListener(restoreLocalStateAction);
+        CaretakerScene.Instance.SaveLocalStateEvent.RemoveListener(SaveLocalStateAction);
+        CaretakerScene.Instance.RestoreLocalStateEvent.RemoveListener(RestoreLocalStateAction);
+
+        CaretakerScene.Instance.RemoveFromLocalList(Guid);
 
         // Remove local location from object location
         RemoveFlagLocation(ObjectLocation.Local);
@@ -264,8 +360,10 @@ public class GameObjController : MonoBehaviour
 
     public void UnsubscribeFromPendingList()
     {
-        CaretakerScene.Instance.SavePendingListEvent.RemoveListener(savePendingListAction);
-        CaretakerScene.Instance.RestorePendingListEvent.RemoveListener(restorePendingListAction);
+        CaretakerScene.Instance.SavePendingListEvent.RemoveListener(SavePendingListAction);
+        CaretakerScene.Instance.RestorePendingListEvent.RemoveListener(RestorePendingListAction);
+
+        CaretakerScene.Instance.RemoveFromPendingList(Guid);
 
         RemoveFlagLocation(ObjectLocation.Pending);
     }
@@ -286,128 +384,38 @@ public class GameObjController : MonoBehaviour
 
         if (CaretakerScene.Instance.IsGlobalScene())
         {
-            // If the object is ONLY in the global scene and not in the pending list
+            // If the object is ONLY in the global scene and NOT in the pending list
             if (ObjectLocation.HasFlag(ObjectLocation.Global) && !ObjectLocation.HasFlag(ObjectLocation.Pending))
             {
                 SetActiveGlobalMenu(true);
-                nearGlobalFollowingMenu.GetComponent<RadialView>().enabled = true;
             }
-            // If the object is also in the pending list
+            // If the object is ALSO in the pending list
             else if (ObjectLocation.HasFlag(ObjectLocation.Pending))
             {
                 // Show pending menu only if the pending obj was RECEIVED
-                SetActivePendingMenu(true);
-                nearPendingFollowingMenu.GetComponent<RadialView>().enabled = true;
+                if (PendingObjectUserType.Equals(UserType.Receiver))
+                    SetActivePendingMenu(true);
             }
         }
         else if (CaretakerScene.Instance.IsLocalScene())
         {
             SetActiveLocalMenu(true);
-            nearLocalFollowingMenu.GetComponent<RadialView>().enabled = true;
         }
     }
 
     private void CreateNearLocalFollowingMenu()
     {
-        nearLocalFollowingMenu = UIManager.Instance.SetNearLocalFollowingMenu(this);
-        //nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), Vector3.zero, Quaternion.identity);
+        NearLocalFollowingMenu = UIManager.Instance.SetNearLocalFollowingMenu(this);
     }
 
     private void CreateNearGlobalFollowingMenu()
     {
-        nearGlobalFollowingMenu = UIManager.Instance.SetNearGlobalFollowingMenu(this);
-        //nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), Vector3.zero, Quaternion.identity);
+        NearGlobalFollowingMenu = UIManager.Instance.SetNearGlobalFollowingMenu(this);
     }
 
     private void CreateNearPendingFollowingMenu()
     {
-        nearPendingFollowingMenu = UIManager.Instance.SetNearPendingFollowingMenu(this);
-        //nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), Vector3.zero, Quaternion.identity, false);
-
-    }
-
-    // todo forse questo metodo va in Caretaker?
-
-    // todo questa funzione è da vedere meglio perchè fa un po' le bizze
-    // (soprattutto sulla posizione, sul colore sembra andare bene?)
-    public void CopyObjectInLocalAndChangeToLocal()
-    {
-        // Call the update object and not the create object, because if I have the obj it means it is already in the 'existing' obj
-        // in the guid list. So just update to make it local it and make it subscribe to the local scene
-        PrefabManager.Instance.PutExistingObjectInLocal(Guid, Transform, MaterialName);
-
-        //CaretakerScene.Instance.ChangeSceneToLocal();
-    }
-
-    // fromScene: tells in which scene we want to delete the object
-    // userType: tells if the user is the sender of the deletion message or the receiver
-    public void DeleteObject(ObjectLocation fromScene, UserType userType)
-    {
-        switch (fromScene)
-        {
-            case ObjectLocation.Local: // Delete it from the Local scene
-            {
-                // Always run these 
-                UnsubscribeFromLocalScene();
-                CaretakerScene.Instance.RemoveFromLocalList(Guid);
-
-                // If the object is only in the local scene - Completely delete it!
-                if (ContainsOnlyFlag(ObjectLocation.Local))
-                {                    
-                    GUIDKeeper.RemoveFromList(Guid);
-                    Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
-                }
-
-                break;
-            }
-
-            case ObjectLocation.Global: // Delete it from the Global scene
-            {
-                // Always run these 
-                UnsubscribeFromGlobalScene();
-                CaretakerScene.Instance.RemoveFromGlobalList(Guid);
-
-                // If the object is only in the global scene - Make it easier for the other user: copy it in the local scene
-                if (ContainsOnlyFlag(ObjectLocation.Global))
-                {
-                    if (userType.Equals(UserType.Receiver)) // prima era il sender che lo faceva, ora è il receiver
-                    {
-                        CopyObjectInLocalAndChangeToLocal(); // todo to review!
-                    }
-                    else if (userType.Equals(UserType.Sender))
-                    {
-                        GUIDKeeper.RemoveFromList(Guid);
-                        Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
-                    }
-                }
-
-                if (userType.Equals(UserType.Sender))
-                    MessagesManager.Instance.SendGlobalDeletionMessage(this); // Send deletion message
-
-                break;
-            }
-
-            case ObjectLocation.None:
-                break;
-
-            default: break;
-        }
-
-        HideObject();
-    }
-
-    // Duplicate obj with a slight movement of 0.1f on axis X and Y
-    public void DuplicateObj()
-    {
-        PrefabManager.Instance.CreateNewObjectInLocal(PrefabName, MaterialName);
-    }
-
-    public void DeclineCommit()
-    {
-        UnsubscribeFromPendingList();
-        CaretakerScene.Instance.RemoveFromPendingList(Guid);
-
-        HideObject();
+        NearPendingFollowingMenu = UIManager.Instance.SetNearPendingFollowingMenu(this);
     }
 
     // todo check this function because sometimes i can move objects in the global scene!
@@ -429,17 +437,20 @@ public class GameObjController : MonoBehaviour
 
     private void SetActiveLocalMenu(bool active)
     {
-        nearLocalFollowingMenu.SetActive(active);
+        NearLocalFollowingMenu.SetActive(active);
+        NearLocalFollowingMenu.GetComponent<RadialView>().enabled = active;
     }
 
     private void SetActiveGlobalMenu(bool active)
     {
-        nearGlobalFollowingMenu.SetActive(active);
+        NearGlobalFollowingMenu.SetActive(active);
+        NearGlobalFollowingMenu.GetComponent<RadialView>().enabled = active;
     }
 
     private void SetActivePendingMenu(bool active)
     {
-        nearPendingFollowingMenu.SetActive(active);
+        NearPendingFollowingMenu.SetActive(active);
+        NearPendingFollowingMenu.GetComponent<RadialView>().enabled = active;
     }
 
     // ------------------ FLAGS ------------------

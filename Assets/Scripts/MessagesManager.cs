@@ -4,6 +4,7 @@ using UnityEngine;
 
 public enum UserType
 { 
+    None,
     Sender,
     Receiver
 }
@@ -80,11 +81,15 @@ public class MessagesManager : MonoBehaviour
 
     public void SendForcedCommit(GameObjController gObjCont)
     {
+        //todo forse questo set è da mettere da un'altra parte, nella classe di controller stessa forse?
+        gObjCont.SetPendingObjectUserType(UserType.None);
         SendCommit(gObjCont, CommitType.ForcedCommit);
     }
 
     public void SendVotingCommit(GameObjController gObjCont)
     {
+        //todo forse questo set è da mettere da un'altra parte, nella classe di controller stessa forse?
+        gObjCont.SetPendingObjectUserType(UserType.Sender);
         SendCommit(gObjCont, CommitType.VotingCommit);
     }
 
@@ -129,6 +134,7 @@ public class MessagesManager : MonoBehaviour
     public void OnForcedCommitSent(GameObjController gObjCont)
     {
         PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
+        gObjCont.DeclineCommit();
         // l'unico motico per cui è qua è che fa il subscribe al global, ma scusa, lo fa già prima di iniviare il commit! 
         // chiamando ExecuteForcedCommit giusramente! PErò spe, ExecuteForcedCommit non contiene il subscribe, quindi è per quello
         // che chiamo UpdateObjectGlobal hmhm
@@ -172,6 +178,8 @@ public class MessagesManager : MonoBehaviour
             // Note: the instance is added in the GUIDKeeper.List in the Awake directly at object creation!
         }
 
+        
+
         // Notify the user that a new commit has arrived
 
         // Play notification sound
@@ -196,15 +204,20 @@ public class MessagesManager : MonoBehaviour
 
          */
 
+        GameObject gObj;
+
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
-            PrefabManager.Instance.PutExistingObjectInPending(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform);
+            gObj = PrefabManager.Instance.PutExistingObjectInPending(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform);
         }
         else 
         {
-            PrefabManager.Instance.CreateNewObjectInPending(gObjMsgInfo.GameObjectGuid,
+            gObj = PrefabManager.Instance.CreateNewObjectInPending(gObjMsgInfo.GameObjectGuid,
                 gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
         }
+
+        // todo: forse è da spostare direttamente nel create o put existing? boh
+        gObj.GetComponent<GameObjController>().SetPendingObjectUserType(UserType.Receiver);
 
         // Notify the user that a new commit has arrived
 

@@ -77,33 +77,6 @@ public class CaretakerScene : MonoBehaviour
 
         SaveLocalStateEvent.Invoke();
         SaveGlobalStateEvent.Invoke();
-
-        InvokeRepeating("PrintLists", 1.0f, 1.0f);
-    }
-
-    private void PrintLists()
-    {
-        string toPrint = "";
-
-        if(GlobalListMementos.Count > 0)
-            toPrint += "\n----------- Global List\n";
-
-        foreach (KeyValuePair<Guid, Memento> kvp in GlobalListMementos)
-            toPrint += "Guid = " + kvp.Key + "\n" + kvp.Value;
-
-        if (LocalListMementos.Count > 0)
-            toPrint += "\n----------- Local List\n";
-
-        foreach (KeyValuePair<Guid, Memento> kvp in LocalListMementos)
-            toPrint += "Guid = " + kvp.Key + "\n" + kvp.Value;
-
-        if (PendingListRequests.Count > 0)
-            toPrint += "\n----------- Pending List\n";
-
-        foreach (KeyValuePair<Guid, Memento> kvp in PendingListRequests)
-            toPrint += "Guid = " + kvp.Key + "\n" + kvp.Value;
-
-        Debug.Log(toPrint);
     }
 
     private void SaveGlobalAndPendingRestoreLocal()
@@ -269,8 +242,6 @@ public class CaretakerScene : MonoBehaviour
 
     public void RemoveFromLocalList(Guid guid)
     {
-        // Check if object is in local list
-        //if (LocalListMementos.ContainsKey(guid)) 
         LocalListMementos.Remove(guid);                 // If the dict does not contain an element with the
                                                         // specified key, the dict remains unchanged.
                                                         // No exception is thrown.
@@ -278,8 +249,6 @@ public class CaretakerScene : MonoBehaviour
 
     public void RemoveFromGlobalList(Guid guid)
     {
-        // Check if object is in global list
-        //if (GlobalListMementos.ContainsKey(guid))
         GlobalListMementos.Remove(guid);                // If the dict does not contain an element with the
                                                         // specified key, the dict remains unchanged.
                                                         // No exception is thrown.
@@ -287,7 +256,9 @@ public class CaretakerScene : MonoBehaviour
 
     public void RemoveFromPendingList(Guid guid)
     {
-        PendingListRequests.Remove(guid);
+        PendingListRequests.Remove(guid);               // If the dict does not contain an element with the
+                                                        // specified key, the dict remains unchanged.
+                                                        // No exception is thrown.
     }
 
     public void EmptyAllPendingStates()

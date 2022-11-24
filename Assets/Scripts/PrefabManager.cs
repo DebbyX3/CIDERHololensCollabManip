@@ -196,7 +196,7 @@ public class PrefabManager : MonoBehaviour
 
     // -------------- PUBLIC --------------
 
-    public void CreateNewObjectInLocal(string prefabName, string materialName)
+    public GameObject CreateNewObjectInLocal(string prefabName, string materialName)
     {
         bool wasGlobalScene = false;
 
@@ -213,6 +213,8 @@ public class PrefabManager : MonoBehaviour
         // If the previous scene was the global one, reswitch to the global
         if (wasGlobalScene)
             CaretakerScene.Instance.ChangeSceneToGlobal();
+
+        return gobj;
     }
 
     public GameObject CreateNewObjectInGlobal(Guid guid, string prefabName, string materialName, SerializableTransform transform)
@@ -257,12 +259,12 @@ public class PrefabManager : MonoBehaviour
         return gobj;
     }
 
-    public void PutExistingObjectInLocal(Guid guid, string materialName)
+    public GameObject PutExistingObjectInLocal(Guid guid, string materialName)
     {
-        PutExistingObjectInLocal(guid, SerializableTransform.Default(), materialName);
+        return PutExistingObjectInLocal(guid, SerializableTransform.Default(), materialName);
     }
 
-    public void PutExistingObjectInLocal(Guid guid, SerializableTransform transform, string materialName = "") 
+    public GameObject PutExistingObjectInLocal(Guid guid, SerializableTransform transform, string materialName = "") 
     {
         bool wasGlobalScene = false;
 
@@ -290,10 +292,12 @@ public class PrefabManager : MonoBehaviour
 
         // If the previous scene was the global one, reswitch to the global
         if (wasGlobalScene)
-            CaretakerScene.Instance.ChangeSceneToGlobal();        
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+
+        return gObj;
     }
 
-    public void PutExistingObjectInGlobal(Guid guid, SerializableTransform transform, string materialName)
+    public GameObject PutExistingObjectInGlobal(Guid guid, SerializableTransform transform, string materialName)
     {
         bool wasLocalScene = false;
 
@@ -317,10 +321,12 @@ public class PrefabManager : MonoBehaviour
 
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
-            CaretakerScene.Instance.ChangeSceneToLocal();       
+            CaretakerScene.Instance.ChangeSceneToLocal();
+
+        return gObj;
     }
 
-    public void PutExistingObjectInPending(Guid guid, SerializableTransform transform)
+    public GameObject PutExistingObjectInPending(Guid guid, SerializableTransform transform)
     {
         bool wasLocalScene = false;
 
@@ -346,6 +352,8 @@ public class PrefabManager : MonoBehaviour
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();
+
+        return gObj;
     }
 
     // --------------- CHANGE MATERIAL METHODS SET --------------------------
