@@ -84,6 +84,12 @@ public class MessagesManager : MonoBehaviour
         SendCommit(gObjCont, CommitType.ForcedCommit);
     }
 
+    public void AcceptCommit(GameObjController gObjCont)
+    {  }
+    
+    public void DeclineCommit(GameObjController gObjCont)
+    { }
+
     public void SendVotingCommit(GameObjController gObjCont)
     {
         //todo forse questo set è da mettere da un'altra parte, nella classe di controller stessa forse?
@@ -133,6 +139,7 @@ public class MessagesManager : MonoBehaviour
     {
         PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
         gObjCont.RemovePending();
+
         // l'unico motivo per cui è qua è che fa il subscribe al global, ma scusa, lo fa già prima di iniviare il commit! 
         // chiamando ExecuteForcedCommit giusramente! PErò spe, ExecuteForcedCommit non contiene il subscribe, quindi è per quello
         // che chiamo UpdateObjectGlobal hmhm

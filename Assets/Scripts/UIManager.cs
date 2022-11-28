@@ -8,7 +8,8 @@ public class UIManager : MonoBehaviour
 {
     /*
       PLEASE NOTE!
-        UIManager needs to be run BEFORE GameObjController, because GameObjController needs references to the object that UIManager has
+        UIManager needs to be run BEFORE GameObjController, because GameObjController needs 
+        references to the object that UIManager has
      */
 
     public static UIManager Instance { get; private set; }
@@ -100,7 +101,6 @@ public class UIManager : MonoBehaviour
     {
         // The parent of the menu is the gameobject -  important: set false as argument
         GameObject nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), gObjContr.Transform, false);
-        //GameObject nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), gObjContr.gameObject.transform, false); // funziona!
         GameObject buttonCollection = nearLocalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // Button 1 - Forced Commit
@@ -141,7 +141,6 @@ public class UIManager : MonoBehaviour
         SolverHandler sh = nearLocalFollowingMenu.GetComponent<SolverHandler>();
         sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
         sh.TransformOverride = gObjContr.Transform;
-        //sh.TransformOverride = gObjContr.gameObject.transform; // funziona!
 
         // Hide it
         nearLocalFollowingMenu.SetActive(false);
@@ -155,13 +154,12 @@ public class UIManager : MonoBehaviour
     {
         // The parent of the menu is the gameobject -  important: set false as argument
         GameObject nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), gObjContr.Transform, false);
-        //GameObject nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), gObjContr.gameObject.transform, false); // funziona!
         GameObject buttonCollection = nearGlobalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // Button 1 - Copy object in local scene
         GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
         Interactable interactableOne = buttonOne.GetComponent<Interactable>();
-        interactableOne.OnClick.AddListener(() => gObjContr.CopyObjectInLocalAndChangeToLocal());
+        interactableOne.OnClick.AddListener(() => gObjContr.CopyObjectInLocal());
 
         // Button 2 - Delete object from global scene
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
@@ -177,7 +175,6 @@ public class UIManager : MonoBehaviour
 
         SolverHandler sh = nearGlobalFollowingMenu.GetComponent<SolverHandler>();
         sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        //sh.TransformOverride = gObjContr.gameObject.transform; // funziona!
         sh.TransformOverride = gObjContr.Transform;
 
         // Hide it
@@ -192,7 +189,6 @@ public class UIManager : MonoBehaviour
     {
         // The parent of the menu is the gameobject -  important: set false as argument
         GameObject nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), gObjContr.Transform, false);
-        // GameObject nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), gObjContr.gameObject.transform, false); // funziona!
 
         GameObject buttonCollection = nearPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
@@ -218,7 +214,6 @@ public class UIManager : MonoBehaviour
         SolverHandler sh = nearPendingFollowingMenu.GetComponent<SolverHandler>();
         sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
         sh.TransformOverride = gObjContr.Transform;
-        // sh.TransformOverride = gObjContr.gameObject.transform; // funziona!
 
         // Hide it
         nearPendingFollowingMenu.SetActive(false);

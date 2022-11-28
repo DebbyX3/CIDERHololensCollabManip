@@ -281,7 +281,6 @@ public class PrefabManager : MonoBehaviour
         // Update transform - only if there is actually something to change - if it is a default value do not change
         if (!transform.Equals(SerializableTransform.Default()))
             gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);
-            // gObj.transform.AssignDeserTransformToOriginalTransform(transform); // funziona!
 
         // Change material of the object - only if there is actually something to change - if it is a default value do not change
         if (!materialName.Equals(""))
@@ -315,7 +314,6 @@ public class PrefabManager : MonoBehaviour
 
         // Update transform
         gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);  
-        //gObj.transform.AssignDeserTransformToOriginalTransform(transform); //funziona!
 
         // Change material of the object
         ChangeMaterial(gObj, materialName);
@@ -346,7 +344,6 @@ public class PrefabManager : MonoBehaviour
 
         // Update transform
         gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);
-        //gObj.transform.AssignDeserTransformToOriginalTransform(transform); //funziona!
 
         // Change material of the object
         ChangeMaterialPendingState(gObj);

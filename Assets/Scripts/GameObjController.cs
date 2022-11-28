@@ -90,7 +90,7 @@ public class GameObjController : MonoBehaviour
         // I can't attach it from the inspector, because the controlled is created at runtime! So I need to reference it using UIManager
         // NOTE: set SlateColor BEFORE calling SetNearLocalFollowingMenu!
         // Alternatively, I can just call UIManager.Instance.SlateColor when I need it, and not reference it using a field (but whatever)
-        //SlateColor = UIManager.Instance.SlateColor;
+        // SlateColor = UIManager.Instance.SlateColor;
 
         /* Create the menus
            Note: The menus need to stay in Awake because they are referred even when the gameobject is not active,
@@ -131,64 +131,60 @@ public class GameObjController : MonoBehaviour
         GUIDKeeper.AddToList(guid, gameObject);
     }
 
-    // todo forse questo metodo va in Caretaker?
-
-    // todo questa funzione è da vedere meglio perchè fa un po' le bizze
-    // (soprattutto sulla posizione, sul colore sembra andare bene?)
-    public void CopyObjectInLocalAndChangeToLocal()
+    public void CopyObjectInLocal()
     {
-        // Call the update object and not the create object, because if I have the obj it means it is already in the 'existing' obj
-        // in the guid list. So just update to make it local it and make it subscribe to the local scene
+        // I have the obj, so it means it is already in the existing obj GUIDKeeper List
         PrefabManager.Instance.PutExistingObjectInLocal(Guid, Transform, MaterialName);
-
-        //CaretakerScene.Instance.ChangeSceneToLocal();
     }
 
-    // fromScene: tells in which scene we want to delete the object
-    // userType: tells if the user is the sender of the deletion message or the receiver
+    /// <summary>
+    /// Removes the object from the scene indicated by "fromScene" based on the type of user "userType" (Sender/Receiver)
+    /// </summary>
+    /// <param name="fromScene">The scene in which we want to delete the object</param>
+    /// <param name="userType">The type of user: sender of the deletion or receiver of the deletion</param>
     public void DeleteObject(ObjectLocation fromScene, UserType userType)
     {
         switch (fromScene)
         {
             case ObjectLocation.Local: // Delete it from the Local scene
+            {
+                // Always run it 
+                UnsubscribeAndRemoveFromLocalScene();
+
+                // If the object is only in the local scene - Completely delete it!
+                if (ContainsOnlyFlag(ObjectLocation.Local))
                 {
-                    // Always run it 
-                    UnsubscribeAndRemoveFromLocalScene();
-
-                    // If the object is only in the local scene - Completely delete it!
-                    if (ContainsOnlyFlag(ObjectLocation.Local))
-                    {
-                        GUIDKeeper.RemoveFromList(Guid);
-                        Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
-                    }
-
-                    break;
+                    GUIDKeeper.RemoveFromList(Guid);
+                    Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
                 }
+
+                break;
+            }
 
             case ObjectLocation.Global: // Delete it from the Global scene
+            {
+                // Always run these 
+                UnsubscribeAndRemoveFromGlobalScene();
+
+                // If the object is only in the global scene - Make it easier for the other user: copy it in the local scene
+                if (ContainsOnlyFlag(ObjectLocation.Global))
                 {
-                    // Always run these 
-                    UnsubscribeAndRemoveFromGlobalScene();
-
-                    // If the object is only in the global scene - Make it easier for the other user: copy it in the local scene
-                    if (ContainsOnlyFlag(ObjectLocation.Global))
+                    if (userType.Equals(UserType.Receiver)) // prima era il sender che lo faceva, ora è il receiver
                     {
-                        if (userType.Equals(UserType.Receiver)) // prima era il sender che lo faceva, ora è il receiver
-                        {
-                            CopyObjectInLocalAndChangeToLocal(); // todo to review!
-                        }
-                        else if (userType.Equals(UserType.Sender))
-                        {
-                            GUIDKeeper.RemoveFromList(Guid);
-                            Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
-                        }
+                        CopyObjectInLocal(); // todo to review!
                     }
-
-                    if (userType.Equals(UserType.Sender))
-                        MessagesManager.Instance.SendGlobalDeletionMessage(this); // Send deletion message
-
-                    break;
+                    else if (userType.Equals(UserType.Sender))
+                    {
+                        GUIDKeeper.RemoveFromList(Guid);
+                        Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
+                    }
                 }
+
+                if (userType.Equals(UserType.Sender))
+                    MessagesManager.Instance.SendGlobalDeletionMessage(this); // Send deletion message
+
+                break;
+            }
 
             case ObjectLocation.None:
                 break;
@@ -205,16 +201,19 @@ public class GameObjController : MonoBehaviour
         PrefabManager.Instance.CreateNewObjectInLocal(PrefabName, MaterialName);
     }
 
-    public void DeclineCommit()
-    {
-        RemovePending();
-    }
+    // ---------------------- BEGIN COMMIT METHODS ----------------------
 
     public void RemovePending()
     {
         UnsubscribeAndRemoveFromPendingList();
         PendingObjectUserType = UserType.None;
     }
+    public void DeclineCommit()
+    {
+        RemovePending();
+    }
+
+    // ---------------------- END COMMIT METHODS ----------------------
 
     // ---------------------- BEGIN METHODS FOR 'MEMENTO' PATTERN ----------------------
 
@@ -234,9 +233,6 @@ public class GameObjController : MonoBehaviour
          */
 
         // Assign transform
-
-        //Transform = memento.GetTransform();
-        //gameObject.transform.AssignDeserTransformToOriginalTransform(memento.GetTransform()); // questa funziona tho
         Transform.AssignDeserTransformToOriginalTransform(memento.GetTransform());
 
         // Assign material
@@ -395,7 +391,6 @@ public class GameObjController : MonoBehaviour
         NearPendingFollowingMenu = UIManager.Instance.SetNearPendingFollowingMenu(this);
     }
 
-    // todo check this function because sometimes i can move objects in the global scene!
     private void SetActiveManipulation(bool active) 
     {      
         // Want to just spawn the object menu on manipulation, so lock rotations and movements
