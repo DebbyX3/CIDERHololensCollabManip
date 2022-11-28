@@ -276,10 +276,12 @@ public class PrefabManager : MonoBehaviour
         }
 
         GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
+        GameObjController gObjContr = gObj.GetComponent<GameObjController>();
 
         // Update transform - only if there is actually something to change - if it is a default value do not change
         if (!transform.Equals(SerializableTransform.Default()))
-            gObj.transform.AssignDeserTransformToOriginalTransform(transform);
+            gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);
+            // gObj.transform.AssignDeserTransformToOriginalTransform(transform); // funziona!
 
         // Change material of the object - only if there is actually something to change - if it is a default value do not change
         if (!materialName.Equals(""))
@@ -309,17 +311,17 @@ public class PrefabManager : MonoBehaviour
         }
 
         GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
+        GameObjController gObjContr = gObj.GetComponent<GameObjController>();
 
         // Update transform
-        gObj.transform.AssignDeserTransformToOriginalTransform(transform); // problema è qua mi sa !
-        gObj.GetComponent<GameObjController>().Transform.AssignDeserTransformToOriginalTransform(transform);
-        //dfgdhyjh
+        gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);  
+        //gObj.transform.AssignDeserTransformToOriginalTransform(transform); //funziona!
 
         // Change material of the object
         ChangeMaterial(gObj, materialName);
-        gObj.GetComponent<GameObjController>().SetMaterialName(materialName); // Do not move this into ChangeMaterial
+        gObjContr.SetMaterialName(materialName); // Do not move this into ChangeMaterial
 
-        gObj.GetComponent<GameObjController>().SubscribeToGlobalScene();
+        gObjContr.SubscribeToGlobalScene();
 
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
@@ -340,16 +342,18 @@ public class PrefabManager : MonoBehaviour
         }
 
         GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
+        GameObjController gObjContr = gObj.GetComponent<GameObjController>();
 
         // Update transform
-        gObj.transform.AssignDeserTransformToOriginalTransform(transform);
+        gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);
+        //gObj.transform.AssignDeserTransformToOriginalTransform(transform); //funziona!
 
         // Change material of the object
         ChangeMaterialPendingState(gObj);
         // todo non sono sicura, intanto tienilo:
-        gObj.GetComponent<GameObjController>().SetMaterialName(pendingStateMaterial.name);
+        gObjContr.SetMaterialName(pendingStateMaterial.name);
 
-        gObj.GetComponent<GameObjController>().SubscribeToPendingList();
+        gObjContr.SubscribeToPendingList();
 
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)

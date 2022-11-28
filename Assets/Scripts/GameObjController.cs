@@ -39,8 +39,10 @@ public class GameObjController : MonoBehaviour
     public string PrefabName { get; private set; }
     public string MaterialName { get; private set; }
 
-    // ma mi serve davvero??
-    public SerializableTransform Transform;
+    // Use this just because it is easier to access rather than always doing gameObject.transform
+    // Would set this as readonly, but I can't since therefore it needs to be initializated in the constructor
+    // (and Unity does not allow constructors)
+    public Transform Transform;
 
     public ObjectLocation ObjectLocation { get; private set; } = ObjectLocation.None;
 
@@ -63,16 +65,14 @@ public class GameObjController : MonoBehaviour
 
     private void Awake() 
     {
+        // Use this just because it is easier to access rather than always doing gameObject.transform
+        Transform = gameObject.transform;
+
         // Generate new guid
         Guid = Guid.NewGuid();
 
         // Add guid and attached gameobject in list
         GUIDKeeper.AddToList(Guid, gameObject);
-
-        // Set initial positions/rotations/scale
-        Transform.Position = gameObject.transform.position;
-        Transform.Rotation = (SerializableVector)gameObject.transform.rotation;
-        Transform.Scale = gameObject.transform.lossyScale;
 
         // Set UnityActions
         SetGlobalUnityActions();
@@ -102,32 +102,6 @@ public class GameObjController : MonoBehaviour
         CreateNearLocalFollowingMenu();
         CreateNearGlobalFollowingMenu();
         CreateNearPendingFollowingMenu();
-    }
-
-    private void Update() 
-    {
-        // Can be done better but not really urgent
-        if (Transform.Position.X != gameObject.transform.position.x ||
-            Transform.Position.Y != gameObject.transform.position.y ||
-            Transform.Position.Z != gameObject.transform.position.z) 
-        {
-            Transform.Position = gameObject.transform.position;
-        }
-
-        if (Transform.Rotation.X != gameObject.transform.rotation.x ||
-            Transform.Rotation.Y != gameObject.transform.rotation.y ||
-            Transform.Rotation.Z != gameObject.transform.rotation.z ||
-            Transform.Rotation.W != gameObject.transform.rotation.w) 
-        {
-            Transform.Rotation = (SerializableVector)gameObject.transform.rotation;
-        }
-
-        if (Transform.Scale.X != gameObject.transform.lossyScale.x ||
-            Transform.Scale.Y != gameObject.transform.lossyScale.y ||
-            Transform.Scale.Z != gameObject.transform.lossyScale.z) 
-        {
-            Transform.Scale = gameObject.transform.lossyScale;
-        }
     }
 
     // TODO ha senso mettere questi metodi quando basta mettere il set pubblico dei campi in alto?? boh
@@ -234,7 +208,6 @@ public class GameObjController : MonoBehaviour
     public void DeclineCommit()
     {
         RemovePending();
-        HideObject();
     }
 
     public void RemovePending()
@@ -261,8 +234,10 @@ public class GameObjController : MonoBehaviour
          */
 
         // Assign transform
-        Transform = memento.GetTransform();
-        gameObject.transform.AssignDeserTransformToOriginalTransform(Transform);
+
+        //Transform = memento.GetTransform();
+        //gameObject.transform.AssignDeserTransformToOriginalTransform(memento.GetTransform()); // questa funziona tho
+        Transform.AssignDeserTransformToOriginalTransform(memento.GetTransform());
 
         // Assign material
         MaterialName = memento.GetMaterialName();
