@@ -38,7 +38,10 @@ public class GameObjController : MonoBehaviour
     public Guid Guid { get; private set; }
     public string PrefabName { get; private set; }
     public string MaterialName { get; private set; }
+
+    // ma mi serve davvero??
     public SerializableTransform Transform;
+
     public ObjectLocation ObjectLocation { get; private set; } = ObjectLocation.None;
 
     // Indicates if the pending obj was received or sent
@@ -176,7 +179,7 @@ public class GameObjController : MonoBehaviour
             case ObjectLocation.Local: // Delete it from the Local scene
                 {
                     // Always run it 
-                    UnsubscribeFromLocalScene();
+                    UnsubscribeAndRemoveFromLocalScene();
 
                     // If the object is only in the local scene - Completely delete it!
                     if (ContainsOnlyFlag(ObjectLocation.Local))
@@ -191,7 +194,7 @@ public class GameObjController : MonoBehaviour
             case ObjectLocation.Global: // Delete it from the Global scene
                 {
                     // Always run these 
-                    UnsubscribeFromGlobalScene();
+                    UnsubscribeAndRemoveFromGlobalScene();
 
                     // If the object is only in the global scene - Make it easier for the other user: copy it in the local scene
                     if (ContainsOnlyFlag(ObjectLocation.Global))
@@ -229,16 +232,15 @@ public class GameObjController : MonoBehaviour
     }
 
     public void DeclineCommit()
-    { 
-
+    {
+        RemovePending();
+        HideObject();
     }
 
-    public void DeclineCommit()
+    public void RemovePending()
     {
-        UnsubscribeFromPendingList();
+        UnsubscribeAndRemoveFromPendingList();
         PendingObjectUserType = UserType.None;
-
-        HideObject();
     }
 
     // ---------------------- BEGIN METHODS FOR 'MEMENTO' PATTERN ----------------------
@@ -336,7 +338,7 @@ public class GameObjController : MonoBehaviour
         AddFlagLocation(ObjectLocation.Pending);
     }
 
-    public void UnsubscribeFromGlobalScene()
+    public void UnsubscribeAndRemoveFromGlobalScene()
     {
         CaretakerScene.Instance.SaveGlobalStateEvent.RemoveListener(SaveGlobalStateAction);
         CaretakerScene.Instance.RestoreGlobalStateEvent.RemoveListener(RestoreGlobalStateAction);
@@ -347,7 +349,7 @@ public class GameObjController : MonoBehaviour
         RemoveFlagLocation(ObjectLocation.Global);
     }
 
-    public void UnsubscribeFromLocalScene()
+    public void UnsubscribeAndRemoveFromLocalScene()
     {
         CaretakerScene.Instance.SaveLocalStateEvent.RemoveListener(SaveLocalStateAction);
         CaretakerScene.Instance.RestoreLocalStateEvent.RemoveListener(RestoreLocalStateAction);
@@ -358,7 +360,7 @@ public class GameObjController : MonoBehaviour
         RemoveFlagLocation(ObjectLocation.Local);
     }
 
-    public void UnsubscribeFromPendingList()
+    public void UnsubscribeAndRemoveFromPendingList()
     {
         CaretakerScene.Instance.SavePendingListEvent.RemoveListener(SavePendingListAction);
         CaretakerScene.Instance.RestorePendingListEvent.RemoveListener(RestorePendingListAction);

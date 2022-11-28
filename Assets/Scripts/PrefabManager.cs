@@ -311,7 +311,9 @@ public class PrefabManager : MonoBehaviour
         GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
 
         // Update transform
-        gObj.transform.AssignDeserTransformToOriginalTransform(transform);
+        gObj.transform.AssignDeserTransformToOriginalTransform(transform); // problema è qua mi sa !
+        gObj.GetComponent<GameObjController>().Transform.AssignDeserTransformToOriginalTransform(transform);
+        //dfgdhyjh
 
         // Change material of the object
         ChangeMaterial(gObj, materialName);

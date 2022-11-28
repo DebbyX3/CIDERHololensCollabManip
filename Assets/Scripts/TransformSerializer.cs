@@ -78,7 +78,7 @@ public struct SerializableVector : IEquatable<SerializableVector>
 }
 
 [Serializable]
-public struct SerializableTransform : IEquatable<SerializableTransform>
+public class SerializableTransform : IEquatable<SerializableTransform>
 {
     public SerializableVector Position { get; set; } 
     public SerializableVector Rotation { get; set; } 
@@ -158,5 +158,12 @@ public static class TransformSerializer
         oldTransform.position = new Vector3(newTransform.Position.X, newTransform.Position.Y, newTransform.Position.Z);
         oldTransform.rotation = new Quaternion(newTransform.Rotation.X, newTransform.Rotation.Y, newTransform.Rotation.Z, newTransform.Rotation.W); 
         oldTransform.localScale = new Vector3(newTransform.Scale.X, newTransform.Scale.Y, newTransform.Scale.Z);
+    }
+
+    public static void AssignDeserTransformToOriginalTransform(this SerializableTransform oldTransform, SerializableTransform newTransform)
+    {
+        oldTransform.Position = new Vector3(newTransform.Position.X, newTransform.Position.Y, newTransform.Position.Z);
+        oldTransform.Rotation = (SerializableVector) new Quaternion(newTransform.Rotation.X, newTransform.Rotation.Y, newTransform.Rotation.Z, newTransform.Rotation.W);
+        oldTransform.Scale = new Vector3(newTransform.Scale.X, newTransform.Scale.Y, newTransform.Scale.Z);
     }
 }
