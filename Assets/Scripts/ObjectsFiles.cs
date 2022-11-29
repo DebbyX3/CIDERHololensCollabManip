@@ -1,19 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using System.Web.Script.Serialization;
 using System.IO;
+using Newtonsoft.Json;
+using System;
+using System.Text;
 
-public class ObjectsFiles : MonoBehaviour
+public class ObjectsFiles
 {
-    public void SaveDictionaryToFile(Dictionary<object, object> dictionary)
+    public static void SaveData(Dictionary<Guid, Memento> obj)
     {
-       // File.WriteAllText("SomeFile.Txt", new JavaScriptSerializer().Serialize(dictionary));
+        string filename = "GlobalLayer-" + DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss");
+        string path = string.Format("{0}/GlobalLayers/{1}.json", Application.persistentDataPath, filename);
+
+        string json = JsonConvert.SerializeObject(obj);
+        byte[] data = Encoding.ASCII.GetBytes(json);
+
+        UnityEngine.Windows.File.WriteAllBytes(path, data);
     }
 
-    /*
-    public Dictionary<object, object> ReadDictionaryFromFile()
+    public static Dictionary<Guid, Memento> ReadData(string filename)
     {
-        return new JavaScriptSerializer().Deserialize<Dictionary<object, object>>(File.ReadAllText("SomeFile.txt"));
-    }*/
+        string path = string.Format("{0}/GlobalLayers/{1}.json", Application.persistentDataPath, filename);
+
+        byte[] data = UnityEngine.Windows.File.ReadAllBytes(path);
+        string json = Encoding.ASCII.GetString(data);
+
+        Dictionary<Guid, Memento> obj = JsonConvert.DeserializeObject<Dictionary<Guid, Memento>>(json);
+
+        return obj;
+    }
 }

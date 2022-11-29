@@ -86,8 +86,6 @@ public class MessagesManager : MonoBehaviour
 
     public void SendVotingCommit(GameObjController gObjCont)
     {
-        //todo forse questo set è da mettere da un'altra parte, nella classe di controller stessa forse?
-        gObjCont.SetPendingObjectUserType(UserType.Sender);
         SendCommit(gObjCont, CommitType.VotingCommit);
     }
 
@@ -195,20 +193,7 @@ public class MessagesManager : MonoBehaviour
     }
 
     public void OnVotingCommitReceived(GameObjMessageInfo gObjMsgInfo)
-    {
-        /*
-         controlla se l'oggetto esiste? ma non lo fa già oncommitreceived?
-        se esiste, allora fai il subscribe al pending list, ma con le sue info aggiornate
-        se non esiste, prima lo crei (dove? nel global? ma poi devi subito ritoglierlo? ma se invece faccio create 
-        in pending? meglio no?) e poi fai il sub al pending - se però faccio create in pending non devo rifare il sub gh
-
-        poi prendi l'oggetto in questione e cambiagli materiale in quello di pending 
-
-        se è nel pending, rendi attivo un bottone del menu global dove si può scegliere se tenere sto oggetto o meno. una volta
-        accettato l'oggetto tenuto è come se ne facessi un forced commit, o no??
-
-         */
-
+    { 
         GameObject gObj;
 
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
@@ -222,6 +207,7 @@ public class MessagesManager : MonoBehaviour
         }
 
         // todo: forse è da spostare direttamente nel create o put existing? boh
+        // o forse solo nel controller a commit ricevuto, si fa una chiamata finale (?)
         gObj.GetComponent<GameObjController>().SetPendingObjectUserType(UserType.Receiver);
 
         // Notify the user that a new commit has arrived
@@ -232,8 +218,6 @@ public class MessagesManager : MonoBehaviour
         // Send commit notification to this device
         UIManager.Instance.SetNotificationButtonActive(true);
     }
-
-    //todo magari un metodo generico oncommitreceived? boh?
 
     // -------------------------- DELETION --------------------------
 

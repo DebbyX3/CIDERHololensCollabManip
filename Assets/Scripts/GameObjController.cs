@@ -166,12 +166,12 @@ public class GameObjController : MonoBehaviour
                 // Always run these 
                 UnsubscribeAndRemoveFromGlobalScene();
 
-                // If the object is only in the global scene - Make it easier for the other user: copy it in the local scene
+                // If the object is only in the global scene - Make it easier for the other user: copy it in the local layer
                 if (ContainsOnlyFlag(ObjectLocation.Global))
                 {
                     if (userType.Equals(UserType.Receiver)) // prima era il sender che lo faceva, ora è il receiver
                     {
-                        CopyObjectInLocal(); // todo to review!
+                        CopyObjectInLocal();
                     }
                     else if (userType.Equals(UserType.Sender))
                     {
@@ -210,7 +210,36 @@ public class GameObjController : MonoBehaviour
 
     public void PrepareVotingCommit()
     {
+        SetPendingObjectUserType(UserType.Sender);
         MessagesManager.Instance.SendVotingCommit(this);
+    }
+    public void AcceptCommit()
+    {
+        
+    }
+
+    // Always called from the Global Layer
+    public void DeclineCommit()
+    {
+        RemovePending();
+
+        // If the obj exists in the global layer, revert to that state
+        if (ObjectLocation.HasFlag(ObjectLocation.Global))
+        {
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+        }
+        else // if it is not in global
+        {
+            if (ObjectLocation.HasFlag(ObjectLocation.Local)) // Then check if it is local
+            {
+                HideObject(); // if thst's the case, just hide it from the global layer
+            }
+            else // if it is not in local, then delete it
+            {
+                GUIDKeeper.RemoveFromList(Guid);
+                Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
+            }
+        }
     }
 
     public void RemovePending()
@@ -218,10 +247,7 @@ public class GameObjController : MonoBehaviour
         UnsubscribeAndRemoveFromPendingList();
         PendingObjectUserType = UserType.None;
     }
-    public void DeclineCommit()
-    {
-        RemovePending();
-    }
+
 
     // ---------------------- END COMMIT METHODS ----------------------
 

@@ -197,7 +197,7 @@ public class UIManager : MonoBehaviour
         // Button 2 - Accept commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
         Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
-        interactableTwo.OnClick.AddListener(() => MessagesManager.Instance.SendForcedCommit(gObjContr));
+        interactableTwo.OnClick.AddListener(() => gObjContr.AcceptCommit());
 
         // Button 3 - Decline commit
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;

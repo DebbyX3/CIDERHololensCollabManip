@@ -148,6 +148,8 @@ public class CaretakerScene : MonoBehaviour
 
         //la funzione di flip fa il cambio da global a local e viceversa
         FlipSceneState();
+
+        ObjectsFiles.SaveData(GlobalListMementos);
     }
 
     public void ChangeSceneToGlobal()
