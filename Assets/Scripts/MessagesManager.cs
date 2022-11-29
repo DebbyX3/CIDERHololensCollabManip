@@ -84,12 +84,6 @@ public class MessagesManager : MonoBehaviour
         SendCommit(gObjCont, CommitType.ForcedCommit);
     }
 
-    public void AcceptCommit(GameObjController gObjCont)
-    {  }
-    
-    public void DeclineCommit(GameObjController gObjCont)
-    { }
-
     public void SendVotingCommit(GameObjController gObjCont)
     {
         //todo forse questo set è da mettere da un'altra parte, nella classe di controller stessa forse?
@@ -134,6 +128,12 @@ public class MessagesManager : MonoBehaviour
                 break;
         }
     }
+    public void AcceptCommit(GameObjController gObjCont)
+    { }
+
+    public void DeclineCommit(GameObjController gObjCont)
+    { }
+
 
     public void OnForcedCommitSent(GameObjController gObjCont)
     {

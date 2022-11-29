@@ -203,6 +203,16 @@ public class GameObjController : MonoBehaviour
 
     // ---------------------- BEGIN COMMIT METHODS ----------------------
 
+    public void PrepareForcedCommit()
+    {
+        MessagesManager.Instance.SendForcedCommit(this);
+    }
+
+    public void PrepareVotingCommit()
+    {
+        MessagesManager.Instance.SendVotingCommit(this);
+    }
+
     public void RemovePending()
     {
         UnsubscribeAndRemoveFromPendingList();

@@ -106,12 +106,12 @@ public class UIManager : MonoBehaviour
         // Button 1 - Forced Commit
         GameObject buttonOne = buttonCollection.transform.Find("ButtonOne").gameObject;
         Interactable interactableOne = buttonOne.GetComponent<Interactable>();
-        interactableOne.OnClick.AddListener(() => MessagesManager.Instance.SendForcedCommit(gObjContr));
+        interactableOne.OnClick.AddListener(() => gObjContr.PrepareForcedCommit());
 
         // Button 2 - Voting Commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
         Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
-        interactableTwo.OnClick.AddListener(() => MessagesManager.Instance.SendVotingCommit(gObjContr));
+        interactableTwo.OnClick.AddListener(() => gObjContr.PrepareVotingCommit());
 
         // Button 3 - Close Menu
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
