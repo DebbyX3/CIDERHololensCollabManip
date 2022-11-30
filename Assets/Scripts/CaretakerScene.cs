@@ -35,7 +35,7 @@ public class CaretakerScene : MonoBehaviour
     */
 
     // keeps mementos of global scene
-    private Dictionary<Guid, Memento> GlobalListMementos { get; } = new Dictionary<Guid, Memento>();
+    private Dictionary<Guid, Memento> GlobalListMementos { get; set;  } = new Dictionary<Guid, Memento>();
 
     // keeps mementos of local scene
     private Dictionary<Guid, Memento> LocalListMementos { get; } = new Dictionary<Guid, Memento>();
@@ -148,8 +148,6 @@ public class CaretakerScene : MonoBehaviour
 
         //la funzione di flip fa il cambio da global a local e viceversa
         FlipSceneState();
-
-        ObjectsFiles.SaveData(GlobalListMementos);
     }
 
     public void ChangeSceneToGlobal()

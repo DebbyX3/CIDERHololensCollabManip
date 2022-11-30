@@ -218,7 +218,11 @@ public class GameObjController : MonoBehaviour
         
     }
 
-    // Always called from the Global Layer
+    // Always called from the Global Layer - not true! può essere chiamato anche come ricezione di messaggio! quindi anche dal 
+    // locale! Quindi DEVO per forza fare un controllo sulla scena in cui sono! e PER FORZA mi sa cambiarla se sono in locale
+    // ma mi conviene farlo qua? oppure lo fa prefab manager? mhm 
+
+    // todo PER FARE QUESTA FUNZIONE DEVO ESSERE SEMPRE IN GLOBAL!!!!! QUINDI CHECCKA COME FAI IN PREFAB MAN!
     public void DeclineCommit()
     {
         RemovePending();
@@ -226,15 +230,21 @@ public class GameObjController : MonoBehaviour
         // If the obj exists in the global layer, revert to that state
         if (ObjectLocation.HasFlag(ObjectLocation.Global))
         {
-            CaretakerScene.Instance.ChangeSceneToGlobal();
+            //meglio fare questo forse, ma devo assicurarmi di essere sempre nel global
+            // ma allora è meglio mettere tutta sta roba nel prefab manager e fare lo switch a global com faccio quando faccio il put, no?
+            // oppure controllare solo se sno in global?
+            CaretakerScene.Instance.RestoreGlobalState(this);
+
+            //operazione molto pesante, ma dovrebbe funzionare lo stesso 
+            //CaretakerScene.Instance.ChangeSceneToGlobal();
         }
         else // if it is not in global
         {
             if (ObjectLocation.HasFlag(ObjectLocation.Local)) // Then check if it is local
             {
-                HideObject(); // if thst's the case, just hide it from the global layer
+                HideObject(); // if that's the case, just hide it from the global layer
             }
-            else // if it is not in local, then delete it
+            else // if it is not in local layer, then delete it
             {
                 GUIDKeeper.RemoveFromList(Guid);
                 Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
