@@ -215,24 +215,27 @@ public class GameObjController : MonoBehaviour
     }
     public void AcceptCommit()
     {
-        
+        //force commit?
     }
 
-    // Always called from the Global Layer - not true! può essere chiamato anche come ricezione di messaggio! quindi anche dal 
-    // locale! Quindi DEVO per forza fare un controllo sulla scena in cui sono! e PER FORZA mi sa cambiarla se sono in locale
-    // ma mi conviene farlo qua? oppure lo fa prefab manager? mhm 
-
-    // todo PER FARE QUESTA FUNZIONE DEVO ESSERE SEMPRE IN GLOBAL!!!!! QUINDI CHECCKA COME FAI IN PREFAB MAN!
+    // todo: maybe move this function in PrefabManager?
     public void DeclineCommit()
     {
         RemovePending();
 
+        bool wasLocalScene = false;
+
+        // Want to edit object in the global scene, so check and switch to it.
+        // Then re-switch to the local one if that's the case
+        if (CaretakerScene.Instance.IsLocalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+            wasLocalScene = true;
+        }
+
         // If the obj exists in the global layer, revert to that state
         if (ObjectLocation.HasFlag(ObjectLocation.Global))
         {
-            //meglio fare questo forse, ma devo assicurarmi di essere sempre nel global
-            // ma allora è meglio mettere tutta sta roba nel prefab manager e fare lo switch a global com faccio quando faccio il put, no?
-            // oppure controllare solo se sno in global?
             CaretakerScene.Instance.RestoreGlobalState(this);
 
             //operazione molto pesante, ma dovrebbe funzionare lo stesso 
@@ -250,12 +253,18 @@ public class GameObjController : MonoBehaviour
                 Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
             }
         }
+
+        // If the previous scene was the global one, reswitch to the global
+        if (wasLocalScene)
+            CaretakerScene.Instance.ChangeSceneToLocal();
     }
 
     public void RemovePending()
     {
         UnsubscribeAndRemoveFromPendingList();
         PendingObjectUserType = UserType.None;
+
+        SetActivePendingMenu(false);
     }
 
 
@@ -269,14 +278,8 @@ public class GameObjController : MonoBehaviour
 
     public void Restore(Memento memento) 
     {
-        // These 3 are commented because a memento should not touch or restore the object guid, its prefab name and location
+        // A memento should not touch or restore the object guid, its prefab name and location
         // It just needs to change the propreties, like position/rot/scale, or colors etc...
-
-        /*
-        Guid = memento.GetGuid();
-        PrefabName = memento.GetPrefabName();
-        ObjectLocation = memento.GetObjectLocation();
-         */
 
         // Assign transform
         Transform.AssignDeserTransformToOriginalTransform(memento.GetTransform());

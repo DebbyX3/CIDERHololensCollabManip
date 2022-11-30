@@ -280,7 +280,9 @@ public class PrefabManager : MonoBehaviour
 
         // Update transform - only if there is actually something to change - if it is a default value do not change
         if (!transform.Equals(SerializableTransform.Default()))
+        {
             gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);
+        }
 
         // Change material of the object - only if there is actually something to change - if it is a default value do not change
         if (!materialName.Equals(""))

@@ -22,6 +22,7 @@ public struct GameObjMessageInfo {
         MaterialName = materialName;
         CommitType = commitType;
     }
+
     public GameObjMessageInfo(GameObjController gObj, CommitType commitType) {
         GameObjectGuid = gObj.Guid;
         Transform = gObj.Transform;

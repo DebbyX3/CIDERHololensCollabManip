@@ -16,6 +16,13 @@ public enum CommitType : int
     VotingCommit
 }
 
+public enum DeclineType : int 
+{
+    None,
+    DeclineCommit,
+    DeclineDeletion
+}
+
 public class MessagesManager : MonoBehaviour
 {
     public static MessagesManager Instance { get; private set; }
@@ -79,6 +86,8 @@ public class MessagesManager : MonoBehaviour
 
     // -------------------------- COMMITS --------------------------
 
+    // ------------ SEND COMMIT ------------
+
     public void SendForcedCommit(GameObjController gObjCont)
     {
         SendCommit(gObjCont, CommitType.ForcedCommit);
@@ -126,22 +135,11 @@ public class MessagesManager : MonoBehaviour
                 break;
         }
     }
-    public void AcceptCommit(GameObjController gObjCont)
-    { }
-
-    public void DeclineCommit(GameObjController gObjCont)
-    { }
-
 
     public void OnForcedCommitSent(GameObjController gObjCont)
     {
         PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
         gObjCont.RemovePending();
-
-        // l'unico motivo per cui è qua è che fa il subscribe al global, ma scusa, lo fa già prima di iniviare il commit! 
-        // chiamando ExecuteForcedCommit giusramente! PErò spe, ExecuteForcedCommit non contiene il subscribe, quindi è per quello
-        // che chiamo UpdateObjectGlobal hmhm
-        // TODO da migliorare sta cosa oscena
     }
 
     public void OnVotingCommitSent(GameObjController gObjCont)
@@ -149,6 +147,16 @@ public class MessagesManager : MonoBehaviour
         PrefabManager.Instance.PutExistingObjectInPending(gObjCont.Guid, gObjCont.Transform);
         // todo da fare qualcosa che boh
     }
+
+    public void SendDeclineCommit(GameObjController gObjCont)
+    {
+        
+    }
+
+    public void AcceptCommit(GameObjController gObjCont)
+    { }
+
+    // ------------ RECEIVE COMMIT ------------
 
     // todo forse questo metodo è da spostare in una classe più appropriata?
     // cioè non dovrebbe essere la classe di commit che controlla se l'oggetto esiste già porca l'oca!!
@@ -179,9 +187,7 @@ public class MessagesManager : MonoBehaviour
                 gObjMsgInfo.PrefabName, gObjMsgInfo.MaterialName, gObjMsgInfo.Transform);
 
             // Note: the instance is added in the GUIDKeeper.List in the Awake directly at object creation!
-        }
-
-        
+        }        
 
         // Notify the user that a new commit has arrived
 

@@ -6,15 +6,12 @@ using UnityEngine;
 [Serializable]
 public class Memento
 {
-
     // originator (gobjcontroller) info
     private Guid Guid;
     private string PrefabName;
     private string MaterialName;
     private SerializableTransform Transform;
     private ObjectLocation ObjectLocation;
-
-    // memento info
 
     public Memento(Guid guid, string prefabName, string materialName, SerializableTransform transform, ObjectLocation objectLocation) {
         Guid = guid;
@@ -24,7 +21,7 @@ public class Memento
         ObjectLocation = objectLocation;
     }
 
-    // Not used because the originator does not have to modify the GUID, the prefabname or the location!!!!
+    // Not used because the originator does not have to modify the GUID, the prefabname or the location
     /*
     public Guid GetGuid() {
         return Guid;
