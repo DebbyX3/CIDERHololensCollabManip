@@ -1,18 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System;
 
-public class DeclineMessage : MonoBehaviour
+/*
+ * Send this message to signal the other user to decline a voting action, specified by enum DeclineType (in MessagesManager)
+*/
+
+[Serializable]
+public struct DeclineMessageInfo
 {
-    // Start is called before the first frame update
-    void Start()
+    public Guid GameObjectGuid { get; private set; }
+    public DeclineType DeclineType { get; private set; }
+
+    public DeclineMessageInfo(Guid guid, DeclineType declineType)
     {
-        
+        GameObjectGuid = guid;
+        DeclineType = declineType;
+    }
+}
+
+[Serializable]
+public class DeclineMessage : Message
+{
+    public DeclineMessage(Guid id, DeclineMessageInfo info) : base(id, info, MessageType.DeclineMessage) { }
+    public DeclineMessage(DeclineMessageInfo info) : base(info, MessageType.DeclineMessage) { }
+    public DeclineMessage(string id, DeclineMessageInfo info) : base(id, info, MessageType.DeclineMessage) { }
+
+    public override void ExecuteMessage()
+    {
+        MessagesManager.Instance.OnDeclineReceived(this);
     }
 
-    // Update is called once per frame
-    void Update()
+    public DeclineMessageInfo GetMsgInfo()
     {
-        
+        return (DeclineMessageInfo)Info;
     }
 }

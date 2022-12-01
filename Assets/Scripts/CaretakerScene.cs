@@ -174,7 +174,8 @@ public class CaretakerScene : MonoBehaviour
 
     public void SaveGlobalState(GameObjController gObj)
     {
-        GlobalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        if (!PendingListRequests.ContainsKey(gObj.Guid))
+            GlobalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
     public void SaveLocalState(GameObjController gObj)

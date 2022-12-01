@@ -121,7 +121,7 @@ public class UIManager : MonoBehaviour
         // Button 4 - Remove from local
         GameObject buttonFour = buttonCollection.transform.Find("ButtonFour").gameObject;
         Interactable interactableFour = buttonFour.GetComponent<Interactable>();
-        interactableFour.OnClick.AddListener(() => gObjContr.DeleteObject(ObjectLocation.Local, UserType.Sender));
+        interactableFour.OnClick.AddListener(() => gObjContr.DeleteObject(ObjectLocation.Local));
 
         // Button 5 - Duplicate
         GameObject buttonFive = buttonCollection.transform.Find("ButtonFive").gameObject;
@@ -164,7 +164,7 @@ public class UIManager : MonoBehaviour
         // Button 2 - Delete object from global scene
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
         Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
-        interactableTwo.OnClick.AddListener(() => gObjContr.DeleteObject(ObjectLocation.Global, UserType.Sender));
+        interactableTwo.OnClick.AddListener(() => gObjContr.DeleteObject(ObjectLocation.Global));
 
         // Button 6 - Close menu
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;

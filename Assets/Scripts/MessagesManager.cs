@@ -41,7 +41,8 @@ public class MessagesManager : MonoBehaviour
     }
 
     // Based on the type of message, compose the object to send and then send it
-    private void CreateAndSendMessage(GameObjController gObjCont, MessageType messageType, CommitType commitType = CommitType.None)
+    private void CreateAndSendMessage(GameObjController gObjCont, MessageType messageType, CommitType commitType = CommitType.None,
+                                      DeclineType declineType = DeclineType.None)
     {
         Message msg = null;
 
@@ -62,6 +63,17 @@ public class MessagesManager : MonoBehaviour
                     msg = new GameObjMessage(new GameObjMessageInfo
                         (gObjCont.Guid, gObjCont.Transform, gObjCont.PrefabName, gObjCont.MaterialName, commitType));
                 }
+
+                break;
+            }
+
+            case MessageType.DeclineMessage:
+            {
+                if (declineType != DeclineType.None)
+                {
+                    msg = new DeclineMessage(new DeclineMessageInfo(gObjCont.Guid, declineType));
+                }
+
                 break;
             }
 
@@ -100,21 +112,28 @@ public class MessagesManager : MonoBehaviour
 
     private void SendCommit(GameObjController gObjCont, CommitType commitType)
     {
+        // non servono mi sa?
+        /*
         switch (commitType)
         {
             case CommitType.ForcedCommit:
+            {
                 CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
                 break;
+            }
                 
             case CommitType.VotingCommit:
+            {
                 CaretakerScene.Instance.ExecuteVotingCommit(gObjCont);
                 break;
+            }
                 
             default:
                 break;
         }
+        */
 
-        CreateAndSendMessage(gObjCont, MessageType.GameObjMessage, commitType);
+        CreateAndSendMessage(gObjCont, MessageType.GameObjMessage, commitType: commitType);
 
         // Play sound on commit
         UIManager.Instance.CommitSentSound.Play();
@@ -124,33 +143,32 @@ public class MessagesManager : MonoBehaviour
         switch (commitType)
         {
             case CommitType.ForcedCommit:
+            {
                 OnForcedCommitSent(gObjCont);
                 break;
+            }
 
             case CommitType.VotingCommit:
+            {
                 OnVotingCommitSent(gObjCont);
                 break;
+            }
 
             default:
                 break;
         }
     }
 
-    public void OnForcedCommitSent(GameObjController gObjCont)
+    private void OnForcedCommitSent(GameObjController gObjCont)
     {
         PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
         gObjCont.RemovePending();
     }
 
-    public void OnVotingCommitSent(GameObjController gObjCont)
+    private void OnVotingCommitSent(GameObjController gObjCont)
     {
         PrefabManager.Instance.PutExistingObjectInPending(gObjCont.Guid, gObjCont.Transform);
         // todo da fare qualcosa che boh
-    }
-
-    public void SendDeclineCommit(GameObjController gObjCont)
-    {
-        
     }
 
     public void AcceptCommit(GameObjController gObjCont)
@@ -171,23 +189,27 @@ public class MessagesManager : MonoBehaviour
             OnVotingCommitReceived(gObjMsgInfo);
     }
 
-    public void OnForcedCommitReceived(GameObjMessageInfo gObjMsgInfo)
+    private void OnForcedCommitReceived(GameObjMessageInfo gObjMsgInfo)
     {
+        GameObject gObj;
+
         // If the receiver already has the object in one or both scenes
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
-            PrefabManager.Instance.PutExistingObjectInGlobal(gObjMsgInfo.GameObjectGuid, 
+            gObj = PrefabManager.Instance.PutExistingObjectInGlobal(gObjMsgInfo.GameObjectGuid, 
                 gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
         }
         // If it does NOT have the object
         else
         {
             // Spawn the obj in a specific pos & rot and make it subscribe to the global scene events
-            PrefabManager.Instance.CreateNewObjectInGlobal(gObjMsgInfo.GameObjectGuid, 
+            gObj = PrefabManager.Instance.CreateNewObjectInGlobal(gObjMsgInfo.GameObjectGuid,
                 gObjMsgInfo.PrefabName, gObjMsgInfo.MaterialName, gObjMsgInfo.Transform);
 
             // Note: the instance is added in the GUIDKeeper.List in the Awake directly at object creation!
-        }        
+        }
+
+        gObj.GetComponent<GameObjController>().OnForcedCommitReceived();
 
         // Notify the user that a new commit has arrived
 
@@ -198,23 +220,21 @@ public class MessagesManager : MonoBehaviour
         UIManager.Instance.SetNotificationButtonActive(true);
     }
 
-    public void OnVotingCommitReceived(GameObjMessageInfo gObjMsgInfo)
-    { 
+    private void OnVotingCommitReceived(GameObjMessageInfo gObjMsgInfo)
+    {
         GameObject gObj;
 
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
             gObj = PrefabManager.Instance.PutExistingObjectInPending(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform);
         }
-        else 
+        else
         {
             gObj = PrefabManager.Instance.CreateNewObjectInPending(gObjMsgInfo.GameObjectGuid,
                 gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
         }
 
-        // todo: forse è da spostare direttamente nel create o put existing? boh
-        // o forse solo nel controller a commit ricevuto, si fa una chiamata finale (?)
-        gObj.GetComponent<GameObjController>().SetPendingObjectUserType(UserType.Receiver);
+        gObj.GetComponent<GameObjController>().OnVotingCommitReceived();
 
         // Notify the user that a new commit has arrived
 
@@ -262,7 +282,7 @@ public class MessagesManager : MonoBehaviour
     {
         DeletionMessageInfo deletionMsgInfo = deletionMsg.GetMsgInfo();
 
-        GameObjController gObjController =  GUIDKeeper.GetGObjFromGuid(deletionMsgInfo.GameObjectGuid)
+        GameObjController gObjController = GUIDKeeper.GetGObjFromGuid(deletionMsgInfo.GameObjectGuid)
                                             .GetComponent<GameObjController>();
 
         gObjController.DeleteObject(ObjectLocation.Global, UserType.Receiver);
@@ -280,4 +300,57 @@ public class MessagesManager : MonoBehaviour
         // da globale ma messo in locale' allora mostro la notifica
         // NON MOSTRARE NOTIFICA IN CONTROLLER!!! MA FARLO QUA EH!!!
     }
+
+    // -------------------------- DECLINE --------------------------
+
+    public void SendDeclineCommit(GameObjController gObjCont)
+    {
+        SendDecline(gObjCont, DeclineType.DeclineCommit);
+    }
+
+    public void SendDeclineDeletion(GameObjController gObjCont)
+    {
+        SendDecline(gObjCont, DeclineType.DeclineDeletion);
+    }
+
+    private void SendDecline(GameObjController gObjCont, DeclineType declineType)
+    {
+        CreateAndSendMessage(gObjCont, MessageType.DeclineMessage, declineType: declineType);
+
+        // Play sound
+        UIManager.Instance.CommitSentSound.Play();
+
+        // todo maybe display a dialog/confirmation box?
+    }
+
+    public void OnDeclineReceived(DeclineMessage declineMessage)
+    {
+        DeclineMessageInfo declineMsgInfo = declineMessage.GetMsgInfo();
+
+        if (declineMsgInfo.DeclineType.Equals(DeclineType.DeclineCommit))
+            OnDeclineCommitReceived(declineMsgInfo);
+        else if (declineMsgInfo.DeclineType.Equals(DeclineType.DeclineDeletion))
+            OnDeclineDeletionReceived(declineMsgInfo);
+    }
+
+    private void OnDeclineCommitReceived(DeclineMessageInfo declineMsgInfo)
+    {
+        GameObjController gObjController = GUIDKeeper.GetGObjFromGuid(declineMsgInfo.GameObjectGuid)
+                                            .GetComponent<GameObjController>();
+
+        gObjController.DeclineCommit(UserType.Receiver);
+
+        // Notify the user that a new thing has arrived
+
+        // Play notification sound
+        UIManager.Instance.NotificationSound.Play();
+
+        // Send commit notification to this device
+        UIManager.Instance.SetNotificationButtonActive(true);
+
+        //todo: show the user a notification in case the global deletion generates a new local obj}
+    }
+
+    private void OnDeclineDeletionReceived(DeclineMessageInfo declineMsgInfo)
+    { }
 }

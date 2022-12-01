@@ -8,14 +8,16 @@ using SysDiag = System.Diagnostics;
 using System.Runtime.Serialization;
 
 [Serializable]
-public struct GameObjMessageInfo {
+public struct GameObjMessageInfo
+{
     public Guid GameObjectGuid { get; private set; }
     public SerializableTransform Transform { get; private set; }
     public string PrefabName { get; private set; }
     public string MaterialName { get; private set; }
     public CommitType CommitType { get; private set; }
 
-    public GameObjMessageInfo(Guid gameObjectGuid, SerializableTransform transform, string prefabName, string materialName, CommitType commitType) {
+    public GameObjMessageInfo(Guid gameObjectGuid, SerializableTransform transform, string prefabName, string materialName, CommitType commitType)
+    {
         GameObjectGuid = gameObjectGuid;
         Transform = transform;
         PrefabName = prefabName;
@@ -23,21 +25,11 @@ public struct GameObjMessageInfo {
         CommitType = commitType;
     }
 
-    public GameObjMessageInfo(GameObjController gObj, CommitType commitType) {
-        GameObjectGuid = gObj.Guid;
-        Transform = gObj.Transform;
-        PrefabName = gObj.PrefabName;
-        MaterialName = gObj.MaterialName;
-        CommitType = commitType;
-    }
+    public GameObjMessageInfo(GameObjController gObj, CommitType commitType)
+        : this(gObj.Guid, gObj.Transform, gObj.PrefabName, gObj.MaterialName, commitType) { }
 
-    public GameObjMessageInfo(Guid gameObjectGuid, Transform transform, string prefabName, string materialName, CommitType commitType) {
-        GameObjectGuid = gameObjectGuid;
-        Transform = new SerializableTransform(transform.position, transform.rotation, transform.lossyScale);
-        PrefabName = prefabName;
-        MaterialName = materialName;
-        CommitType = commitType;
-    }
+    public GameObjMessageInfo(Guid gameObjectGuid, Transform transform, string prefabName, string materialName, CommitType commitType)
+       : this(gameObjectGuid, (SerializableTransform)transform, prefabName, materialName, commitType) { }
 }
 
 //---------------

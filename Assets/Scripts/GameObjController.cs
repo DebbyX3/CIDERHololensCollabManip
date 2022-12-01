@@ -141,8 +141,8 @@ public class GameObjController : MonoBehaviour
     /// Removes the object from the scene indicated by "fromScene" based on the type of user "userType" (Sender/Receiver)
     /// </summary>
     /// <param name="fromScene">The scene in which we want to delete the object</param>
-    /// <param name="userType">The type of user: sender of the deletion or receiver of the deletion</param>
-    public void DeleteObject(ObjectLocation fromScene, UserType userType)
+    /// <param name="userType">The type of user: sender of the deletion or receiver of the deletion. Default value: sender</param>
+    public void DeleteObject(ObjectLocation fromScene, UserType userType = UserType.Sender)
     {
         switch (fromScene)
         {
@@ -213,13 +213,55 @@ public class GameObjController : MonoBehaviour
         SetPendingObjectUserType(UserType.Sender);
         MessagesManager.Instance.SendVotingCommit(this);
     }
+
+    public void OnForcedCommitReceived()
+    {
+        bool wasLocalScene = false;
+
+        // Want to modify object in the global scene, so check and switch to it.
+        // Then re-switch to the local one if that's the case
+        if (CaretakerScene.Instance.IsLocalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+            wasLocalScene = true;
+        }
+
+        SetActiveManipulation(false);
+        CaretakerScene.Instance.SaveGlobalState(this);
+
+        if (wasLocalScene)
+            CaretakerScene.Instance.ChangeSceneToLocal();
+    }
+
+    public void OnVotingCommitReceived()
+    {
+        bool wasLocalScene = false;
+
+        // Want to modify object in the global scene, so check and switch to it.
+        // Then re-switch to the local one if that's the case
+        if (CaretakerScene.Instance.IsLocalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+            wasLocalScene = true;
+        }
+
+        SetPendingObjectUserType(UserType.Receiver);
+        SetActiveGlobalMenu(false);
+        SetActiveManipulation(false);
+
+        CaretakerScene.Instance.SavePendingState(this);
+
+        if (wasLocalScene)
+            CaretakerScene.Instance.ChangeSceneToLocal();
+    }    
+
     public void AcceptCommit()
     {
         //force commit?
     }
 
-    // todo: maybe move this function in PrefabManager?
-    public void DeclineCommit()
+    // todo: maybe move this function in PrefabManager? nah?
+    public void DeclineCommit(UserType userType = UserType.Sender)
     {
         RemovePending();
 
@@ -238,8 +280,7 @@ public class GameObjController : MonoBehaviour
         {
             CaretakerScene.Instance.RestoreGlobalState(this);
 
-            //operazione molto pesante, ma dovrebbe funzionare lo stesso 
-            //CaretakerScene.Instance.ChangeSceneToGlobal();
+            //operazione molto pesante, ma dovrebbe funzionare lo stesso: CaretakerScene.Instance.ChangeSceneToGlobal();
         }
         else // if it is not in global
         {
@@ -247,7 +288,7 @@ public class GameObjController : MonoBehaviour
             {
                 HideObject(); // if that's the case, just hide it from the global layer
             }
-            else // if it is not in local layer, then delete it
+            else // if it's not in local layer, then delete it
             {
                 GUIDKeeper.RemoveFromList(Guid);
                 Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
@@ -257,6 +298,9 @@ public class GameObjController : MonoBehaviour
         // If the previous scene was the global one, reswitch to the global
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();
+
+        if (userType.Equals(UserType.Sender))
+            MessagesManager.Instance.SendDeclineCommit(this); // Send decline commit message
     }
 
     public void RemovePending()
@@ -414,6 +458,8 @@ public class GameObjController : MonoBehaviour
             // If the object is ALSO in the pending list
             else if (ObjectLocation.HasFlag(ObjectLocation.Pending))
             {
+                SetActiveGlobalMenu(false);
+
                 // Show pending menu only if the pending obj was RECEIVED
                 if (PendingObjectUserType.Equals(UserType.Receiver))
                     SetActivePendingMenu(true);
