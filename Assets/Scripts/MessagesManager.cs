@@ -161,18 +161,20 @@ public class MessagesManager : MonoBehaviour
 
     private void OnForcedCommitSent(GameObjController gObjCont)
     {
-        PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
         gObjCont.RemovePending();
+        PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
     }
 
     private void OnVotingCommitSent(GameObjController gObjCont)
     {
-        PrefabManager.Instance.PutExistingObjectInPending(gObjCont.Guid, gObjCont.Transform);
+        PrefabManager.Instance.PutExistingObjectInPending(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
         // todo da fare qualcosa che boh
     }
 
     public void AcceptCommit(GameObjController gObjCont)
-    { }
+    {
+        SendForcedCommit(gObjCont);
+    }
 
     // ------------ RECEIVE COMMIT ------------
 
@@ -226,12 +228,13 @@ public class MessagesManager : MonoBehaviour
 
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
-            gObj = PrefabManager.Instance.PutExistingObjectInPending(gObjMsgInfo.GameObjectGuid, gObjMsgInfo.Transform);
+            gObj = PrefabManager.Instance.PutExistingObjectInPending(gObjMsgInfo.GameObjectGuid, 
+                gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
         }
         else
         {
             gObj = PrefabManager.Instance.CreateNewObjectInPending(gObjMsgInfo.GameObjectGuid,
-                gObjMsgInfo.PrefabName, gObjMsgInfo.Transform);
+                gObjMsgInfo.PrefabName, gObjMsgInfo.MaterialName, gObjMsgInfo.Transform);
         }
 
         gObj.GetComponent<GameObjController>().OnVotingCommitReceived();

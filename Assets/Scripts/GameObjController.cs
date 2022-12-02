@@ -124,7 +124,7 @@ public class GameObjController : MonoBehaviour
         Guid = guid;
 
         if (GUIDKeeper.ContainsGuid(oldGuid))
-        { //era guid 
+        {
             GUIDKeeper.RemoveFromList(oldGuid);
         }
 
@@ -141,7 +141,7 @@ public class GameObjController : MonoBehaviour
     /// Removes the object from the scene indicated by "fromScene" based on the type of user "userType" (Sender/Receiver)
     /// </summary>
     /// <param name="fromScene">The scene in which we want to delete the object</param>
-    /// <param name="userType">The type of user: sender of the deletion or receiver of the deletion. Default value: sender</param>
+    /// <param name="userType">The type of user: sender of the deletion or receiver of the deletion. Default value: Sender</param>
     public void DeleteObject(ObjectLocation fromScene, UserType userType = UserType.Sender)
     {
         switch (fromScene)
@@ -151,8 +151,10 @@ public class GameObjController : MonoBehaviour
                 // Always run it 
                 UnsubscribeAndRemoveFromLocalScene();
 
-                // If the object is only in the local scene - Completely delete it!
-                if (ContainsOnlyFlag(ObjectLocation.Local))
+                // If there are no flags, it means that the previous call deleted the only flag, but the method only removes
+                // the local Flag! So, the object has no flags (thus it only had the local one)
+                // the object is/was only in the local scene: completely delete it!
+                if (ContainsOnlyFlag(ObjectLocation.None))
                 {
                     GUIDKeeper.RemoveFromList(Guid);
                     Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
@@ -166,10 +168,12 @@ public class GameObjController : MonoBehaviour
                 // Always run these 
                 UnsubscribeAndRemoveFromGlobalScene();
 
-                // If the object is only in the global scene - Make it easier for the other user: copy it in the local layer
-                if (ContainsOnlyFlag(ObjectLocation.Global))
+                // If there are no flags, it means that the previous call deleted the only flag, but the method only removes
+                // the global Flag! So, the object has no flags (thus it only had the globa one)
+                // the object is/was only in the global scene: completely delete it!
+                if (ContainsOnlyFlag(ObjectLocation.None))
                 {
-                    if (userType.Equals(UserType.Receiver)) // prima era il sender che lo faceva, ora è il receiver
+                    if (userType.Equals(UserType.Receiver))
                     {
                         CopyObjectInLocal();
                     }
@@ -227,7 +231,7 @@ public class GameObjController : MonoBehaviour
         }
 
         SetActiveManipulation(false);
-        CaretakerScene.Instance.SaveGlobalState(this);
+        //CaretakerScene.Instance.SaveGlobalState(this);
 
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();
@@ -249,7 +253,7 @@ public class GameObjController : MonoBehaviour
         SetActiveGlobalMenu(false);
         SetActiveManipulation(false);
 
-        CaretakerScene.Instance.SavePendingState(this);
+        //CaretakerScene.Instance.SavePendingState(this);
 
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();
@@ -257,6 +261,7 @@ public class GameObjController : MonoBehaviour
 
     public void AcceptCommit()
     {
+        MessagesManager.Instance.AcceptCommit(this);
         //force commit?
     }
 
@@ -380,7 +385,7 @@ public class GameObjController : MonoBehaviour
         CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(RestoreGlobalStateAction);
 
         // Add global location to object location
-        AddFlagLocation(ObjectLocation.Global);
+        AddFlagToObjectLocation(ObjectLocation.Global);
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -390,7 +395,7 @@ public class GameObjController : MonoBehaviour
         CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(RestoreLocalStateAction);
 
         // Add local location to object location
-        AddFlagLocation(ObjectLocation.Local);
+        AddFlagToObjectLocation(ObjectLocation.Local);
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -399,7 +404,7 @@ public class GameObjController : MonoBehaviour
         CaretakerScene.Instance.SavePendingListEvent.AddListener(SavePendingListAction);
         CaretakerScene.Instance.RestorePendingListEvent.AddListener(RestorePendingListAction);
 
-        AddFlagLocation(ObjectLocation.Pending);
+        AddFlagToObjectLocation(ObjectLocation.Pending);
     }
 
     public void UnsubscribeAndRemoveFromGlobalScene()
@@ -410,7 +415,7 @@ public class GameObjController : MonoBehaviour
         CaretakerScene.Instance.RemoveFromGlobalList(Guid);
 
         // Remove global location from object location
-        RemoveFlagLocation(ObjectLocation.Global);
+        RemoveFlagFromObjectLocation(ObjectLocation.Global);
     }
 
     public void UnsubscribeAndRemoveFromLocalScene()
@@ -421,7 +426,7 @@ public class GameObjController : MonoBehaviour
         CaretakerScene.Instance.RemoveFromLocalList(Guid);
 
         // Remove local location from object location
-        RemoveFlagLocation(ObjectLocation.Local);
+        RemoveFlagFromObjectLocation(ObjectLocation.Local);
     }
 
     public void UnsubscribeAndRemoveFromPendingList()
@@ -431,7 +436,7 @@ public class GameObjController : MonoBehaviour
 
         CaretakerScene.Instance.RemoveFromPendingList(Guid);
 
-        RemoveFlagLocation(ObjectLocation.Pending);
+        RemoveFlagFromObjectLocation(ObjectLocation.Pending);
     }
 
     // Always hide the object on scene change!
@@ -522,14 +527,17 @@ public class GameObjController : MonoBehaviour
 
     // ------------------ FLAGS ------------------
 
-    private void AddFlagLocation(ObjectLocation flagToAdd)
+    private void AddFlagToObjectLocation(ObjectLocation flagToAdd)
     {
         ObjectLocation |= flagToAdd;
     }
 
-    private void RemoveFlagLocation(ObjectLocation flagToRemove)
+    private bool RemoveFlagFromObjectLocation(ObjectLocation flagToRemove)
     {
+        bool hasFlag = ObjectLocation.HasFlag(flagToRemove);
         ObjectLocation &= ~flagToRemove;
+
+        return hasFlag;
     }
 
     public bool ContainsOnlyFlag(ObjectLocation flag)

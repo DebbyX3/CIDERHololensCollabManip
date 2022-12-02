@@ -35,13 +35,13 @@ public class CaretakerScene : MonoBehaviour
     */
 
     // keeps mementos of global scene
-    private Dictionary<Guid, Memento> GlobalListMementos { get; set;  } = new Dictionary<Guid, Memento>();
+    public Dictionary<Guid, Memento> GlobalListMementos { get; set;  } = new Dictionary<Guid, Memento>();
 
     // keeps mementos of local scene
-    private Dictionary<Guid, Memento> LocalListMementos { get; } = new Dictionary<Guid, Memento>();
+    public Dictionary<Guid, Memento> LocalListMementos { get; } = new Dictionary<Guid, Memento>();
 
     // not sure about the use of a Memento object here
-    private Dictionary<Guid, Memento> PendingListRequests { get; } = new Dictionary<Guid, Memento>();
+    public Dictionary<Guid, Memento> PendingListRequests { get; } = new Dictionary<Guid, Memento>();
 
     private Location SceneState = Location.LocalLayer;
 
@@ -231,8 +231,9 @@ public class CaretakerScene : MonoBehaviour
             // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
             gObj.gameObject.SetActive(true);
             gObj.Restore(value);
+
+            // todo? non molto todo ma vabbè, cambia solo il materiale! e non il nome mi raccomando!
             PrefabManager.Instance.ChangeMaterialPendingState(gObj.gameObject);
-            // todo: change material of object, but do not change the field! maybe?
         }
         else
         {
