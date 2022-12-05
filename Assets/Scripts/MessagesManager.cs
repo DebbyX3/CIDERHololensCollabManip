@@ -194,10 +194,17 @@ public class MessagesManager : MonoBehaviour
     private void OnForcedCommitReceived(GameObjMessageInfo gObjMsgInfo)
     {
         GameObject gObj;
+        GameObjController gObjCont;
 
         // If the receiver already has the object in one or both scenes
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
+            gObj = GUIDKeeper.GetGObjFromGuid(gObjMsgInfo.GameObjectGuid);
+            gObjCont = gObj.GetComponent<GameObjController>();
+
+            // Important: remove pending before putting object in global scene
+            gObjCont.RemovePending(); // todo: da fare anche in onvotingcommitreceived?
+
             gObj = PrefabManager.Instance.PutExistingObjectInGlobal(gObjMsgInfo.GameObjectGuid, 
                 gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
         }
