@@ -6,13 +6,14 @@ using TMPro;
 
 public class SlatePrefabsManager : MonoBehaviour
 {
-    public GameObject SlateColor;
+    private GameObject SlateColor;
     private GameObject UGUIButtons;
 
     private void Start()
     {
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
-        
+        SlateColor = UIManager.Instance.SlateColor;
+
         // Put this call in Start because the slate needs to be populated only the first time! Otherwise, I would have put it in OnEnable
         PopulateSlate();
     }

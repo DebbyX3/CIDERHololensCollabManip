@@ -1478,7 +1478,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &676763815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1696,7 +1696,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &874715597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1709,7 +1709,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aeb557f9c7358f04081d04c39598d800, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IpToSend: 157.27.147.5
+  IpToSend: 157.27.156.9
   PortToSend: 60000
 --- !u!4 &874715598
 Transform:
@@ -2677,7 +2677,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c532d787887a49498cde66674ccdf5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SlateColor: {fileID: 0}
 --- !u!1 &1210558079
 GameObject:
   m_ObjectHideFlags: 0
@@ -3163,7 +3162,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c532d787887a49498cde66674ccdf5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SlateColor: {fileID: 150033285}
 --- !u!114 &1769365791 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5347967211681601084, guid: 1b29fd1c30c874949bad77da76eb81b7, type: 3}
@@ -3450,6 +3448,10 @@ PrefabInstance:
       propertyPath: constraintsManager
       value: 
       objectReference: {fileID: 841122029}
+    - target: {fileID: 8499781147640819945, guid: ae76aea696100e141af5aab810d21e7b, type: 3}
+      propertyPath: twoHandedManipulationType
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 8499781147640819945, guid: ae76aea696100e141af5aab810d21e7b, type: 3}
       propertyPath: onHoverEntered.m_PersistentCalls.m_Calls.Array.size
       value: 0

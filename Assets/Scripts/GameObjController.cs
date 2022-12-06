@@ -157,7 +157,7 @@ public class GameObjController : MonoBehaviour
                 if (ContainsOnlyFlag(ObjectLocation.None))
                 {
                     GUIDKeeper.RemoveFromList(Guid);
-                    Destroy(gameObject); //also destroy its children, e.g.: menus/buttons
+                    Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                    
                 }
 
                 break;
@@ -180,7 +180,7 @@ public class GameObjController : MonoBehaviour
                     else if (userType.Equals(UserType.Sender))
                     {
                         GUIDKeeper.RemoveFromList(Guid);
-                        Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
+                        Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                            
                     }
                 }
 
@@ -296,7 +296,7 @@ public class GameObjController : MonoBehaviour
             else // if it's not in local layer, then delete it
             {
                 GUIDKeeper.RemoveFromList(Guid);
-                Destroy(gameObject); //also destroy its children, e.g.: menus/buttons    
+                Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                    
             }
         }
 
@@ -384,6 +384,13 @@ public class GameObjController : MonoBehaviour
         CaretakerScene.Instance.SaveGlobalStateEvent.AddListener(SaveGlobalStateAction);
         CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(RestoreGlobalStateAction);
 
+        Debug.Log(SaveGlobalStateAction.GetHashCode());
+        foreach (Delegate d in SaveGlobalStateAction.GetInvocationList())
+        {
+            Debug.Log(d.Method);
+        }
+        
+
         // Add global location to object location
         AddFlagToObjectLocation(ObjectLocation.Global);
     }
@@ -393,6 +400,12 @@ public class GameObjController : MonoBehaviour
     {
         CaretakerScene.Instance.SaveLocalStateEvent.AddListener(SaveLocalStateAction);
         CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(RestoreLocalStateAction);
+
+        Debug.Log(SaveLocalStateAction.GetHashCode());
+        foreach (Delegate d in SaveLocalStateAction.GetInvocationList())
+        {
+            Debug.Log(d.Method.Name);
+        }
 
         // Add local location to object location
         AddFlagToObjectLocation(ObjectLocation.Local);
