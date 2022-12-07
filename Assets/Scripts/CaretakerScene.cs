@@ -175,17 +175,20 @@ public class CaretakerScene : MonoBehaviour
     public void SaveGlobalState(GameObjController gObj)
     {
         if (!PendingListRequests.ContainsKey(gObj.Guid))
-            GlobalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+            if (gObj.ObjectLocation.HasFlag(ObjectLocation.Global))
+                GlobalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
     public void SaveLocalState(GameObjController gObj)
     {
-        LocalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Local))
+            LocalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
     public void SavePendingState(GameObjController gObj)
     {
-        PendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Pending))
+            PendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
     public void RestoreGlobalState(GameObjController gObj)
