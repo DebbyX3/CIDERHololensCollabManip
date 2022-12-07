@@ -33,6 +33,14 @@ public enum ObjectLocation
     Pending = 4
 }
 
+/*
+public enum Deleted
+{ 
+    None = 0,
+    DeletedFromGlobal = 1,
+    DeleteFromLocal = 2
+}*/
+
 public class GameObjController : MonoBehaviour
 {
     public Guid Guid { get; private set; }
@@ -48,6 +56,8 @@ public class GameObjController : MonoBehaviour
 
     // Indicates if the pending obj was received or sent
     public UserType PendingObjectUserType { get; private set; } = UserType.None;
+
+    //private Deleted DeletedFrom { get; set; } = Deleted.None;
 
     // Need to keep the references to the unity actions in order to disable them
     private UnityAction SaveGlobalStateAction;
@@ -157,7 +167,7 @@ public class GameObjController : MonoBehaviour
                 if (ContainsOnlyFlag(ObjectLocation.None))
                 {
                     GUIDKeeper.RemoveFromList(Guid);
-                    Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                    
+                    //Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                    
                 }
 
                 break;
@@ -180,7 +190,7 @@ public class GameObjController : MonoBehaviour
                     else if (userType.Equals(UserType.Sender))
                     {
                         GUIDKeeper.RemoveFromList(Guid);
-                        Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                            
+                        //Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                            
                     }
                 }
 
@@ -289,15 +299,13 @@ public class GameObjController : MonoBehaviour
         }
         else // if it is not in global
         {
-            if (ObjectLocation.HasFlag(ObjectLocation.Local)) // Then check if it is local
-            {
-                HideObject(); // if that's the case, just hide it from the global layer
-            }
-            else // if it's not in local layer, then delete it
+            if (!ObjectLocation.HasFlag(ObjectLocation.Local)) // if it's not in local layer, then delete it
             {
                 GUIDKeeper.RemoveFromList(Guid);
-                Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                    
+                //Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                
             }
+
+            HideObject(); // always hide it from the global layer
         }
 
         // If the previous scene was the global one, reswitch to the global
@@ -352,6 +360,9 @@ public class GameObjController : MonoBehaviour
 
         RestoreGlobalStateAction += () => SetActiveLocalMenu(false); // Untoggle local menu
         RestoreGlobalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
+
+        // Hide objet in local only if it does not have the Global flag
+        RestoreGlobalStateAction += () => HideObject(!ObjectLocation.HasFlag(ObjectLocation.Global));
     }
 
     private void SetLocalUnityActions()
@@ -364,6 +375,9 @@ public class GameObjController : MonoBehaviour
 
         RestoreLocalStateAction += () => SetActiveGlobalMenu(false); // untoggle global menu
         RestoreLocalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
+
+        // Hide object in local only if it does not have the Local flag
+        RestoreLocalStateAction += () => HideObject(!ObjectLocation.HasFlag(ObjectLocation.Local));
     }
 
     private void SetPendingUnityActions()
@@ -376,20 +390,16 @@ public class GameObjController : MonoBehaviour
 
         RestorePendingListAction += () => SetActiveLocalMenu(false); // Untoggle local menu
         RestorePendingListAction += () => SetActiveGlobalMenu(false); // untoggle global menu
+
+        // Hide object in pending only if it does not have the Pending flag
+        RestorePendingListAction += () => HideObject(!ObjectLocation.HasFlag(ObjectLocation.Pending));
     }
 
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToGlobalScene()
     {
         CaretakerScene.Instance.SaveGlobalStateEvent.AddListener(SaveGlobalStateAction);
-        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(RestoreGlobalStateAction);
-
-        Debug.Log(SaveGlobalStateAction.GetHashCode());
-        foreach (Delegate d in SaveGlobalStateAction.GetInvocationList())
-        {
-            Debug.Log(d.Method);
-        }
-        
+        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(RestoreGlobalStateAction);            
 
         // Add global location to object location
         AddFlagToObjectLocation(ObjectLocation.Global);
@@ -400,12 +410,6 @@ public class GameObjController : MonoBehaviour
     {
         CaretakerScene.Instance.SaveLocalStateEvent.AddListener(SaveLocalStateAction);
         CaretakerScene.Instance.RestoreLocalStateEvent.AddListener(RestoreLocalStateAction);
-
-        Debug.Log(SaveLocalStateAction.GetHashCode());
-        foreach (Delegate d in SaveLocalStateAction.GetInvocationList())
-        {
-            Debug.Log(d.Method.Name);
-        }
 
         // Add local location to object location
         AddFlagToObjectLocation(ObjectLocation.Local);
@@ -422,8 +426,10 @@ public class GameObjController : MonoBehaviour
 
     public void UnsubscribeAndRemoveFromGlobalScene()
     {
+        /*
         CaretakerScene.Instance.SaveGlobalStateEvent.RemoveListener(SaveGlobalStateAction);
         CaretakerScene.Instance.RestoreGlobalStateEvent.RemoveListener(RestoreGlobalStateAction);
+        */
 
         CaretakerScene.Instance.RemoveFromGlobalList(Guid);
 
@@ -433,8 +439,10 @@ public class GameObjController : MonoBehaviour
 
     public void UnsubscribeAndRemoveFromLocalScene()
     {
+        /*
         CaretakerScene.Instance.SaveLocalStateEvent.RemoveListener(SaveLocalStateAction);
         CaretakerScene.Instance.RestoreLocalStateEvent.RemoveListener(RestoreLocalStateAction);
+        */
 
         CaretakerScene.Instance.RemoveFromLocalList(Guid);
 
@@ -444,18 +452,23 @@ public class GameObjController : MonoBehaviour
 
     public void UnsubscribeAndRemoveFromPendingList()
     {
+        /*
         CaretakerScene.Instance.SavePendingListEvent.RemoveListener(SavePendingListAction);
         CaretakerScene.Instance.RestorePendingListEvent.RemoveListener(RestorePendingListAction);
+        */
 
         CaretakerScene.Instance.RemoveFromPendingList(Guid);
 
+        // Remove pending location from object location
         RemoveFlagFromObjectLocation(ObjectLocation.Pending);
     }
 
-    // Always hide the object on scene change!
-    public void HideObject()
+    // Default: deleted is true, to be called even if the parameter is not passed
+    // Always hide the object on scene change + hide it when the obj is deleted from a specific scene
+    public void HideObject(bool deleted = true)
     {
-        gameObject.SetActive(false);
+        if (deleted)
+            gameObject.SetActive(false);
     }
 
     // ---------------------- END UN/SUB METHODS ----------------------

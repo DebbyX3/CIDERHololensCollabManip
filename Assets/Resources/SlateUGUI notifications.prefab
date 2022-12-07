@@ -1564,7 +1564,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 2340110311176011144}
+  - {fileID: 6040131865180241775}
   m_Father: {fileID: 6896587426858797793}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2953,28 +2953,24 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7779420039263858271, guid: 937ce507dd7ee334ba569554e24adbdd, type: 3}
   m_PrefabInstance: {fileID: 2247178681866051892}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &5782149367453321101
+--- !u!1001 &2564012973568034154
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 8682867315481211600}
     m_Modifications:
-    - target: {fileID: 873951365874622483, guid: 0ed91f801a84e234388ef265b71cff8f, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 2.1358948
-      objectReference: {fileID: 0}
     - target: {fileID: 5520118768169066432, guid: 0ed91f801a84e234388ef265b71cff8f, type: 3}
       propertyPath: m_Name
       value: SlateNotificationButton
       objectReference: {fileID: 0}
     - target: {fileID: 8090698979833149957, guid: 0ed91f801a84e234388ef265b71cff8f, type: 3}
       propertyPath: m_Pivot.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8090698979833149957, guid: 0ed91f801a84e234388ef265b71cff8f, type: 3}
       propertyPath: m_Pivot.y
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8090698979833149957, guid: 0ed91f801a84e234388ef265b71cff8f, type: 3}
       propertyPath: m_RootOrder
@@ -3054,8 +3050,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ed91f801a84e234388ef265b71cff8f, type: 3}
---- !u!224 &2340110311176011144 stripped
+--- !u!224 &6040131865180241775 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8090698979833149957, guid: 0ed91f801a84e234388ef265b71cff8f, type: 3}
-  m_PrefabInstance: {fileID: 5782149367453321101}
+  m_PrefabInstance: {fileID: 2564012973568034154}
   m_PrefabAsset: {fileID: 0}
