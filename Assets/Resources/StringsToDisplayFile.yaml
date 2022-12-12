@@ -1,0 +1,21 @@
+# Configuration file for notifications display
+
+# File structure: each element in the list (-) is a notification config and has the following structure:
+
+# NotificationID: unique name of a notification type
+# NotificationTitle: title of the notification
+# NotificationDesc: description of the notification
+
+# You can add a new notification to the list by adding a new element using "-" and the same attributes as the others elements.
+
+# ***** Please, keep the order of these the same as the struct NotificationIDsStruct! *****
+
+- 
+  NotificationID: OBJECT_RECEIVED
+  NotificationTitle: "New change received!"
+  NotificationDesc: "You received a commit from the other user. This changes the shared scene. \nTap me to go to the global scene and see the changes"
+
+- 
+  NotificationID: DELETION_RECEIVED
+  NotificationTitle: "groda"
+  NotificationDesc: "Groda"

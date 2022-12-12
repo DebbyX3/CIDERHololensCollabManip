@@ -24,6 +24,7 @@ public class UIManager : MonoBehaviour
 
     public GameObject SlateColor;
     public GameObject SlatePrefab;
+    public GameObject SlateNotifications;
 
     private string LogString = "";
 
