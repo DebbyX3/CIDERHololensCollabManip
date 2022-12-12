@@ -33,14 +33,6 @@ public enum ObjectLocation
     Pending = 4
 }
 
-/*
-public enum Deleted
-{ 
-    None = 0,
-    DeletedFromGlobal = 1,
-    DeleteFromLocal = 2
-}*/
-
 public class GameObjController : MonoBehaviour
 {
     public Guid Guid { get; private set; }
@@ -57,8 +49,6 @@ public class GameObjController : MonoBehaviour
     // Indicates if the pending obj was received or sent
     public UserType PendingObjectUserType { get; private set; } = UserType.None;
 
-    //private Deleted DeletedFrom { get; set; } = Deleted.None;
-
     // Need to keep the references to the unity actions in order to disable them
     private UnityAction SaveGlobalStateAction;
     private UnityAction RestoreGlobalStateAction;
@@ -73,7 +63,7 @@ public class GameObjController : MonoBehaviour
     private GameObject NearGlobalFollowingMenu;
     private GameObject NearPendingFollowingMenu;
 
-    private void Awake() 
+    private void Awake()
     {
         // Use this just because it is easier to access rather than always doing gameObject.transform
         Transform = gameObject.transform;
@@ -115,11 +105,13 @@ public class GameObjController : MonoBehaviour
     }
 
     // TODO ha senso mettere questi metodi quando basta mettere il set pubblico dei campi in alto?? boh
-    public void SetPrefabName(string prefabName) {
+    public void SetPrefabName(string prefabName)
+    {
         PrefabName = prefabName;
     }
 
-    public void SetMaterialName(string materialName) {
+    public void SetMaterialName(string materialName)
+    {
         MaterialName = materialName;
     }
 
@@ -167,7 +159,7 @@ public class GameObjController : MonoBehaviour
                 if (ContainsOnlyFlag(ObjectLocation.None))
                 {
                     GUIDKeeper.RemoveFromList(Guid);
-                    //Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                    
+                    Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                    
                 }
 
                 break;
@@ -190,7 +182,7 @@ public class GameObjController : MonoBehaviour
                     else if (userType.Equals(UserType.Sender))
                     {
                         GUIDKeeper.RemoveFromList(Guid);
-                        //Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                            
+                        Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                            
                     }
                 }
 
@@ -267,7 +259,7 @@ public class GameObjController : MonoBehaviour
 
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();
-    }    
+    }
 
     public void AcceptCommit()
     {
@@ -299,13 +291,15 @@ public class GameObjController : MonoBehaviour
         }
         else // if it is not in global
         {
-            if (!ObjectLocation.HasFlag(ObjectLocation.Local)) // if it's not in local layer, then delete it
+            if (ObjectLocation.HasFlag(ObjectLocation.Local)) // Then check if it is local
+            {
+                HideObject(); // if that's the case, just hide it from the global layer
+            }
+            else // if it's not in local layer, then delete it
             {
                 GUIDKeeper.RemoveFromList(Guid);
-                //Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                
+                Destroy(gameObject); //also destroy its children, e.g.: menus/buttons                    
             }
-
-            HideObject(); // always hide it from the global layer
         }
 
         // If the previous scene was the global one, reswitch to the global
@@ -329,11 +323,12 @@ public class GameObjController : MonoBehaviour
 
     // ---------------------- BEGIN METHODS FOR 'MEMENTO' PATTERN ----------------------
 
-    public Memento Save() {
+    public Memento Save()
+    {
         return new Memento(Guid, PrefabName, MaterialName, Transform, ObjectLocation);
     }
 
-    public void Restore(Memento memento) 
+    public void Restore(Memento memento)
     {
         // A memento should not touch or restore the object guid, its prefab name and location
         // It just needs to change the propreties, like position/rot/scale, or colors etc...
@@ -360,9 +355,6 @@ public class GameObjController : MonoBehaviour
 
         RestoreGlobalStateAction += () => SetActiveLocalMenu(false); // Untoggle local menu
         RestoreGlobalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
-
-        // Hide objet in local only if it does not have the Global flag
-        RestoreGlobalStateAction += () => HideObject(!ObjectLocation.HasFlag(ObjectLocation.Global));
     }
 
     private void SetLocalUnityActions()
@@ -375,9 +367,6 @@ public class GameObjController : MonoBehaviour
 
         RestoreLocalStateAction += () => SetActiveGlobalMenu(false); // untoggle global menu
         RestoreLocalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
-
-        // Hide object in local only if it does not have the Local flag
-        RestoreLocalStateAction += () => HideObject(!ObjectLocation.HasFlag(ObjectLocation.Local));
     }
 
     private void SetPendingUnityActions()
@@ -390,16 +379,14 @@ public class GameObjController : MonoBehaviour
 
         RestorePendingListAction += () => SetActiveLocalMenu(false); // Untoggle local menu
         RestorePendingListAction += () => SetActiveGlobalMenu(false); // untoggle global menu
-
-        // Hide object in pending only if it does not have the Pending flag
-        RestorePendingListAction += () => HideObject(!ObjectLocation.HasFlag(ObjectLocation.Pending));
     }
 
     // Adding multiple identical listeners results in only a single call being made.
     public void SubscribeToGlobalScene()
     {
         CaretakerScene.Instance.SaveGlobalStateEvent.AddListener(SaveGlobalStateAction);
-        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(RestoreGlobalStateAction);            
+        CaretakerScene.Instance.RestoreGlobalStateEvent.AddListener(RestoreGlobalStateAction);
+
 
         // Add global location to object location
         AddFlagToObjectLocation(ObjectLocation.Global);
@@ -424,51 +411,61 @@ public class GameObjController : MonoBehaviour
         AddFlagToObjectLocation(ObjectLocation.Pending);
     }
 
+    /* PLEASE NOTE:
+         It is necessary to call the specific "Resubscribe" method when a GObj is unsubscribing!
+         This is because the Action passed in the RemoveListener call are reference types and also multicast delegates.
+         That means that when a GObj unsubscribes from an event, ALL the GObjs attached to that events are unsubsctibed!
+         (And that sucks a lot, but I discovered that only at the end... yeah)
+
+         TLDR: Call the "Resubscribe" method to make all the previously subscribed objects subscribe again
+         (I think the most well fitted class to do this is the CaretakerScene one)
+         */
+
     public void UnsubscribeAndRemoveFromGlobalScene()
     {
-        /*
         CaretakerScene.Instance.SaveGlobalStateEvent.RemoveListener(SaveGlobalStateAction);
         CaretakerScene.Instance.RestoreGlobalStateEvent.RemoveListener(RestoreGlobalStateAction);
-        */
 
         CaretakerScene.Instance.RemoveFromGlobalList(Guid);
 
         // Remove global location from object location
         RemoveFlagFromObjectLocation(ObjectLocation.Global);
+
+        // Note: do this AFTER removing the flag location (previous call)
+        CaretakerScene.Instance.ResubscribeRemainingObjsToGlobalEvents();
     }
 
     public void UnsubscribeAndRemoveFromLocalScene()
     {
-        /*
         CaretakerScene.Instance.SaveLocalStateEvent.RemoveListener(SaveLocalStateAction);
         CaretakerScene.Instance.RestoreLocalStateEvent.RemoveListener(RestoreLocalStateAction);
-        */
 
         CaretakerScene.Instance.RemoveFromLocalList(Guid);
 
         // Remove local location from object location
         RemoveFlagFromObjectLocation(ObjectLocation.Local);
+
+        // Note: do this AFTER removing the flag location (previous call)
+        CaretakerScene.Instance.ResubscribeRemainingObjsToLocalEvents();
     }
 
     public void UnsubscribeAndRemoveFromPendingList()
     {
-        /*
         CaretakerScene.Instance.SavePendingListEvent.RemoveListener(SavePendingListAction);
         CaretakerScene.Instance.RestorePendingListEvent.RemoveListener(RestorePendingListAction);
-        */
 
         CaretakerScene.Instance.RemoveFromPendingList(Guid);
 
-        // Remove pending location from object location
         RemoveFlagFromObjectLocation(ObjectLocation.Pending);
+
+        // Note: do this AFTER removing the flag location (previous call)
+        CaretakerScene.Instance.ResubscribeRemainingObjsToPendingEvents();
     }
 
-    // Default: deleted is true, to be called even if the parameter is not passed
-    // Always hide the object on scene change + hide it when the obj is deleted from a specific scene
-    public void HideObject(bool deleted = true)
+    // Always hide the object on scene change!
+    public void HideObject()
     {
-        if (deleted)
-            gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     // ---------------------- END UN/SUB METHODS ----------------------
@@ -517,8 +514,8 @@ public class GameObjController : MonoBehaviour
         NearPendingFollowingMenu = UIManager.Instance.SetNearPendingFollowingMenu(this);
     }
 
-    private void SetActiveManipulation(bool active) 
-    {      
+    private void SetActiveManipulation(bool active)
+    {
         // Want to just spawn the object menu on manipulation, so lock rotations and movements
 
         // If manip is active (true), then do not lock movements (make 'enable' false)
@@ -526,10 +523,10 @@ public class GameObjController : MonoBehaviour
 
         // If manip is not active (false), then also lock y axis (so lock every axis)
         if (!active)
-            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = 
+            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation =
                 MSUtilities.AxisFlags.YAxis | MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
         else // If manip is active (true), then do not lock y axis (only lock axis x and z) 
-            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = 
+            gameObject.GetComponent<RotationAxisConstraint>().ConstraintOnRotation =
                 MSUtilities.AxisFlags.XAxis | MSUtilities.AxisFlags.ZAxis;
     }
 

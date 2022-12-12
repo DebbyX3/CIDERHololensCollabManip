@@ -11,7 +11,7 @@ public static class GUIDKeeper
     /// <summary>
     /// A list that contains the pairs <GUID, GameObject>
     /// </summary>
-    private static Dictionary<Guid, GameObject> List { get; } = new Dictionary<Guid, GameObject>();
+    public static Dictionary<Guid, GameObject> List { get; private set; } = new Dictionary<Guid, GameObject>();
 
     /// <summary>
     /// Add the pair <GUID, GameObject> to the static list - where GUID is the key, GameObject is the value

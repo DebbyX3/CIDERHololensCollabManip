@@ -35,7 +35,7 @@ public class CaretakerScene : MonoBehaviour
     */
 
     // keeps mementos of global scene
-    public Dictionary<Guid, Memento> GlobalListMementos { get; set;  } = new Dictionary<Guid, Memento>();
+    public Dictionary<Guid, Memento> GlobalListMementos { get; set; } = new Dictionary<Guid, Memento>();
 
     // keeps mementos of local scene
     public Dictionary<Guid, Memento> LocalListMementos { get; } = new Dictionary<Guid, Memento>();
@@ -175,36 +175,36 @@ public class CaretakerScene : MonoBehaviour
     public void SaveGlobalState(GameObjController gObj)
     {
         if (!PendingListRequests.ContainsKey(gObj.Guid))
-            if (gObj.ObjectLocation.HasFlag(ObjectLocation.Global))
-                GlobalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+            GlobalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
     public void SaveLocalState(GameObjController gObj)
     {
-        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Local))
-            LocalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        LocalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
     public void SavePendingState(GameObjController gObj)
     {
-        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Pending))
-            PendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        PendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
     public void RestoreGlobalState(GameObjController gObj)
     {
         Memento value;
 
-        if (GlobalListMementos.TryGetValue(gObj.Guid, out value)) // if the obj is in the global list, restore it
+        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Global))
         {
-            // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call  
-            gObj.gameObject.SetActive(true);
-            gObj.Restore(value);            
-        }
-        else
-        {
-            Debug.Log("Key " + gObj.Guid + " not found in dictionary GlobalListMementos");
-            UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary GlobalListMementos");
+            if (GlobalListMementos.TryGetValue(gObj.Guid, out value)) // if the obj is in the global list, restore it
+            {
+                // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call  
+                gObj.gameObject.SetActive(true);
+                gObj.Restore(value);
+            }
+            else
+            {
+                Debug.Log("Key " + gObj.Guid + " not found in dictionary GlobalListMementos");
+                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary GlobalListMementos");
+            }
         }
     }
 
@@ -212,16 +212,19 @@ public class CaretakerScene : MonoBehaviour
     {
         Memento value;
 
-        if (LocalListMementos.TryGetValue(gObj.Guid, out value)) // if the obj is in the local list, restore it
+        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Local))
         {
-            // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
-            gObj.gameObject.SetActive(true);
-            gObj.Restore(value);
-        }
-        else
-        {
-            Debug.Log("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
-            UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
+            if (LocalListMementos.TryGetValue(gObj.Guid, out value)) // if the obj is in the local list, restore it
+            {
+                // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
+                gObj.gameObject.SetActive(true);
+                gObj.Restore(value);
+            }
+            else
+            {
+                Debug.Log("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
+                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
+            }
         }
     }
 
@@ -229,19 +232,22 @@ public class CaretakerScene : MonoBehaviour
     {
         Memento value;
 
-        if (PendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the pending list, restore it
+        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Pending))
         {
-            // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
-            gObj.gameObject.SetActive(true);
-            gObj.Restore(value);
+            if (PendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the pending list, restore it
+            {
+                // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
+                gObj.gameObject.SetActive(true);
+                gObj.Restore(value);
 
-            // todo? non molto todo ma vabbè, cambia solo il materiale! e non il nome mi raccomando!
-            PrefabManager.Instance.ChangeMaterialPendingState(gObj.gameObject);
-        }
-        else
-        {
-            Debug.Log("Key " + gObj.Guid + " not found in dictionary PendingListRequests");
-            UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary PendingListRequests");
+                // todo? non molto todo ma vabbè, cambia solo il materiale! e non il nome mi raccomando!
+                PrefabManager.Instance.ChangeMaterialPendingState(gObj.gameObject);
+            }
+            else
+            {
+                Debug.Log("Key " + gObj.Guid + " not found in dictionary PendingListRequests");
+                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary PendingListRequests");
+            }
         }
     }
 
@@ -280,5 +286,44 @@ public class CaretakerScene : MonoBehaviour
     public void ExecuteVotingCommit(GameObjController gObj)
     {
         //Instance.SavePendingState(gObj);
+    }
+
+    public void ResubscribeRemainingObjsToGlobalEvents()
+    {
+        GameObjController gobjController;
+
+        foreach (GameObject gobj in GUIDKeeper.List.Values)
+        {
+            gobjController = gobj.GetComponent<GameObjController>();
+
+            if(gobjController.ObjectLocation.HasFlag(ObjectLocation.Global))
+                gobjController.SubscribeToGlobalScene();
+        }
+    }
+
+    public void ResubscribeRemainingObjsToLocalEvents()
+    {
+        GameObjController gobjController;
+
+        foreach (GameObject gobj in GUIDKeeper.List.Values)
+        {
+            gobjController = gobj.GetComponent<GameObjController>();
+
+            if (gobjController.ObjectLocation.HasFlag(ObjectLocation.Local))
+                gobjController.SubscribeToLocalScene();
+        }
+    }
+
+    public void ResubscribeRemainingObjsToPendingEvents()
+    {
+        GameObjController gobjController;
+
+        foreach (GameObject gobj in GUIDKeeper.List.Values)
+        {
+            gobjController = gobj.GetComponent<GameObjController>();
+
+            if (gobjController.ObjectLocation.HasFlag(ObjectLocation.Pending))
+                gobjController.SubscribeToPendingList();
+        }
     }
 }
