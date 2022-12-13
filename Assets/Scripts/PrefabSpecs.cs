@@ -80,12 +80,18 @@ public class PrefabSpecs
 
     public Material GetMaterialByName(string name)
     {
-        Material mat;
-
-        if (Materials.TryGetValue(name, out mat)) // If the material exists
+        if (Materials.TryGetValue(name, out Material mat)) // If the material exists
             return mat;
 
         return GetAMaterial(); //else, return a 'default' material 
+    }
+
+    public Texture2D GetImageByName(string name)
+    {
+        if (Images.TryGetValue(name, out Texture2D image)) // If the image exists
+            return image;
+
+        return GetAnImage(); //else, return a 'default' image 
     }
 
     /* Returns the first element that matches the Equals, if found;

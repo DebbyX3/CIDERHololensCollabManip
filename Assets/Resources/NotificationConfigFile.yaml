@@ -1,0 +1,41 @@
+# Configuration file for notifications display
+
+# File structure: each element in the list (-) is a notification config and has the following structure:
+
+# NotificationID: unique name of a notification type
+# NotificationTitle: title of the notification
+# NotificationDesc: description of the notification
+
+# You can add a new notification to the list by adding a new element using "-" and the same attributes as the others elements.
+
+# ***** Please, keep the order of these the same as the struct NotificationIDsStruct! *****
+
+- 
+  NotificationID: OBJECT_CHANGE_RECEIVED
+  NotificationTitle: "New change received!"
+  NotificationDesc: "You received a commit from the other user. This changes the global shared scene. \nTap me to go to the global scene and see the changes"
+  NotificationObjSpecs: "Object received: "
+
+- 
+  NotificationID: DELETION_RECEIVED
+  NotificationTitle: "Global deletion received!"
+  NotificationDesc: "The other user deleted an object from the shared global scene. \nTap me to go to the global scene and see the changes"
+  NotificationObjSpecs: "Object deleted: "
+
+- 
+  NotificationID: COMMIT_REQUEST_RECEIVED
+  NotificationTitle: "Commit request received! - Transparent yellow object color"
+  NotificationDesc: "The other user is asking you to Accept or Decline a change of an object in the shared global scene. \nTap me to go to the global scene and accept/decline the change"
+  NotificationObjSpecs: "Issued object: "
+
+- 
+  NotificationID: DELETION_REQUEST_RECEIVED
+  NotificationTitle: "Global deletion request received! - Transparent red object color"
+  NotificationDesc: "The other user is asking you to Accept or Decline the deletion of an object in the shared global scene. \nTap me to go to the global scene and accept/decline the deletion"
+  NotificationObjSpecs: "Issued object: "
+
+- 
+  NotificationID: DECLINE_COMMIT_RECEIVED
+  NotificationTitle: "Your change was declined"
+  NotificationDesc: "The other user declined the change of an object you proposed in the global shared scene. \nIf the object already existed in the global scene, then it kept its previous position. Otherwise, it was deleted. Tap me to go to the global scene"
+  NotificationObjSpecs: "Issued object: "

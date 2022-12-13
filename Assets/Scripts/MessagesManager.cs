@@ -26,6 +26,7 @@ public enum DeclineType : int
 public class MessagesManager : MonoBehaviour
 {
     public static MessagesManager Instance { get; private set; }
+    private NotificationManager NotificationManager;
 
     private void Awake()
     {
@@ -38,6 +39,8 @@ public class MessagesManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        NotificationManager = UIManager.Instance.SlateNotifications.GetComponent<NotificationManager>();
     }
 
     // Based on the type of message, compose the object to send and then send it
@@ -226,7 +229,13 @@ public class MessagesManager : MonoBehaviour
         UIManager.Instance.NotificationSound.Play();
 
         // Send commit notification to this device
-        UIManager.Instance.SetNotificationButtonActive(true);
+        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(gObjMsgInfo.PrefabName, PrefabManager.Instance.PrefabCollection);
+
+        NotificationManager.AddNotification(
+            NotificationID.ObjectChangeReceived,
+            gObjMsgInfo.PrefabName,
+            gObjMsgInfo.MaterialName,
+            prefabSpecs.GetImageByName(gObjMsgInfo.MaterialName));
     }
 
     private void OnVotingCommitReceived(GameObjMessageInfo gObjMsgInfo)
@@ -252,7 +261,13 @@ public class MessagesManager : MonoBehaviour
         UIManager.Instance.NotificationSound.Play();
 
         // Send commit notification to this device
-        UIManager.Instance.SetNotificationButtonActive(true);
+        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(gObjMsgInfo.PrefabName, PrefabManager.Instance.PrefabCollection);
+
+        NotificationManager.AddNotification(
+            NotificationID.CommitRequestReceived,
+            gObjMsgInfo.PrefabName,
+            gObjMsgInfo.MaterialName,
+            prefabSpecs.GetImageByName(gObjMsgInfo.MaterialName));
     }
 
     // -------------------------- DELETION --------------------------
@@ -288,10 +303,8 @@ public class MessagesManager : MonoBehaviour
      * I proved that if the obj exists in the global scene for U1, it also exists in the global scene for U2
      * So in the deletion I don't have to check if the object exists in the global scene  
      */
-    public void OnDeletionReceived(DeletionMessage deletionMsg)
+    public void OnDeletionReceived(DeletionMessageInfo deletionMsgInfo)
     {
-        DeletionMessageInfo deletionMsgInfo = deletionMsg.GetMsgInfo();
-
         GameObjController gObjController = GUIDKeeper.GetGObjFromGuid(deletionMsgInfo.GameObjectGuid)
                                             .GetComponent<GameObjController>();
 
@@ -303,7 +316,13 @@ public class MessagesManager : MonoBehaviour
         UIManager.Instance.NotificationSound.Play();
 
         // Send commit notification to this device
-        UIManager.Instance.SetNotificationButtonActive(true);
+        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(gObjController.PrefabName, PrefabManager.Instance.PrefabCollection);
+
+        NotificationManager.AddNotification(
+            NotificationID.DeletionReceived,
+            gObjController.PrefabName,
+            gObjController.MaterialName,
+            prefabSpecs.GetImageByName(gObjController.MaterialName));
 
         //todo: show the user a notification in case the global deletion generates a new local obj
         // potrei farlo che il delete obj mi torna un valore X, dove se X corrisponde a 'ho cancellato
@@ -356,9 +375,13 @@ public class MessagesManager : MonoBehaviour
         UIManager.Instance.NotificationSound.Play();
 
         // Send commit notification to this device
-        UIManager.Instance.SetNotificationButtonActive(true);
+        PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(gObjController.PrefabName, PrefabManager.Instance.PrefabCollection);
 
-        //todo: show the user a notification in case the global deletion generates a new local obj}
+        NotificationManager.AddNotification(
+            NotificationID.DeclineCommitReceived,
+            gObjController.PrefabName,
+            gObjController.MaterialName,
+            prefabSpecs.GetImageByName(gObjController.MaterialName));
     }
 
     private void OnDeclineDeletionReceived(DeclineMessageInfo declineMsgInfo)

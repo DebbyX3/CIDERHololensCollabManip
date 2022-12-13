@@ -27,7 +27,7 @@ public class DeletionMessage : Message
 
     public override void ExecuteMessage()
     {
-        MessagesManager.Instance.OnDeletionReceived(this);
+        MessagesManager.Instance.OnDeletionReceived(GetMsgInfo());
     }
 
     public DeletionMessageInfo GetMsgInfo()

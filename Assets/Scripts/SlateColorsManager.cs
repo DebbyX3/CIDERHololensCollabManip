@@ -49,7 +49,7 @@ public class SlateColorsManager : MonoBehaviour
             buttonComponent.onClick.AddListener(() => PrefabManager.Instance.PutExistingObjectInLocal(guid, imageName));
         }
 
-        //Hide this slate
+        // Hide this slate
         buttonComponent.onClick.AddListener(() => gameObject.SetActive(false));
 
         // Get RawImage gameObject and component
