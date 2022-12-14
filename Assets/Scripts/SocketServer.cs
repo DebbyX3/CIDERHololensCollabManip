@@ -23,26 +23,25 @@ public class SocketServer : NetworkManager
         WaitingForConnectionsThread = new Thread(WaitingForConnections);
         WaitingForConnectionsThread.IsBackground = true;
         WaitingForConnectionsThread.Start();
-
-        //attach this object to NetworkManager
-        //NetworkManager.Instance.SetNetworkPeer(this);
     }
 
     private void WaitingForConnections() 
     {
-        try {
-            while (true) {
+        try 
+        {
+            while (true) 
+            {
                 ListenToClient();
 
-                Debug.Log("Waiting for Connection");
-                UIManager.Instance.PrintMessages("Waiting for Connection");
+                Debug.Log("Waiting for a new Connection");
+                UIManager.Instance.PrintMessages("Waiting for a new Connection");
 
                 // Program is suspended while waiting for an incoming connection
                 // (not a problem because we are in a different thread than the main one)
                 ConnectionHandler = Listener.Accept();
 
-                Debug.Log("Client Connected");
-                UIManager.Instance.PrintMessages("Client connected");
+                Debug.Log("Client Connected!");
+                UIManager.Instance.PrintMessages("Client connected!");
 
                 ConnectionEstablished = true;
 
@@ -51,7 +50,9 @@ public class SocketServer : NetworkManager
                 HandleIncomingRequestThread.IsBackground = true;
                 HandleIncomingRequestThread.Start();
             }
-        } catch (Exception e) {
+        } 
+        catch (Exception e) 
+        {
             Debug.Log(e.ToString());
             UIManager.Instance.PrintMessages(e.ToString());
         }
@@ -62,9 +63,6 @@ public class SocketServer : NetworkManager
         // IP on where the server should listen to incoming connections/requests
         IPAddress ipAddress = IPAddress.Any;
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 60000);
-
-        Debug.Log(ipAddress);
-        UIManager.Instance.PrintMessages(ipAddress.ToString());
 
         // Create a TCP/IP socket
         Listener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -93,7 +91,7 @@ public class SocketServer : NetworkManager
     private void ListenToClient() 
     {
         try {
-            Listener.Listen(10); //max 10 connections
+            Listener.Listen(1); // Max 1 connection
         } catch (SocketException se) {
             Debug.Log("An error occurred when attempting to access the socket.\n\n" + se.ToString());
             UIManager.Instance.PrintMessages("An error occurred when attempting to access the socket.\n\n" + se.ToString());
@@ -120,11 +118,14 @@ public class SocketServer : NetworkManager
             UIManager.Instance.PrintMessages("Disconnected!");
         }
 
-        //stop thread
-        if (WaitingForConnectionsThread != null) {            
+        // Stop thread
+        if (WaitingForConnectionsThread != null) 
+        {            
             WaitingForConnectionsThread.Abort();
         }
-        if (HandleIncomingRequestThread != null) {
+
+        if (HandleIncomingRequestThread != null) 
+        {
             HandleIncomingRequestThread.Abort();
         }
 

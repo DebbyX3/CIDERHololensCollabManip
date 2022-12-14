@@ -23,6 +23,10 @@ public enum DeclineType : int
     DeclineDeletion
 }
 
+/*
+    MessagesManager MUST be executed AFTER NotificationManager, 
+    in order to correctly initialize the NotificationID class appropriately
+ */
 public class MessagesManager : MonoBehaviour
 {
     public static MessagesManager Instance { get; private set; }
@@ -41,6 +45,37 @@ public class MessagesManager : MonoBehaviour
         }
 
         NotificationManager = UIManager.Instance.SlateNotifications.GetComponent<NotificationManager>();
+    }
+
+    
+    private void Start()
+    {
+        NotificationManager.AddNotification(
+            NotificationID.ObjectChangeReceived,
+            "a",
+            "aaaa",
+            new Texture2D(100,100));
+
+        NotificationManager.AddNotification(
+            NotificationID.ObjectChangeReceived,
+            "a",
+            "aaaa",
+            new Texture2D(100, 100));
+        NotificationManager.AddNotification(
+            NotificationID.ObjectChangeReceived,
+            "a",
+            "aaaa",
+            new Texture2D(100, 100));
+        NotificationManager.AddNotification(
+            NotificationID.ObjectChangeReceived,
+            "a",
+            "aaaa",
+            new Texture2D(100, 100));
+        NotificationManager.AddNotification(
+            NotificationID.ObjectChangeReceived,
+            "a",
+            "aaaa",
+            new Texture2D(100, 100));
     }
 
     // Based on the type of message, compose the object to send and then send it

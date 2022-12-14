@@ -37,5 +37,5 @@
 - 
   NotificationID: DECLINE_COMMIT_RECEIVED
   NotificationTitle: "Your change was declined"
-  NotificationDesc: "The other user declined the change of an object you proposed in the global shared scene. \nIf the object already existed in the global scene, then it kept its previous position. Otherwise, it was deleted. Tap me to go to the global scene"
+  NotificationDesc: "The other user declined the change of an object you proposed in the global shared scene. If it already existed in the global scene, it kept its previous position. Otherwise, it was deleted.\n Tap me to go to the global scene"
   NotificationObjSpecs: "Issued object: "

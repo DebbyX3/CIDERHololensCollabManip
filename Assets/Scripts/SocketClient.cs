@@ -21,9 +21,6 @@ public class SocketClient: NetworkManager
         HandleIncomingRequestThread.IsBackground = true;
         HandleIncomingRequestThread.Start();
 
-        //attach this object to NetworkManager
-        //NetworkManager.Instance.SetNetworkPeer(this);
-
         if (!ConnectionHandler.Connected) {
             Debug.LogError("Connection Failed");
             UIManager.Instance.PrintMessages("Connection Failed");
@@ -50,7 +47,7 @@ public class SocketClient: NetworkManager
             UIManager.Instance.PrintMessages("Disconnected!");
         }
 
-        //stop thread
+        // Stop thread
         if (HandleIncomingRequestThread != null) {
             HandleIncomingRequestThread.Abort();
         }

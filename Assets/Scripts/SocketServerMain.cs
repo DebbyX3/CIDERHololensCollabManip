@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using System.Net;
 
 public class SocketServerMain : SocketServer {
 
@@ -8,7 +9,8 @@ public class SocketServerMain : SocketServer {
     void Start() 
     {
         //open connection
-        Debug.Log("Server: open connection");
+        Debug.Log("Open connection. Listening on IP: " + IPAddress.Any + " Port: " + PortToListen);
+        UIManager.Instance.PrintMessages("Open connection. Listening on IP: " + IPAddress.Any + " Port: " + PortToListen);
 
         SetInstance(this);
 
@@ -19,17 +21,8 @@ public class SocketServerMain : SocketServer {
     {
         if (ConnectionEstablished && Running == false) {
             Running = true;
-            //StartCoroutine(Cor());
         }
 
         base.Update();
     }
-
-    /*
-    IEnumerator Cor() {
-        while (true) {
-            SendObject(cube);
-            yield return new WaitForSeconds(0.5f);
-        }
-    }*/
 }

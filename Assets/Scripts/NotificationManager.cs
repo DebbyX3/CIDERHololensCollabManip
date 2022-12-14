@@ -5,6 +5,11 @@ using UnityEngine.UI;
 using YamlDotNet.Serialization;
 
 // Script is attached to SlateUGUI - Notifications
+
+/*
+    NotificationManager MUST be executed BEFORE MessagesManager, 
+    in order to correctly initialize the NotificationID class appropriately
+ */
 public class NotificationType
 {
     public string NotificationID { get; set; }
@@ -66,21 +71,19 @@ public class NotificationManager : MonoBehaviour
     private List<NotificationType> NotificationTypesList;
     private static NotificationID NotificationIDs;
 
-    private void Awake()
+    private void Start()
     {
         DeserializeNotificationTypes();
         PopulateNotificationIDs();        
 
         UGUIButtons = gameObject.transform.Find("UGUIScrollViewContent/Scroll View/Viewport/Content/GridLayout1/Column1/UGUIButtons").gameObject;
+        gameObject.SetActive(false);
     }
 
     private void DeserializeNotificationTypes()
     {
         IDeserializer deserializer = new DeserializerBuilder().Build();
         NotificationTypesList = deserializer.Deserialize<List<NotificationType>>(StringsToDisplayFile.text);
-
-        foreach(NotificationType nt in NotificationTypesList)
-            Debug.Log(nt);
     }
 
     private void PopulateNotificationIDs()
@@ -95,7 +98,12 @@ public class NotificationManager : MonoBehaviour
 
     public void AddNotification(NotificationID notificationIDToFind, string objectName, string colorName, Texture2D image)
     {
-        gameObject.SetActive(true);
+        bool wasAlreadyActive = false;
+
+        if (gameObject.activeSelf)      // If the slate is already visible, then set the variable
+            wasAlreadyActive = true;
+        else                            // Else, activate it
+            gameObject.SetActive(true);
 
         // The parent of the button is the gameobject UGUIButtons - important: set false as argument
         GameObject buttonNotification = Instantiate(Resources.Load<GameObject>("SlateNotificationButton"), UGUIButtons.transform, false);
@@ -131,20 +139,35 @@ public class NotificationManager : MonoBehaviour
         // Hide this slate
         buttonNotificationComponent.onClick.AddListener(() => gameObject.SetActive(false));
 
+        // Remove child (that is because otherwise childCount is not = 0) (Destroy is deferred at the and of current frame)
+        buttonNotificationComponent.onClick.AddListener(() => RemoveChild(buttonNotification));
+
         // Destroy the button when clicked 
         buttonNotificationComponent.onClick.AddListener(() => Destroy(buttonNotification));
 
         // Disable the menu notification button on click if the clicked button was the last one
         buttonNotificationComponent.onClick.AddListener(() => DisableMenuNotifButtonIfLastNotifButton());
 
-        gameObject.SetActive(false);
+        if (!wasAlreadyActive)               // If the slate was NOT already visible before, deactivate it
+            gameObject.SetActive(false);
 
         UIManager.Instance.SetNotificationButtonActive(true);
+    }
+
+    private void RemoveChild(GameObject child)
+    {
+        child.transform.parent = null;
     }
 
     private void DisableMenuNotifButtonIfLastNotifButton()
     {
         if (UGUIButtons.transform.childCount == 0)
             UIManager.Instance.SetNotificationButtonActive(false);
+    }
+
+    public void DestroyAllChildren(GameObject parent)
+    {
+        foreach (Transform child in parent.transform)
+            Destroy(child.gameObject);
     }
 }

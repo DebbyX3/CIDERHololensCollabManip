@@ -6,8 +6,8 @@ public class SocketClientMain : SocketClient
     void Start() 
     {
         //open connection
-        Debug.Log("Client: connect to server");
-        UIManager.Instance.PrintMessages("Client: connect to server");
+        Debug.Log("Searching for a server having IP: " + IpToSend + " Port: " + PortToSend);
+        UIManager.Instance.PrintMessages("Searching for a server having IP: " + IpToSend + " Port: " + PortToSend);
 
         SetInstance(this);
 
@@ -15,19 +15,13 @@ public class SocketClientMain : SocketClient
 
         if (ConnectionEstablished) 
         {
-            //StartCoroutine(Cor());
+            Debug.Log("Connection to server established");
+            UIManager.Instance.PrintMessages("Connection to server established");
         }        
     }
 
     new void Update()
     {
         base.Update();
-    }
-
-    IEnumerator Cor() {
-        while (true) {
-            //SendObject(cube);
-            yield return new WaitForSeconds(0.1f);
-        }
     }
 }
