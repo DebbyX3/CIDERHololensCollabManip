@@ -99,8 +99,8 @@ public class UIManager : MonoBehaviour
 
     public GameObject SetNearLocalFollowingMenu(GameObjController gObjContr)
     {
-        // The parent of the menu is the gameobject -  important: set false as argument
-        GameObject nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), gObjContr.Transform, false);
+        // The parent of the menu is the gameobject -  important: set true as argument
+        GameObject nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), gObjContr.Transform, true);
         GameObject buttonCollection = nearLocalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // Button 1 - Forced Commit
@@ -152,8 +152,8 @@ public class UIManager : MonoBehaviour
 
     public GameObject SetNearGlobalFollowingMenu(GameObjController gObjContr)
     {
-        // The parent of the menu is the gameobject -  important: set false as argument
-        GameObject nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), gObjContr.Transform, false);
+        // The parent of the menu is the gameobject -  important: set true as argument
+        GameObject nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), gObjContr.Transform, true);
         GameObject buttonCollection = nearGlobalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // Button 1 - Copy object in local scene
@@ -187,8 +187,8 @@ public class UIManager : MonoBehaviour
 
     public GameObject SetNearPendingFollowingMenu(GameObjController gObjContr)
     {
-        // The parent of the menu is the gameobject -  important: set false as argument
-        GameObject nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), gObjContr.Transform, false);
+        // The parent of the menu is the gameobject -  important: set true as argument
+        GameObject nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), gObjContr.Transform, true);
 
         GameObject buttonCollection = nearPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
