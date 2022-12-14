@@ -146,6 +146,8 @@ public class GameObjController : MonoBehaviour
     /// <param name="userType">The type of user: sender of the deletion or receiver of the deletion. Default value: Sender</param>
     public void DeleteObject(ObjectLocation fromScene, UserType userType = UserType.Sender)
     {
+        bool hide = true;
+
         switch (fromScene)
         {
             case ObjectLocation.Local: // Delete it from the Local scene
@@ -171,13 +173,16 @@ public class GameObjController : MonoBehaviour
                 UnsubscribeAndRemoveFromGlobalScene();
 
                 // If there are no flags, it means that the previous call deleted the only flag, but the method only removes
-                // the global Flag! So, the object has no flags (thus it only had the globa one)
+                // the global Flag! So, the object has no flags (thus it only had the global one)
                 // the object is/was only in the global scene: completely delete it!
                 if (ContainsOnlyFlag(ObjectLocation.None))
                 {
                     if (userType.Equals(UserType.Receiver))
                     {
                         CopyObjectInLocal();
+                        hide = false;
+
+                        break;
                     }
                     else if (userType.Equals(UserType.Sender))
                     {
@@ -198,7 +203,8 @@ public class GameObjController : MonoBehaviour
             default: break;
         }
 
-        HideObject();
+        if (hide)
+            HideObject();
     }
 
     // Duplicate obj with a slight movement of 0.1f on axis X and Y

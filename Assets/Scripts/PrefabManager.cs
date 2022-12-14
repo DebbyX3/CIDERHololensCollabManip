@@ -305,6 +305,8 @@ public class PrefabManager : MonoBehaviour
         gObjContr.SubscribeToLocalScene(); //always
         CaretakerScene.Instance.SaveLocalState(gObjContr);
 
+        gObj.SetActive(true);
+
         // If the previous scene was the global one, reswitch to the global
         if (wasGlobalScene)
             CaretakerScene.Instance.ChangeSceneToGlobal();

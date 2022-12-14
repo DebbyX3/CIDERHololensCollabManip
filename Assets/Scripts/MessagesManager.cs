@@ -47,7 +47,7 @@ public class MessagesManager : MonoBehaviour
         NotificationManager = UIManager.Instance.SlateNotifications.GetComponent<NotificationManager>();
     }
 
-    
+    /*
     private void Start()
     {
         NotificationManager.AddNotification(
@@ -76,7 +76,7 @@ public class MessagesManager : MonoBehaviour
             "a",
             "aaaa",
             new Texture2D(100, 100));
-    }
+    }*/
 
     // Based on the type of message, compose the object to send and then send it
     private void CreateAndSendMessage(GameObjController gObjCont, MessageType messageType, CommitType commitType = CommitType.None,
