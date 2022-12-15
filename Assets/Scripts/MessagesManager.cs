@@ -13,7 +13,14 @@ public enum CommitType : int
 {
     None,
     ForcedCommit,
-    VotingCommit
+    RequestCommit
+}
+
+public enum DeletionType : int
+{
+    None,
+    ForcedGlobalDeletion,
+    RequestGlobalDeletion
 }
 
 public enum DeclineType : int 
@@ -47,40 +54,10 @@ public class MessagesManager : MonoBehaviour
         NotificationManager = UIManager.Instance.SlateNotifications.GetComponent<NotificationManager>();
     }
 
-    /*
-    private void Start()
-    {
-        NotificationManager.AddNotification(
-            NotificationID.ObjectChangeReceived,
-            "a",
-            "aaaa",
-            new Texture2D(100,100));
-
-        NotificationManager.AddNotification(
-            NotificationID.ObjectChangeReceived,
-            "a",
-            "aaaa",
-            new Texture2D(100, 100));
-        NotificationManager.AddNotification(
-            NotificationID.ObjectChangeReceived,
-            "a",
-            "aaaa",
-            new Texture2D(100, 100));
-        NotificationManager.AddNotification(
-            NotificationID.ObjectChangeReceived,
-            "a",
-            "aaaa",
-            new Texture2D(100, 100));
-        NotificationManager.AddNotification(
-            NotificationID.ObjectChangeReceived,
-            "a",
-            "aaaa",
-            new Texture2D(100, 100));
-    }*/
-
     // Based on the type of message, compose the object to send and then send it
+    // todo: forse fare diverse funzioni col polimorfismo ma boh, tanto alla fine devo comunque inviare, da capire ecco
     private void CreateAndSendMessage(GameObjController gObjCont, MessageType messageType, CommitType commitType = CommitType.None,
-                                      DeclineType declineType = DeclineType.None)
+                                      DeclineType declineType = DeclineType.None, DeletionType deletionType = DeletionType.None)
     {
         Message msg = null;
 
@@ -88,14 +65,16 @@ public class MessagesManager : MonoBehaviour
         {
             case MessageType.DeletionMessage:
             {
-                // Create message
-                msg = new DeletionMessage(new DeletionMessageInfo(gObjCont.Guid));
+                if (deletionType != DeletionType.None)
+                {
+                    msg = new DeletionMessage(new DeletionMessageInfo(gObjCont.Guid, deletionType));
+                }
+
                 break;
             }
 
             case MessageType.GameObjMessage:
             {
-                // Create message
                 if (commitType != CommitType.None)
                 {
                     msg = new GameObjMessage(new GameObjMessageInfo
@@ -143,38 +122,17 @@ public class MessagesManager : MonoBehaviour
         SendCommit(gObjCont, CommitType.ForcedCommit);
     }
 
-    public void SendVotingCommit(GameObjController gObjCont)
+    public void SendRequestCommit(GameObjController gObjCont)
     {
-        SendCommit(gObjCont, CommitType.VotingCommit);
+        SendCommit(gObjCont, CommitType.RequestCommit);
     }
 
     private void SendCommit(GameObjController gObjCont, CommitType commitType)
     {
-        // non servono mi sa?
-        /*
-        switch (commitType)
-        {
-            case CommitType.ForcedCommit:
-            {
-                CaretakerScene.Instance.ExecuteForcedCommit(gObjCont);
-                break;
-            }
-                
-            case CommitType.VotingCommit:
-            {
-                CaretakerScene.Instance.ExecuteVotingCommit(gObjCont);
-                break;
-            }
-                
-            default:
-                break;
-        }
-        */
-
         CreateAndSendMessage(gObjCont, MessageType.GameObjMessage, commitType: commitType);
 
         // Play sound on commit
-        UIManager.Instance.CommitSentSound.Play();
+        UIManager.Instance.MessageSentSound.Play();
 
         // Todo maybe display a dialog/confirmation box? forse uno che va via da solo dopo tot tempo?
 
@@ -186,9 +144,9 @@ public class MessagesManager : MonoBehaviour
                 break;
             }
 
-            case CommitType.VotingCommit:
+            case CommitType.RequestCommit:
             {
-                OnVotingCommitSent(gObjCont);
+                OnRequestCommitSent(gObjCont);
                 break;
             }
 
@@ -199,13 +157,13 @@ public class MessagesManager : MonoBehaviour
 
     private void OnForcedCommitSent(GameObjController gObjCont)
     {
-        gObjCont.RemovePending();
+        gObjCont.RemoveCommitPending();
         PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
     }
 
-    private void OnVotingCommitSent(GameObjController gObjCont)
+    private void OnRequestCommitSent(GameObjController gObjCont)
     {
-        PrefabManager.Instance.PutExistingObjectInPending(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
+        PrefabManager.Instance.PutExistingObjectInCommitPending(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
         // todo da fare qualcosa che boh
     }
 
@@ -225,8 +183,8 @@ public class MessagesManager : MonoBehaviour
 
         if (gObjMsgInfo.CommitType.Equals(CommitType.ForcedCommit))
             OnForcedCommitReceived(gObjMsgInfo);
-        else if (gObjMsgInfo.CommitType.Equals(CommitType.VotingCommit))
-            OnVotingCommitReceived(gObjMsgInfo);
+        else if (gObjMsgInfo.CommitType.Equals(CommitType.RequestCommit))
+            OnRequestCommitReceived(gObjMsgInfo);
     }
 
     private void OnForcedCommitReceived(GameObjMessageInfo gObjMsgInfo)
@@ -240,8 +198,8 @@ public class MessagesManager : MonoBehaviour
             gObj = GUIDKeeper.GetGObjFromGuid(gObjMsgInfo.GameObjectGuid);
             gObjCont = gObj.GetComponent<GameObjController>();
 
-            // Important: remove pending before putting object in global scene
-            gObjCont.RemovePending(); // todo: da fare anche in onvotingcommitreceived?
+            // Important: remove Commit pending before putting object in global scene
+            gObjCont.RemoveCommitPending();
 
             gObj = PrefabManager.Instance.PutExistingObjectInGlobal(gObjMsgInfo.GameObjectGuid, 
                 gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
@@ -261,7 +219,7 @@ public class MessagesManager : MonoBehaviour
         // Notify the user that a new commit has arrived
 
         // Play notification sound
-        UIManager.Instance.NotificationSound.Play();
+        UIManager.Instance.MessageReceivedSound.Play();
 
         // Send commit notification to this device
         PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(gObjMsgInfo.PrefabName, PrefabManager.Instance.PrefabCollection);
@@ -273,27 +231,27 @@ public class MessagesManager : MonoBehaviour
             prefabSpecs.GetImageByName(gObjMsgInfo.MaterialName));
     }
 
-    private void OnVotingCommitReceived(GameObjMessageInfo gObjMsgInfo)
+    private void OnRequestCommitReceived(GameObjMessageInfo gObjMsgInfo)
     {
         GameObject gObj;
 
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
-            gObj = PrefabManager.Instance.PutExistingObjectInPending(gObjMsgInfo.GameObjectGuid, 
+            gObj = PrefabManager.Instance.PutExistingObjectInCommitPending(gObjMsgInfo.GameObjectGuid, 
                 gObjMsgInfo.Transform, gObjMsgInfo.MaterialName);
         }
         else
         {
-            gObj = PrefabManager.Instance.CreateNewObjectInPending(gObjMsgInfo.GameObjectGuid,
+            gObj = PrefabManager.Instance.CreateNewObjectInCommitPending(gObjMsgInfo.GameObjectGuid,
                 gObjMsgInfo.PrefabName, gObjMsgInfo.MaterialName, gObjMsgInfo.Transform);
         }
 
-        gObj.GetComponent<GameObjController>().OnVotingCommitReceived();
+        gObj.GetComponent<GameObjController>().OnRequestCommitReceived();
 
         // Notify the user that a new commit has arrived
 
         // Play notification sound
-        UIManager.Instance.NotificationSound.Play();
+        UIManager.Instance.MessageReceivedSound.Play();
 
         // Send commit notification to this device
         PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(gObjMsgInfo.PrefabName, PrefabManager.Instance.PrefabCollection);
@@ -307,15 +265,60 @@ public class MessagesManager : MonoBehaviour
 
     // -------------------------- DELETION --------------------------
 
-    public void SendGlobalDeletionMessage(GameObjController gObjCont)
+    // ------------ SEND DELETION ------------
+
+    public void SendGlobalForcedDeleteMessage(GameObjController gObjCont)
     {
-        CreateAndSendMessage(gObjCont, MessageType.DeletionMessage);
-
-        // Play sound
-        UIManager.Instance.CommitSentSound.Play();
-
-        // todo maybe display a dialog/confirmation box?
+        SendGlobalDeletionMessage(gObjCont, DeletionType.ForcedGlobalDeletion);
     }
+
+    public void SendGlobalRequestDeletionMessage(GameObjController gObjCont)
+    {
+        SendGlobalDeletionMessage(gObjCont, DeletionType.RequestGlobalDeletion);
+    }
+
+    private void SendGlobalDeletionMessage(GameObjController gObjCont, DeletionType deletionType)
+    {
+        CreateAndSendMessage(gObjCont, MessageType.DeletionMessage, deletionType: deletionType);
+
+        // Play sound on sent
+        UIManager.Instance.MessageSentSound.Play();
+
+        switch (deletionType)
+        {
+            case DeletionType.ForcedGlobalDeletion:
+            {
+                OnGlobalForcedDeletionSent(gObjCont);
+                break;
+            }
+
+            case DeletionType.RequestGlobalDeletion:
+            {
+                OnGlobalRequestDeletionSent(gObjCont);
+                break;
+            }
+
+            default:
+                break;
+        }
+    }   
+
+    private void OnGlobalForcedDeletionSent(GameObjController gObjCont)
+    {
+        gObjCont.RemoveDeletionPending();
+        //PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
+    }
+
+    private void OnGlobalRequestDeletionSent(GameObjController gObjCont)
+    {
+        PrefabManager.Instance.PutExistingObjectInDeletionPending(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
+    }
+
+    public void AcceptDeletion(GameObjController gObjCont)
+    {
+        SendGlobalForcedDeleteMessage(gObjCont);
+    }
+    // ------------ RECEIVE DELETION ------------
 
     /*
      * Note: 
@@ -348,7 +351,7 @@ public class MessagesManager : MonoBehaviour
         // Notify the user that a new thing has arrived
 
         // Play notification sound
-        UIManager.Instance.NotificationSound.Play();
+        UIManager.Instance.MessageReceivedSound.Play();
 
         // Send commit notification to this device
         PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(gObjController.PrefabName, PrefabManager.Instance.PrefabCollection);
@@ -362,10 +365,11 @@ public class MessagesManager : MonoBehaviour
         //todo: show the user a notification in case the global deletion generates a new local obj
         // potrei farlo che il delete obj mi torna un valore X, dove se X corrisponde a 'ho cancellato
         // da globale ma messo in locale' allora mostro la notifica
-        // NON MOSTRARE NOTIFICA IN CONTROLLER!!! MA FARLO QUA EH!!!
     }
 
     // -------------------------- DECLINE --------------------------
+
+    // ------------ SEND DECLINE ------------
 
     public void SendDeclineCommit(GameObjController gObjCont)
     {
@@ -382,10 +386,12 @@ public class MessagesManager : MonoBehaviour
         CreateAndSendMessage(gObjCont, MessageType.DeclineMessage, declineType: declineType);
 
         // Play sound
-        UIManager.Instance.CommitSentSound.Play();
+        UIManager.Instance.MessageSentSound.Play();
 
         // todo maybe display a dialog/confirmation box?
     }
+
+    // ------------ RECEIVE DECLINE  ------------
 
     public void OnDeclineReceived(DeclineMessage declineMessage)
     {
@@ -407,7 +413,7 @@ public class MessagesManager : MonoBehaviour
         // Notify the user that a new thing has arrived
 
         // Play notification sound
-        UIManager.Instance.NotificationSound.Play();
+        UIManager.Instance.MessageReceivedSound.Play();
 
         // Send commit notification to this device
         PrefabSpecs prefabSpecs = PrefabSpecs.FindByPrefabName(gObjController.PrefabName, PrefabManager.Instance.PrefabCollection);

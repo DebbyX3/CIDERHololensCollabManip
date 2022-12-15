@@ -30,7 +30,8 @@ public enum ObjectLocation
     None = 0,
     Local = 1,
     Global = 2,
-    Pending = 4
+    CommitPending = 4,
+    DeletionPending = 8
 }
 
 public class GameObjController : MonoBehaviour
@@ -47,7 +48,9 @@ public class GameObjController : MonoBehaviour
     public ObjectLocation ObjectLocation { get; private set; } = ObjectLocation.None;
 
     // Indicates if the pending obj was received or sent
-    public UserType PendingObjectUserType { get; private set; } = UserType.None;
+    public UserType CommitPendingObjectUserType { get; private set; } = UserType.None;
+
+    public UserType DeletionPendingObjectUserType { get; private set; } = UserType.None;
 
     // Need to keep the references to the unity actions in order to disable them
     private UnityAction SaveGlobalStateAction;
@@ -56,12 +59,16 @@ public class GameObjController : MonoBehaviour
     private UnityAction SaveLocalStateAction;
     private UnityAction RestoreLocalStateAction;
 
-    private UnityAction SavePendingListAction;
-    private UnityAction RestorePendingListAction;
+    private UnityAction SaveCommitPendingListAction;
+    private UnityAction RestoreCommitPendingListAction;
+
+    private UnityAction SaveDeletionPendingListAction;
+    private UnityAction RestoreDeletionPendingListAction;
 
     private GameObject NearLocalFollowingMenu;
     private GameObject NearGlobalFollowingMenu;
-    private GameObject NearPendingFollowingMenu;
+    private GameObject NearCommitPendingFollowingMenu;
+    private GameObject NearDeletionPendingFollowingMenu;
 
     private void Awake()
     {
@@ -77,7 +84,7 @@ public class GameObjController : MonoBehaviour
         // Set UnityActions
         SetGlobalUnityActions();
         SetLocalUnityActions();
-        SetPendingUnityActions();
+        SetCommitPendingUnityActions();
 
         // Subscribe to event to hide the object at each scene change
         // no need to use an unityaction (I think) because i don't need to unsubscribe from this event! it's fixed
@@ -101,7 +108,7 @@ public class GameObjController : MonoBehaviour
         */
         CreateNearLocalFollowingMenu();
         CreateNearGlobalFollowingMenu();
-        CreateNearPendingFollowingMenu();
+        CreateNearCommitPendingFollowingMenu();
     }
 
     // TODO ha senso mettere questi metodi quando basta mettere il set pubblico dei campi in alto?? boh
@@ -115,9 +122,9 @@ public class GameObjController : MonoBehaviour
         MaterialName = materialName;
     }
 
-    public void SetPendingObjectUserType(UserType pendingObjectUserType)
+    public void SetCommitPendingObjectUserType(UserType commitPendingObjectUserType)
     {
-        PendingObjectUserType = pendingObjectUserType;
+        CommitPendingObjectUserType = commitPendingObjectUserType;
     }
 
     public void SetGuid(Guid guid)
@@ -192,7 +199,7 @@ public class GameObjController : MonoBehaviour
                 }
 
                 if (userType.Equals(UserType.Sender))
-                    MessagesManager.Instance.SendGlobalDeletionMessage(this); // Send deletion message
+                    MessagesManager.Instance.SendGlobalForcedDeleteMessage(this); // Send deletion message
 
                 break;
             }
@@ -220,10 +227,15 @@ public class GameObjController : MonoBehaviour
         MessagesManager.Instance.SendForcedCommit(this);
     }
 
-    public void PrepareVotingCommit()
+    public void PrepareRequestCommit()
     {
-        SetPendingObjectUserType(UserType.Sender);
-        MessagesManager.Instance.SendVotingCommit(this);
+        SetCommitPendingObjectUserType(UserType.Sender);
+        MessagesManager.Instance.SendRequestCommit(this);
+    }
+
+    public void PrepareGlobalRequestDeletion()
+    {
+        MessagesManager.Instance.SendGlobalRequestDeletionMessage(this);
     }
 
     public void OnForcedCommitReceived()
@@ -239,13 +251,12 @@ public class GameObjController : MonoBehaviour
         }
 
         SetActiveManipulation(false);
-        //CaretakerScene.Instance.SaveGlobalState(this);
 
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();
     }
 
-    public void OnVotingCommitReceived()
+    public void OnRequestCommitReceived()
     {
         bool wasLocalScene = false;
 
@@ -257,11 +268,9 @@ public class GameObjController : MonoBehaviour
             wasLocalScene = true;
         }
 
-        SetPendingObjectUserType(UserType.Receiver);
+        SetCommitPendingObjectUserType(UserType.Receiver);
         SetActiveGlobalMenu(false);
         SetActiveManipulation(false);
-
-        //CaretakerScene.Instance.SavePendingState(this);
 
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();
@@ -270,13 +279,12 @@ public class GameObjController : MonoBehaviour
     public void AcceptCommit()
     {
         MessagesManager.Instance.AcceptCommit(this);
-        //force commit?
     }
 
     // todo: maybe move this function in PrefabManager? nah?
     public void DeclineCommit(UserType userType = UserType.Sender)
     {
-        RemovePending();
+        RemoveCommitPending();
 
         bool wasLocalScene = false;
 
@@ -316,14 +324,21 @@ public class GameObjController : MonoBehaviour
             MessagesManager.Instance.SendDeclineCommit(this); // Send decline commit message
     }
 
-    public void RemovePending()
+    public void RemoveCommitPending()
     {
-        UnsubscribeAndRemoveFromPendingList();
-        PendingObjectUserType = UserType.None;
+        UnsubscribeAndRemoveFromCommitPendingList();
+        CommitPendingObjectUserType = UserType.None;
 
-        SetActivePendingMenu(false);
+        SetActiveCommitPendingMenu(false);
     }
 
+    public void RemoveDeletionPending()
+    {
+        UnsubscribeAndRemoveFromDeletionPendingList();
+        DeletionPendingObjectUserType = UserType.None;
+
+        SetActiveDeletionPendingMenu(false);
+    }
 
     // ---------------------- END COMMIT METHODS ----------------------
 
@@ -360,7 +375,7 @@ public class GameObjController : MonoBehaviour
         RestoreGlobalStateAction += () => SetActiveManipulation(false);
 
         RestoreGlobalStateAction += () => SetActiveLocalMenu(false); // Untoggle local menu
-        RestoreGlobalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
+        RestoreGlobalStateAction += () => SetActiveCommitPendingMenu(false); // untoggle commit pending menu
     }
 
     private void SetLocalUnityActions()
@@ -372,19 +387,19 @@ public class GameObjController : MonoBehaviour
         RestoreLocalStateAction += () => SetActiveManipulation(true);
 
         RestoreLocalStateAction += () => SetActiveGlobalMenu(false); // untoggle global menu
-        RestoreLocalStateAction += () => SetActivePendingMenu(false); // untoggle pending menu
+        RestoreLocalStateAction += () => SetActiveCommitPendingMenu(false); // untoggle commit pending menu
     }
 
-    private void SetPendingUnityActions()
+    private void SetCommitPendingUnityActions()
     {
         // Just set them, not attach to a listener yet
-        SavePendingListAction += () => CaretakerScene.Instance.SavePendingState(this);
+        SaveCommitPendingListAction += () => CaretakerScene.Instance.SaveCommitPendingState(this);
 
-        RestorePendingListAction += () => CaretakerScene.Instance.RestorePendingState(this);
-        RestorePendingListAction += () => SetActiveManipulation(false);
+        RestoreCommitPendingListAction += () => CaretakerScene.Instance.RestoreCommitPendingState(this);
+        RestoreCommitPendingListAction += () => SetActiveManipulation(false);
 
-        RestorePendingListAction += () => SetActiveLocalMenu(false); // Untoggle local menu
-        RestorePendingListAction += () => SetActiveGlobalMenu(false); // untoggle global menu
+        RestoreCommitPendingListAction += () => SetActiveLocalMenu(false); // Untoggle local menu
+        RestoreCommitPendingListAction += () => SetActiveGlobalMenu(false); // untoggle global menu
     }
 
     // Adding multiple identical listeners results in only a single call being made.
@@ -409,12 +424,20 @@ public class GameObjController : MonoBehaviour
     }
 
     // Adding multiple identical listeners results in only a single call being made.
-    public void SubscribeToPendingList()
+    public void SubscribeToCommitPendingList()
     {
-        CaretakerScene.Instance.SavePendingListEvent.AddListener(SavePendingListAction);
-        CaretakerScene.Instance.RestorePendingListEvent.AddListener(RestorePendingListAction);
+        CaretakerScene.Instance.SaveCommitPendingListEvent.AddListener(SaveCommitPendingListAction);
+        CaretakerScene.Instance.RestoreCommitPendingListEvent.AddListener(RestoreCommitPendingListAction);
 
-        AddFlagToObjectLocation(ObjectLocation.Pending);
+        AddFlagToObjectLocation(ObjectLocation.CommitPending);
+    }
+    
+    public void SubscribeToDeletionPendingList()
+    {
+        CaretakerScene.Instance.SaveDeletionPendingListEvent.AddListener(SaveDeletionPendingListAction);
+        CaretakerScene.Instance.RestoreDeletionPendingListEvent.AddListener(RestoreDeletionPendingListAction);
+
+        AddFlagToObjectLocation(ObjectLocation.DeletionPending);
     }
 
     /* PLEASE NOTE:
@@ -455,17 +478,30 @@ public class GameObjController : MonoBehaviour
         CaretakerScene.Instance.ResubscribeRemainingObjsToLocalEvents();
     }
 
-    public void UnsubscribeAndRemoveFromPendingList()
+    public void UnsubscribeAndRemoveFromCommitPendingList()
     {
-        CaretakerScene.Instance.SavePendingListEvent.RemoveListener(SavePendingListAction);
-        CaretakerScene.Instance.RestorePendingListEvent.RemoveListener(RestorePendingListAction);
+        CaretakerScene.Instance.SaveCommitPendingListEvent.RemoveListener(SaveCommitPendingListAction);
+        CaretakerScene.Instance.RestoreCommitPendingListEvent.RemoveListener(RestoreCommitPendingListAction);
 
-        CaretakerScene.Instance.RemoveFromPendingList(Guid);
+        CaretakerScene.Instance.RemoveFromCommitPendingList(Guid);
 
-        RemoveFlagFromObjectLocation(ObjectLocation.Pending);
+        RemoveFlagFromObjectLocation(ObjectLocation.CommitPending);
 
         // Note: do this AFTER removing the flag location (previous call)
-        CaretakerScene.Instance.ResubscribeRemainingObjsToPendingEvents();
+        CaretakerScene.Instance.ResubscribeRemainingObjsToCommitPendingEvents();
+    }
+
+    public void UnsubscribeAndRemoveFromDeletionPendingList()
+    {
+        CaretakerScene.Instance.SaveDeletionPendingListEvent.RemoveListener(SaveDeletionPendingListAction);
+        CaretakerScene.Instance.RestoreDeletionPendingListEvent.RemoveListener(RestoreDeletionPendingListAction);
+
+        CaretakerScene.Instance.RemoveFromDeletionPendingList(Guid);
+
+        RemoveFlagFromObjectLocation(ObjectLocation.DeletionPending);
+
+        // Note: do this AFTER removing the flag location (previous call)
+        CaretakerScene.Instance.ResubscribeRemainingObjsToDeletionPendingEvents();
     }
 
     // Always hide the object on scene change!
@@ -484,19 +520,19 @@ public class GameObjController : MonoBehaviour
 
         if (CaretakerScene.Instance.IsGlobalScene())
         {
-            // If the object is ONLY in the global scene and NOT in the pending list
-            if (ObjectLocation.HasFlag(ObjectLocation.Global) && !ObjectLocation.HasFlag(ObjectLocation.Pending))
+            // If the object is ONLY in the global scene and NOT in the Commit pending list
+            if (ObjectLocation.HasFlag(ObjectLocation.Global) && !ObjectLocation.HasFlag(ObjectLocation.CommitPending))
             {
                 SetActiveGlobalMenu(true);
             }
-            // If the object is ALSO in the pending list
-            else if (ObjectLocation.HasFlag(ObjectLocation.Pending))
+            // If the object is ALSO in the Commit pending list
+            else if (ObjectLocation.HasFlag(ObjectLocation.CommitPending))
             {
                 SetActiveGlobalMenu(false);
 
-                // Show pending menu only if the pending obj was RECEIVED
-                if (PendingObjectUserType.Equals(UserType.Receiver))
-                    SetActivePendingMenu(true);
+                // Show commmit pending menu only if the Commit pending obj was RECEIVED
+                if (CommitPendingObjectUserType.Equals(UserType.Receiver))
+                    SetActiveCommitPendingMenu(true);
             }
         }
         else if (CaretakerScene.Instance.IsLocalScene())
@@ -515,9 +551,9 @@ public class GameObjController : MonoBehaviour
         NearGlobalFollowingMenu = UIManager.Instance.SetNearGlobalFollowingMenu(this);
     }
 
-    private void CreateNearPendingFollowingMenu()
+    private void CreateNearCommitPendingFollowingMenu()
     {
-        NearPendingFollowingMenu = UIManager.Instance.SetNearPendingFollowingMenu(this);
+        NearCommitPendingFollowingMenu = UIManager.Instance.SetNearCommitPendingFollowingMenu(this);
     }
 
     private void SetActiveManipulation(bool active)
@@ -548,10 +584,16 @@ public class GameObjController : MonoBehaviour
         NearGlobalFollowingMenu.GetComponent<RadialView>().enabled = active;
     }
 
-    private void SetActivePendingMenu(bool active)
+    private void SetActiveCommitPendingMenu(bool active)
     {
-        NearPendingFollowingMenu.SetActive(active);
-        NearPendingFollowingMenu.GetComponent<RadialView>().enabled = active;
+        NearCommitPendingFollowingMenu.SetActive(active);
+        NearCommitPendingFollowingMenu.GetComponent<RadialView>().enabled = active;
+    }
+
+    private void SetActiveDeletionPendingMenu(bool active)
+    {
+        NearDeletionPendingFollowingMenu.SetActive(active);
+        NearDeletionPendingFollowingMenu.GetComponent<RadialView>().enabled = active;
     }
 
     // ------------------ FLAGS ------------------

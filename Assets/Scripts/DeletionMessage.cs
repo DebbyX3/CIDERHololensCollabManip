@@ -11,10 +11,12 @@ using System;
 public struct DeletionMessageInfo
 {
     public Guid GameObjectGuid { get; private set; }
+    public DeletionType DeletionType { get; private set; }
 
-    public DeletionMessageInfo(Guid guid)
+    public DeletionMessageInfo(Guid guid, DeletionType deletionType)
     {
         GameObjectGuid = guid;
+        DeletionType = deletionType;
     }
 }
 

@@ -30,7 +30,7 @@ public class PrefabManager : MonoBehaviour
     public List<Texture2D> Images;
     public List<Material> Materials;
 
-    public Material pendingStateMaterial;
+    public Material CommitPendingStateMaterial;
 
     // Dictionary that keeps all the materials indexed by material name.
     // Please note that this 'list' is the best way I found to access all the materials without having to also provide
@@ -244,7 +244,7 @@ public class PrefabManager : MonoBehaviour
         return gObj;
     }
 
-    public GameObject CreateNewObjectInPending(Guid guid, string prefabName, string materialName, SerializableTransform transform)
+    public GameObject CreateNewObjectInCommitPending(Guid guid, string prefabName, string materialName, SerializableTransform transform)
     {
         bool wasLocalScene = false;
 
@@ -258,10 +258,10 @@ public class PrefabManager : MonoBehaviour
         GameObject gObj = CreateNewObject(guid, prefabName, materialName, transform);
 
         GameObjController gObjContr = gObj.GetComponent<GameObjController>();
-        gObjContr.SubscribeToPendingList();
-        CaretakerScene.Instance.SavePendingState(gObjContr);
+        gObjContr.SubscribeToCommitPendingList();
+        CaretakerScene.Instance.SaveCommitPendingState(gObjContr);
 
-        ChangeMaterialPendingState(gObj);
+        ChangeMaterialCommitPendingState(gObj);
 
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
@@ -345,7 +345,7 @@ public class PrefabManager : MonoBehaviour
         return gObj;
     }
 
-    public GameObject PutExistingObjectInPending(Guid guid, SerializableTransform transform, string materialName)
+    public GameObject PutExistingObjectInCommitPending(Guid guid, SerializableTransform transform, string materialName)
     {
         bool wasLocalScene = false;
 
@@ -363,15 +363,11 @@ public class PrefabManager : MonoBehaviour
         gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);
 
         // Change material of the object
-        ChangeMaterialPendingState(gObj);
-        gObjContr.SetMaterialName(materialName); // Do not move this into ChangeMaterial? o si?
+        ChangeMaterialCommitPendingState(gObj);
+        gObjContr.SetMaterialName(materialName); // Do not move this into ChangeMaterial
 
-        // todo non sono sicura, intanto tienilo:
-        //gObjContr.SetMaterialName(pendingStateMaterial.name);
-        //ChangeMaterial(gObj, materialName);
-
-        gObjContr.SubscribeToPendingList(); //always
-        CaretakerScene.Instance.SavePendingState(gObjContr);
+        gObjContr.SubscribeToCommitPendingList(); //always
+        CaretakerScene.Instance.SaveCommitPendingState(gObjContr);
 
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
@@ -400,8 +396,8 @@ public class PrefabManager : MonoBehaviour
 
         if (AllMaterialsDict.TryGetValue(materialName, out mat)) // If the material exists
             ChangeMaterial(gObj, mat);
-        else if (materialName.Equals(pendingStateMaterial.name)) //todo probabilmente da sistemare?
-            ChangeMaterialPendingState(gObj);
+        else if (materialName.Equals(CommitPendingStateMaterial.name)) //todo probabilmente da sistemare?
+            ChangeMaterialCommitPendingState(gObj);
         else
             ChangeMaterial(gObj, PrefabCollection[0].GetAMaterial()); // if the material does not exists, then take whatever material
                                                                       // (can also be randomized it but i don't think it will be useful)
@@ -422,14 +418,14 @@ public class PrefabManager : MonoBehaviour
         ChangeOneMaterial(gObj, material);
     }
 
-    public void ChangeMaterialPendingState(GameObject gObj)
+    public void ChangeMaterialCommitPendingState(GameObject gObj)
     {
-        ChangeMaterial(gObj, pendingStateMaterial);
+        ChangeMaterial(gObj, CommitPendingStateMaterial);
     }
 
-    public void ChangeMaterialPendingState(Guid guid)
+    public void ChangeMaterialCommitPendingState(Guid guid)
     {
-        ChangeMaterial(guid, pendingStateMaterial);
+        ChangeMaterial(guid, CommitPendingStateMaterial);
     }
 
     private void ChangeOneMaterial(GameObject gObj, Material material)
@@ -444,8 +440,8 @@ public class PrefabManager : MonoBehaviour
         // and they don't have a Mesh
         if (meshRenderer != null)
         {
-            // if the material is the pending one, change every material
-            if (material.Equals(pendingStateMaterial))
+            // if the material is the Commit pending one, change every material
+            if (material.Equals(CommitPendingStateMaterial))
             {
                 Material[] mat;
 

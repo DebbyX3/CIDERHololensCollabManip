@@ -117,13 +117,18 @@ public class NotificationManager : MonoBehaviour
         RawImage rawImage = buttonNotification.transform.Find("RawImage").GetComponent<RawImage>();
 
         // Based on the notification ID received, find the corresponding info in the notification types list
-        // (that holds all the specification took from the config file) 
+        // (that holds all the specifications took from the config file) 
         NotificationType notificationType = NotificationTypesList.Find(x => x.NotificationID.Equals(notificationIDToFind.ToString()));
+
+        // Set color name by trimming everything before the dash and making the first letter uppercase
+        string colorNameTrimmed = colorName.Substring(colorName.IndexOf('-') + 1); // +1 to exclude the dash
 
         // Change texts
         title.text = notificationType.NotificationTitle;
         description.text = notificationType.NotificationDesc;
-        objReceivedText.text = notificationType.NotificationObjSpecs + colorName + " " + objectName;
+        objReceivedText.text =  notificationType.NotificationObjSpecs + 
+                                char.ToUpper(colorNameTrimmed[0]) + colorNameTrimmed.Substring(1) + " " + 
+                                objectName;
 
         // Assign the image to the rawImage component to display the image in the button
         rawImage.texture = image;
@@ -145,12 +150,13 @@ public class NotificationManager : MonoBehaviour
         // Destroy the button when clicked 
         buttonNotificationComponent.onClick.AddListener(() => Destroy(buttonNotification));
 
-        // Disable the menu notification button on click if the clicked button was the last one
+        // Disable the menu notification button on click if the clicked notif was the last one
         buttonNotificationComponent.onClick.AddListener(() => DisableMenuNotifButtonIfLastNotifButton());
 
         if (!wasAlreadyActive)               // If the slate was NOT already visible before, deactivate it
             gameObject.SetActive(false);
 
+        // Enable notif button on following menu
         UIManager.Instance.SetNotificationButtonActive(true);
     }
 

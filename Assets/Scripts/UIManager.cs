@@ -19,8 +19,8 @@ public class UIManager : MonoBehaviour
 
     public GameObject NotificationButton;
 
-    public AudioSource NotificationSound;
-    public AudioSource CommitSentSound;
+    public AudioSource MessageReceivedSound;
+    public AudioSource MessageSentSound;
 
     public GameObject SlateColor;
     public GameObject SlatePrefab;
@@ -108,10 +108,10 @@ public class UIManager : MonoBehaviour
         Interactable interactableOne = buttonOne.GetComponent<Interactable>();
         interactableOne.OnClick.AddListener(() => gObjContr.PrepareForcedCommit());
 
-        // Button 2 - Voting Commit
+        // Button 2 - Request Commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
         Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
-        interactableTwo.OnClick.AddListener(() => gObjContr.PrepareVotingCommit());
+        interactableTwo.OnClick.AddListener(() => gObjContr.PrepareRequestCommit());
 
         // Button 3 - Close Menu
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
@@ -161,10 +161,15 @@ public class UIManager : MonoBehaviour
         Interactable interactableOne = buttonOne.GetComponent<Interactable>();
         interactableOne.OnClick.AddListener(() => gObjContr.CopyObjectInLocal());
 
-        // Button 2 - Delete object from global scene
+        // Button 2 - Force delete object from global scene
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
         Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
         interactableTwo.OnClick.AddListener(() => gObjContr.DeleteObject(ObjectLocation.Global));
+
+        // Button 3 - Request deletion of an object from global scene
+        GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
+        Interactable interactableThree = buttonThree.GetComponent<Interactable>();
+        interactableThree.OnClick.AddListener(() => gObjContr.PrepareGlobalRequestDeletion());
 
         // Button 6 - Close menu
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
@@ -185,12 +190,12 @@ public class UIManager : MonoBehaviour
         return nearGlobalFollowingMenu;
     }
 
-    public GameObject SetNearPendingFollowingMenu(GameObjController gObjContr)
+    public GameObject SetNearCommitPendingFollowingMenu(GameObjController gObjContr)
     {
         // The parent of the menu is the gameobject -  important: set true as argument
-        GameObject nearPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), gObjContr.Transform, true);
+        GameObject nearCommitPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), gObjContr.Transform, true);
 
-        GameObject buttonCollection = nearPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
+        GameObject buttonCollection = nearCommitPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // todo! Accept or decline commit
 
@@ -207,19 +212,19 @@ public class UIManager : MonoBehaviour
         // Button 6 - Close menu
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
         Interactable interactableSix = buttonSix.GetComponent<Interactable>();
-        interactableSix.OnClick.AddListener(() => CloseMenu(nearPendingFollowingMenu));
+        interactableSix.OnClick.AddListener(() => CloseMenu(nearCommitPendingFollowingMenu));
 
         //----------------------
 
-        SolverHandler sh = nearPendingFollowingMenu.GetComponent<SolverHandler>();
+        SolverHandler sh = nearCommitPendingFollowingMenu.GetComponent<SolverHandler>();
         sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
         sh.TransformOverride = gObjContr.Transform;
 
         // Hide it
-        nearPendingFollowingMenu.SetActive(false);
+        nearCommitPendingFollowingMenu.SetActive(false);
 
         //todo: set scale to the same for every menu (so it doesn't become too small or too big)}
 
-        return nearPendingFollowingMenu;
+        return nearCommitPendingFollowingMenu;
     }
 }

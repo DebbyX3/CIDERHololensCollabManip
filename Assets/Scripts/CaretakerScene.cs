@@ -40,20 +40,23 @@ public class CaretakerScene : MonoBehaviour
     // keeps mementos of local scene
     public Dictionary<Guid, Memento> LocalListMementos { get; } = new Dictionary<Guid, Memento>();
 
-    // not sure about the use of a Memento object here
-    public Dictionary<Guid, Memento> PendingListRequests { get; } = new Dictionary<Guid, Memento>();
+    public Dictionary<Guid, Memento> CommitPendingListRequests { get; } = new Dictionary<Guid, Memento>();
+
+    public Dictionary<Guid, Memento> DeletionPendingListRequests { get; } = new Dictionary<Guid, Memento>();
 
     private Location SceneState = Location.LocalLayer;
 
-    // Need 4 events, because the save and restore are done in different moments:
+    // Need different events for save and restore, because the save and restore are done in different moments:
     // Save is done always before the restore, and some objs may not be in both scenes
     public UnityEvent SaveGlobalStateEvent = new UnityEvent();
     public UnityEvent SaveLocalStateEvent = new UnityEvent();
-    public UnityEvent SavePendingListEvent = new UnityEvent();
+    public UnityEvent SaveCommitPendingListEvent = new UnityEvent();
+    public UnityEvent SaveDeletionPendingListEvent = new UnityEvent();
 
     public UnityEvent RestoreGlobalStateEvent = new UnityEvent();
     public UnityEvent RestoreLocalStateEvent = new UnityEvent();
-    public UnityEvent RestorePendingListEvent = new UnityEvent();
+    public UnityEvent RestoreCommitPendingListEvent = new UnityEvent();
+    public UnityEvent RestoreDeletionPendingListEvent = new UnityEvent();
 
     public UnityEvent HideObjectEvent = new UnityEvent();
 
@@ -81,8 +84,8 @@ public class CaretakerScene : MonoBehaviour
 
     private void SaveGlobalAndPendingRestoreLocal()
     {
-        // before changing to local, save the global and pending scene
-        SavePendingListEvent.Invoke();
+        // before changing to local, save the global and pending scenes
+        SaveCommitPendingListEvent.Invoke();
         SaveGlobalStateEvent.Invoke();
 
         // hide all objects (each obj is subscribed to this event)
@@ -102,7 +105,7 @@ public class CaretakerScene : MonoBehaviour
 
         // change to global and pending
         RestoreGlobalStateEvent.Invoke();
-        RestorePendingListEvent.Invoke();
+        RestoreCommitPendingListEvent.Invoke();
     }
 
     private void FlipSceneState()
@@ -174,7 +177,7 @@ public class CaretakerScene : MonoBehaviour
 
     public void SaveGlobalState(GameObjController gObj)
     {
-        if (!PendingListRequests.ContainsKey(gObj.Guid))
+        if (!CommitPendingListRequests.ContainsKey(gObj.Guid))
             GlobalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
@@ -183,9 +186,9 @@ public class CaretakerScene : MonoBehaviour
         LocalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public void SavePendingState(GameObjController gObj)
+    public void SaveCommitPendingState(GameObjController gObj)
     {
-        PendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        CommitPendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
     public void RestoreGlobalState(GameObjController gObj)
@@ -228,25 +231,24 @@ public class CaretakerScene : MonoBehaviour
         }
     }
 
-    public void RestorePendingState(GameObjController gObj)
+    public void RestoreCommitPendingState(GameObjController gObj)
     {
         Memento value;
 
-        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Pending))
+        if (gObj.ObjectLocation.HasFlag(ObjectLocation.CommitPending))
         {
-            if (PendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the pending list, restore it
+            if (CommitPendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the pending list, restore it
             {
                 // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
                 gObj.gameObject.SetActive(true);
                 gObj.Restore(value);
 
-                // todo? non molto todo ma vabbè, cambia solo il materiale! e non il nome mi raccomando!
-                PrefabManager.Instance.ChangeMaterialPendingState(gObj.gameObject);
+                PrefabManager.Instance.ChangeMaterialCommitPendingState(gObj.gameObject);
             }
             else
             {
-                Debug.Log("Key " + gObj.Guid + " not found in dictionary PendingListRequests");
-                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary PendingListRequests");
+                Debug.Log("Key " + gObj.Guid + " not found in dictionary CommitPendingListRequests");
+                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary CommitPendingListRequests");
             }
         }
     }
@@ -265,27 +267,23 @@ public class CaretakerScene : MonoBehaviour
                                                         // No exception is thrown.
     }
 
-    public void RemoveFromPendingList(Guid guid)
+    public void RemoveFromCommitPendingList(Guid guid)
     {
-        PendingListRequests.Remove(guid);               // If the dict does not contain an element with the
+        CommitPendingListRequests.Remove(guid);         // If the dict does not contain an element with the
+                                                        // specified key, the dict remains unchanged.
+                                                        // No exception is thrown.
+    }
+    
+    public void RemoveFromDeletionPendingList(Guid guid)
+    {
+        DeletionPendingListRequests.Remove(guid);       // If the dict does not contain an element with the
                                                         // specified key, the dict remains unchanged.
                                                         // No exception is thrown.
     }
 
-    public void EmptyAllPendingStates()
+    public void EmptyAllCommitPendingStates()
     {
-        PendingListRequests.Clear();
-    }
-
-    public void ExecuteForcedCommit(GameObjController gObj)
-    {
-        //Instance.SaveGlobalState(gObj);
-        //Instance.ChangeSceneToGlobal();
-    }
-
-    public void ExecuteVotingCommit(GameObjController gObj)
-    {
-        //Instance.SavePendingState(gObj);
+        CommitPendingListRequests.Clear();
     }
 
     public void ResubscribeRemainingObjsToGlobalEvents()
@@ -314,7 +312,7 @@ public class CaretakerScene : MonoBehaviour
         }
     }
 
-    public void ResubscribeRemainingObjsToPendingEvents()
+    public void ResubscribeRemainingObjsToCommitPendingEvents()
     {
         GameObjController gobjController;
 
@@ -322,8 +320,21 @@ public class CaretakerScene : MonoBehaviour
         {
             gobjController = gobj.GetComponent<GameObjController>();
 
-            if (gobjController.ObjectLocation.HasFlag(ObjectLocation.Pending))
-                gobjController.SubscribeToPendingList();
+            if (gobjController.ObjectLocation.HasFlag(ObjectLocation.CommitPending))
+                gobjController.SubscribeToCommitPendingList();
+        }
+    }    
+    
+    public void ResubscribeRemainingObjsToDeletionPendingEvents()
+    {
+        GameObjController gobjController;
+
+        foreach (GameObject gobj in GUIDKeeper.List.Values)
+        {
+            gobjController = gobj.GetComponent<GameObjController>();
+
+            if (gobjController.ObjectLocation.HasFlag(ObjectLocation.DeletionPending))
+                gobjController.SubscribeToDeletionPendingList();
         }
     }
 }
