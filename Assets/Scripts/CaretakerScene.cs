@@ -85,6 +85,7 @@ public class CaretakerScene : MonoBehaviour
     private void SaveGlobalAndPendingRestoreLocal()
     {
         // before changing to local, save the global and pending scenes
+        SaveDeletionPendingListEvent.Invoke();
         SaveCommitPendingListEvent.Invoke();
         SaveGlobalStateEvent.Invoke();
 
@@ -106,6 +107,7 @@ public class CaretakerScene : MonoBehaviour
         // change to global and pending
         RestoreGlobalStateEvent.Invoke();
         RestoreCommitPendingListEvent.Invoke();
+        RestoreDeletionPendingListEvent.Invoke();
     }
 
     private void FlipSceneState()
@@ -177,7 +179,7 @@ public class CaretakerScene : MonoBehaviour
 
     public void SaveGlobalState(GameObjController gObj)
     {
-        if (!CommitPendingListRequests.ContainsKey(gObj.Guid))
+        if (!CommitPendingListRequests.ContainsKey(gObj.Guid) && !DeletionPendingListRequests.ContainsKey(gObj.Guid))
             GlobalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
@@ -189,6 +191,11 @@ public class CaretakerScene : MonoBehaviour
     public void SaveCommitPendingState(GameObjController gObj)
     {
         CommitPendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+    }
+
+    public void SaveDeletionPendingState(GameObjController gObj)
+    {
+        DeletionPendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
     }
 
     public void RestoreGlobalState(GameObjController gObj)
@@ -237,7 +244,7 @@ public class CaretakerScene : MonoBehaviour
 
         if (gObj.ObjectLocation.HasFlag(ObjectLocation.CommitPending))
         {
-            if (CommitPendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the pending list, restore it
+            if (CommitPendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the commit pending list, restore it
             {
                 // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
                 gObj.gameObject.SetActive(true);
@@ -249,6 +256,28 @@ public class CaretakerScene : MonoBehaviour
             {
                 Debug.Log("Key " + gObj.Guid + " not found in dictionary CommitPendingListRequests");
                 UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary CommitPendingListRequests");
+            }
+        }
+    }
+    
+    public void RestoreDeletionPendingState(GameObjController gObj)
+    {
+        Memento value;
+
+        if (gObj.ObjectLocation.HasFlag(ObjectLocation.DeletionPending))
+        {
+            if (DeletionPendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the Deletion pending list, restore it
+            {
+                // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
+                gObj.gameObject.SetActive(true);
+                gObj.Restore(value);
+
+                PrefabManager.Instance.ChangeMaterialDeletionPendingState(gObj.gameObject);
+            }
+            else
+            {
+                Debug.Log("Key " + gObj.Guid + " not found in dictionary DeletionPendingListRequests");
+                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary DeletionPendingListRequests");
             }
         }
     }

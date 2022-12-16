@@ -33,6 +33,7 @@ public class NotificationID
     public static NotificationID CommitRequestReceived;
     public static NotificationID DeletionRequestReceived;
     public static NotificationID DeclineCommitReceived;
+    public static NotificationID DeclineDeletionReceived;
 
     private NotificationID(string typeKeyWord)
     {
@@ -46,15 +47,19 @@ public class NotificationID
         CommitRequestReceived = new NotificationID(notificationIDs[2]);
         DeletionRequestReceived = new NotificationID(notificationIDs[3]);
         DeclineCommitReceived = new NotificationID(notificationIDs[4]);
+        DeclineDeletionReceived = new NotificationID(notificationIDs[5]);
     }
 
-    public NotificationID(string objectChangeReceived, string deletionReceived, string commitRequestReceived, string deletionRequestReceived, string declineCommitReceived)
+    public NotificationID(string objectChangeReceived, string deletionReceived, 
+        string commitRequestReceived, string deletionRequestReceived, 
+        string declineCommitReceived, string declineDeletionReceived)
     {
         ObjectChangeReceived = new NotificationID(objectChangeReceived);
         DeletionReceived = new NotificationID(deletionReceived);
         CommitRequestReceived = new NotificationID(commitRequestReceived);
         DeletionRequestReceived = new NotificationID(deletionRequestReceived);
         DeclineCommitReceived = new NotificationID(declineCommitReceived);
+        DeclineDeletionReceived = new NotificationID(declineDeletionReceived);
     }
 
     public override string ToString()

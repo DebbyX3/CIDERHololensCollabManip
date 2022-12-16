@@ -97,9 +97,10 @@ public class UIManager : MonoBehaviour
         menu.SetActive(false);
     }
 
-    public GameObject SetNearLocalFollowingMenu(GameObjController gObjContr)
+    public GameObject SetNearLocalFollowingMenu(GameObjController gObjContr, 
+        out GameObject localForcedCommitButton, out GameObject localRequestCommitButton)
     {
-        // The parent of the menu is the gameobject -  important: set true as argument
+        // The parent of the menu is the gameobject - important: set true as argument
         GameObject nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), gObjContr.Transform, true);
         GameObject buttonCollection = nearLocalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
@@ -108,10 +109,14 @@ public class UIManager : MonoBehaviour
         Interactable interactableOne = buttonOne.GetComponent<Interactable>();
         interactableOne.OnClick.AddListener(() => gObjContr.PrepareForcedCommit());
 
+        localForcedCommitButton = buttonOne;
+
         // Button 2 - Request Commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
         Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
         interactableTwo.OnClick.AddListener(() => gObjContr.PrepareRequestCommit());
+
+        localRequestCommitButton = buttonTwo;
 
         // Button 3 - Close Menu
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
@@ -146,13 +151,11 @@ public class UIManager : MonoBehaviour
         nearLocalFollowingMenu.SetActive(false);
 
         return nearLocalFollowingMenu;
-
-        // todo: set scale to the same for every menu (so it doesn't become too small or too big)
     }
 
     public GameObject SetNearGlobalFollowingMenu(GameObjController gObjContr)
     {
-        // The parent of the menu is the gameobject -  important: set true as argument
+        // The parent of the menu is the gameobject - important: set true as argument
         GameObject nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), gObjContr.Transform, true);
         GameObject buttonCollection = nearGlobalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
@@ -164,7 +167,7 @@ public class UIManager : MonoBehaviour
         // Button 2 - Force delete object from global scene
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
         Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
-        interactableTwo.OnClick.AddListener(() => gObjContr.DeleteObject(ObjectLocation.Global));
+        interactableTwo.OnClick.AddListener(() => gObjContr.PrepareGlobalForcedDeletion());
 
         // Button 3 - Request deletion of an object from global scene
         GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
@@ -185,19 +188,15 @@ public class UIManager : MonoBehaviour
         // Hide it
         nearGlobalFollowingMenu.SetActive(false);
 
-        //todo: set scale to the same for every menu (so it doesn't become too small or too big)}
-
         return nearGlobalFollowingMenu;
     }
 
     public GameObject SetNearCommitPendingFollowingMenu(GameObjController gObjContr)
     {
-        // The parent of the menu is the gameobject -  important: set true as argument
-        GameObject nearCommitPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Pending obj"), gObjContr.Transform, true);
+        // The parent of the menu is the gameobject - important: set true as argument
+        GameObject nearCommitPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Commit Pending obj"), gObjContr.Transform, true);
 
         GameObject buttonCollection = nearCommitPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
-
-        // todo! Accept or decline commit
 
         // Button 2 - Accept commit
         GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
@@ -223,8 +222,40 @@ public class UIManager : MonoBehaviour
         // Hide it
         nearCommitPendingFollowingMenu.SetActive(false);
 
-        //todo: set scale to the same for every menu (so it doesn't become too small or too big)}
-
         return nearCommitPendingFollowingMenu;
+    }
+    
+    public GameObject SetNearDeletionPendingFollowingMenu(GameObjController gObjContr)
+    {
+        // The parent of the menu is the gameobject - important: set true as argument
+        GameObject nearDeletionPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Deletion Pending obj"), gObjContr.Transform, true);
+
+        GameObject buttonCollection = nearDeletionPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
+
+        // Button 2 - Accept deletion
+        GameObject buttonTwo = buttonCollection.transform.Find("ButtonTwo").gameObject;
+        Interactable interactableTwo = buttonTwo.GetComponent<Interactable>();
+        interactableTwo.OnClick.AddListener(() => gObjContr.AcceptDeletion());
+
+        // Button 3 - Decline deletion
+        GameObject buttonThree = buttonCollection.transform.Find("ButtonThree").gameObject;
+        Interactable interactableThree = buttonThree.GetComponent<Interactable>();
+        interactableThree.OnClick.AddListener(() => gObjContr.DeclineDeletion());
+
+        // Button 6 - Close menu
+        GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
+        Interactable interactableSix = buttonSix.GetComponent<Interactable>();
+        interactableSix.OnClick.AddListener(() => CloseMenu(nearDeletionPendingFollowingMenu));
+
+        //----------------------
+
+        SolverHandler sh = nearDeletionPendingFollowingMenu.GetComponent<SolverHandler>();
+        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
+        sh.TransformOverride = gObjContr.Transform;
+
+        // Hide it
+        nearDeletionPendingFollowingMenu.SetActive(false);
+
+        return nearDeletionPendingFollowingMenu;
     }
 }

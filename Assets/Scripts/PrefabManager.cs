@@ -31,6 +31,7 @@ public class PrefabManager : MonoBehaviour
     public List<Material> Materials;
 
     public Material CommitPendingStateMaterial;
+    public Material DeletionPendingStateMaterial;
 
     // Dictionary that keeps all the materials indexed by material name.
     // Please note that this 'list' is the best way I found to access all the materials without having to also provide
@@ -376,6 +377,37 @@ public class PrefabManager : MonoBehaviour
         return gObj;
     }
 
+    public GameObject PutExistingObjectInDeletionPending(Guid guid, SerializableTransform transform, string materialName)
+    {
+        bool wasLocalScene = false;
+
+        // Want to spawn object in the global scene, so check and switch to it. Then re-switch to the local one if that's the case
+        if (CaretakerScene.Instance.IsLocalScene())
+        {
+            CaretakerScene.Instance.ChangeSceneToGlobal();
+            wasLocalScene = true;
+        }
+
+        GameObject gObj = GUIDKeeper.GetGObjFromGuid(guid);
+        GameObjController gObjContr = gObj.GetComponent<GameObjController>();
+
+        // Update transform
+        gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);
+
+        // Change material of the object
+        ChangeMaterialDeletionPendingState(gObj);
+        gObjContr.SetMaterialName(materialName); // Do not move this into ChangeMaterial
+
+        gObjContr.SubscribeToDeletionPendingList(); //always
+        CaretakerScene.Instance.SaveDeletionPendingState(gObjContr);
+
+        // If the previous scene was the local one, reswitch to the local
+        if (wasLocalScene)
+            CaretakerScene.Instance.ChangeSceneToLocal();
+
+        return gObj;
+    }
+
     // --------------- CHANGE MATERIAL METHODS SET --------------------------
 
     public void ChangeMaterial(Guid guid, string materialName)
@@ -426,6 +458,16 @@ public class PrefabManager : MonoBehaviour
     public void ChangeMaterialCommitPendingState(Guid guid)
     {
         ChangeMaterial(guid, CommitPendingStateMaterial);
+    }
+
+    public void ChangeMaterialDeletionPendingState(GameObject gObj)
+    {
+        ChangeMaterial(gObj, DeletionPendingStateMaterial);
+    }
+
+    public void ChangeMaterialDeletionPendingState(Guid guid)
+    {
+        ChangeMaterial(guid, DeletionPendingStateMaterial);
     }
 
     private void ChangeOneMaterial(GameObject gObj, Material material)

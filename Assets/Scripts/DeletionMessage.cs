@@ -29,7 +29,7 @@ public class DeletionMessage : Message
 
     public override void ExecuteMessage()
     {
-        MessagesManager.Instance.OnDeletionReceived(GetMsgInfo());
+        MessagesManager.Instance.OnDeletionReceived(this);
     }
 
     public DeletionMessageInfo GetMsgInfo()

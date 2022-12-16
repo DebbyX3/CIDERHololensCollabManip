@@ -37,10 +37,8 @@ public class NotificationButtonController : MonoBehaviour
             TextOriginalColor = TextMeshPro.color;
             IconOriginalColor = IconRenderer.material.color;
 
-            this.GetComponent<ButtonConfigHelper>().SetQuadIconByName("IconDot");
+            GetComponent<ButtonConfigHelper>().SetQuadIconByName("IconDot");
 
-            // non serve che tanto basta mostrare la backplate 
-            //backPlateRenderer = transform.Find("BackPlate").Find("Quad").gameObject.GetComponent<Renderer>();
             BackPlate = transform.Find("BackPlate");
         }
 
@@ -59,11 +57,5 @@ public class NotificationButtonController : MonoBehaviour
         IconRenderer.material.color = active ? IconOriginalColor : Color.gray;
 
         BackPlate.gameObject.SetActive(active); // show red backplate bg when button is active
-    }
-
-    // non serve probabilmente, basta mostrare backplate
-    public void SetButtonColor(Color color)
-    {
-        BackPlateRenderer.material.color = color;
     }
 }

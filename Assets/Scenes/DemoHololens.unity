@@ -641,7 +641,10 @@ MonoBehaviour:
   SaveLocalStateEvent:
     m_PersistentCalls:
       m_Calls: []
-  SavePendingListEvent:
+  SaveCommitPendingListEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  SaveDeletionPendingListEvent:
     m_PersistentCalls:
       m_Calls: []
   RestoreGlobalStateEvent:
@@ -650,7 +653,10 @@ MonoBehaviour:
   RestoreLocalStateEvent:
     m_PersistentCalls:
       m_Calls: []
-  RestorePendingListEvent:
+  RestoreCommitPendingListEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  RestoreDeletionPendingListEvent:
     m_PersistentCalls:
       m_Calls: []
   HideObjectEvent:
@@ -758,7 +764,8 @@ MonoBehaviour:
   - {fileID: 2100000, guid: bc4388e6a67870f43a169b454afd4249, type: 2}
   - {fileID: 2100000, guid: 179a6d9c1cb5a3b438df78fc4cfcf3bd, type: 2}
   - {fileID: 2100000, guid: 68a26bec743f5e64383d6578b1b0c7f6, type: 2}
-  pendingStateMaterial: {fileID: 2100000, guid: 8ebff964fe72b6f4f8fef544f839195d, type: 2}
+  CommitPendingStateMaterial: {fileID: 2100000, guid: 8ebff964fe72b6f4f8fef544f839195d, type: 2}
+  DeletionPendingStateMaterial: {fileID: 2100000, guid: ce1d4b4d3544d004ba805c7def429936, type: 2}
 --- !u!1 &446312076
 GameObject:
   m_ObjectHideFlags: 0
@@ -1082,8 +1089,8 @@ MonoBehaviour:
   SceneStateText: {fileID: 3730556653754545743}
   LogText: {fileID: 1401878284}
   NotificationButton: {fileID: 478567734}
-  NotificationSound: {fileID: 661707667}
-  CommitSentSound: {fileID: 661707668}
+  MessageReceivedSound: {fileID: 661707667}
+  MessageSentSound: {fileID: 661707668}
   SlateColor: {fileID: 150033285}
   SlatePrefab: {fileID: 1769365785}
   SlateNotifications: {fileID: 1121379517}
