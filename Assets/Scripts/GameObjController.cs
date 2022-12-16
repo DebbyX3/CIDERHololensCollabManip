@@ -235,6 +235,8 @@ public class GameObjController : MonoBehaviour
     public void PrepareForcedCommit()
     {
         MessagesManager.Instance.SendForcedCommit(this);
+
+        MessagesManager.Instance.OnDeletionReceived(new DeletionMessage(new DeletionMessageInfo(Guid, DeletionType.RequestGlobalDeletion)));
     }
 
     public void PrepareRequestCommit()
@@ -352,6 +354,7 @@ public class GameObjController : MonoBehaviour
         MessagesManager.Instance.SendGlobalRequestDeletionMessage(this);
 
         SetActiveCommitButtons(false);
+        SetActiveGlobalMenu(false);
     }
 
     // todo forse sto metodo non serve
@@ -397,7 +400,7 @@ public class GameObjController : MonoBehaviour
 
     public void AcceptDeletion()
     {
-        MessagesManager.Instance.AcceptCommit(this);
+        MessagesManager.Instance.AcceptDeletion(this);
         SetActiveCommitButtons(true);
     }
 
@@ -725,7 +728,7 @@ public class GameObjController : MonoBehaviour
     private void SetActiveCommitButtons(bool active)
     {
         LocalForcedCommitButton.SetActive(active);
-        LocalRequestCommitButton.SetActive(false);
+        LocalRequestCommitButton.SetActive(active);
     }
 
     // ------------------ FLAGS ------------------

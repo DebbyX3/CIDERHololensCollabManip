@@ -306,7 +306,9 @@ public class MessagesManager : MonoBehaviour
     private void OnGlobalForcedDeletionSent(GameObjController gObjCont)
     {
         gObjCont.RemoveDeletionPending();
-        //PrefabManager.Instance.PutExistingObjectInGlobal(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
+
+        //todo: fix this because it creates a loop
+        //gObjCont.DeleteObject(ObjectLocation.Global);
     }
 
     private void OnGlobalRequestDeletionSent(GameObjController gObjCont)
