@@ -17,12 +17,12 @@ Example:
 
 couch
 |
-|---- couch.png (base img)
 |---- couch.prefab
 |---- couch.fbx (optional?)
 |---- images
 |	|
 |	|---- couch-red.png (img for couch-red material)
+|	|---- couch-various.png (img for couch-red material)
 |
 |---- materials
 |	|
