@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Imported Brick Project Studio
+[Aa]ssets/Brick\  Project\  Studio/
+
 # User-specific files
 *.rsuser
 *.suo
