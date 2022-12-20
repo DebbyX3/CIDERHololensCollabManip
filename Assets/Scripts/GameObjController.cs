@@ -235,8 +235,6 @@ public class GameObjController : MonoBehaviour
     public void PrepareForcedCommit()
     {
         MessagesManager.Instance.SendForcedCommit(this);
-
-        MessagesManager.Instance.OnDeletionReceived(new DeletionMessage(new DeletionMessageInfo(Guid, DeletionType.RequestGlobalDeletion)));
     }
 
     public void PrepareRequestCommit()

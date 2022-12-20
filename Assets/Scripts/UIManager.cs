@@ -139,7 +139,14 @@ public class UIManager : MonoBehaviour
         // Important: set slate active before populating - so onEnable & Awake (1st time) are called
         interactableSix.OnClick.AddListener(() => SlateColor.SetActive(true));
         interactableSix.OnClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().
+            DeleteAllButtons());
+        interactableSix.OnClick.AddListener(() => SlateColor.GetComponent<SlateColorsManager>().
             PopulateSlate(gObjContr.PrefabName, gObjContr.Guid));
+
+        //----------------------
+
+        TMP_Text objectText = nearLocalFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
+        objectText.text += gObjContr.name.Remove(gObjContr.name.LastIndexOf("("));
 
         //----------------------
 
@@ -181,6 +188,11 @@ public class UIManager : MonoBehaviour
 
         //----------------------
 
+        TMP_Text objectText = nearGlobalFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
+        objectText.text += gObjContr.name.Remove(gObjContr.name.LastIndexOf("("));
+
+        //----------------------
+
         SolverHandler sh = nearGlobalFollowingMenu.GetComponent<SolverHandler>();
         sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
         sh.TransformOverride = gObjContr.Transform;
@@ -215,6 +227,11 @@ public class UIManager : MonoBehaviour
 
         //----------------------
 
+        TMP_Text objectText = nearCommitPendingFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
+        objectText.text += gObjContr.name.Remove(gObjContr.name.LastIndexOf("("));
+
+        //----------------------
+
         SolverHandler sh = nearCommitPendingFollowingMenu.GetComponent<SolverHandler>();
         sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
         sh.TransformOverride = gObjContr.Transform;
@@ -246,6 +263,11 @@ public class UIManager : MonoBehaviour
         GameObject buttonSix = buttonCollection.transform.Find("ButtonSix").gameObject;
         Interactable interactableSix = buttonSix.GetComponent<Interactable>();
         interactableSix.OnClick.AddListener(() => CloseMenu(nearDeletionPendingFollowingMenu));
+
+        //----------------------
+
+        TMP_Text objectText = nearDeletionPendingFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
+        objectText.text += gObjContr.name.Remove(gObjContr.name.LastIndexOf("("));
 
         //----------------------
 

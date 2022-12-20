@@ -21,6 +21,11 @@ public class SlateColorsManager : MonoBehaviour
 
     private void OnEnable()
     {
+        DeleteAllButtons();
+    }
+
+    public void DeleteAllButtons()
+    { 
         // Delete all the buttons in the SlateColor before repopulating the colors (because of the previous color display)
         // This operation is well suited in the OnEnable because I have to do it at each 'respawn'
         foreach (Transform child in UGUIButtons.transform)
