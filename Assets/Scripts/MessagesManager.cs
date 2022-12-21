@@ -308,7 +308,7 @@ public class MessagesManager : MonoBehaviour
         gObjCont.RemoveDeletionPending();
 
         //todo: fix this because it creates a loop
-        //gObjCont.DeleteObject(ObjectLocation.Global);
+        gObjCont.DeleteObject(ObjectLocation.Global, UserType.Receiver);
     }
 
     private void OnGlobalRequestDeletionSent(GameObjController gObjCont)
