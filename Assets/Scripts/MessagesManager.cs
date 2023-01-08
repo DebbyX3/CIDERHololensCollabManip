@@ -1,3 +1,4 @@
+using Microsoft.MixedReality.Toolkit;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,6 +39,21 @@ public class MessagesManager : MonoBehaviour
 {
     public static MessagesManager Instance { get; private set; }
     private NotificationManager NotificationManager;
+
+    IEnumerator LogCurrentGazeTarget()
+    {
+        if (CoreServices.InputSystem.GazeProvider.GazeTarget)
+        {
+            Debug.Log("User gaze is currently over game object: " + CoreServices.InputSystem.GazeProvider.GazeTarget);
+        }
+
+        yield return new WaitForSeconds(1);
+    }
+
+    private void Start()
+    {
+        StartCoroutine(LogCurrentGazeTarget());
+    }
 
     private void Awake()
     {

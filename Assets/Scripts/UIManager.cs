@@ -146,13 +146,13 @@ public class UIManager : MonoBehaviour
         //----------------------
 
         TMP_Text objectText = nearLocalFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
-        objectText.text += gObjContr.name.Remove(gObjContr.name.LastIndexOf("("));
+        objectText.text += gObjContr.ToString();
 
         //----------------------
 
-        SolverHandler sh = nearLocalFollowingMenu.GetComponent<SolverHandler>();
-        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        sh.TransformOverride = gObjContr.Transform;
+        //SolverHandler sh = nearLocalFollowingMenu.GetComponent<SolverHandler>();
+        //sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
+        //sh.TransformOverride = gObjContr.Transform;
 
         // Hide it
         nearLocalFollowingMenu.SetActive(false);
@@ -189,13 +189,13 @@ public class UIManager : MonoBehaviour
         //----------------------
 
         TMP_Text objectText = nearGlobalFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
-        objectText.text += gObjContr.name.Remove(gObjContr.name.LastIndexOf("("));
+        objectText.text += gObjContr.ToString();
 
         //----------------------
 
-        SolverHandler sh = nearGlobalFollowingMenu.GetComponent<SolverHandler>();
-        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        sh.TransformOverride = gObjContr.Transform;
+        //SolverHandler sh = nearGlobalFollowingMenu.GetComponent<SolverHandler>();
+        //sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
+        //sh.TransformOverride = gObjContr.Transform;
 
         // Hide it
         nearGlobalFollowingMenu.SetActive(false);
@@ -228,13 +228,13 @@ public class UIManager : MonoBehaviour
         //----------------------
 
         TMP_Text objectText = nearCommitPendingFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
-        objectText.text += gObjContr.name.Remove(gObjContr.name.LastIndexOf("("));
+        objectText.text += gObjContr.ToString();
 
         //----------------------
 
-        SolverHandler sh = nearCommitPendingFollowingMenu.GetComponent<SolverHandler>();
-        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        sh.TransformOverride = gObjContr.Transform;
+        //SolverHandler sh = nearCommitPendingFollowingMenu.GetComponent<SolverHandler>();
+        //sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
+        //sh.TransformOverride = gObjContr.Transform;
 
         // Hide it
         nearCommitPendingFollowingMenu.SetActive(false);
@@ -267,13 +267,13 @@ public class UIManager : MonoBehaviour
         //----------------------
 
         TMP_Text objectText = nearDeletionPendingFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
-        objectText.text += gObjContr.name.Remove(gObjContr.name.LastIndexOf("("));
+        objectText.text += gObjContr.ToString();
 
         //----------------------
 
-        SolverHandler sh = nearDeletionPendingFollowingMenu.GetComponent<SolverHandler>();
-        sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        sh.TransformOverride = gObjContr.Transform;
+        //SolverHandler sh = nearDeletionPendingFollowingMenu.GetComponent<SolverHandler>();
+        //sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
+        //sh.TransformOverride = gObjContr.Transform;
 
         // Hide it
         nearDeletionPendingFollowingMenu.SetActive(false);

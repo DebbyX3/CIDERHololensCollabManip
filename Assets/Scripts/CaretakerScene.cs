@@ -60,6 +60,9 @@ public class CaretakerScene : MonoBehaviour
 
     public UnityEvent HideObjectEvent = new UnityEvent();
 
+    // Stores the current active gameobject - where 'active' means the last object touched/manipolated
+    public GameObjController CurrentActiveGObj { get; set; }
+
     private void Awake()
     {
         // If there is an instance, and it's not me, delete myself.

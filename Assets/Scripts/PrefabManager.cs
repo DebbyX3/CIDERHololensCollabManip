@@ -155,7 +155,7 @@ public class PrefabManager : MonoBehaviour
 
         SerializableVector sv = new SerializableVector(
             st.Position.X + 0.5f,
-            st.Position.Y,
+            st.Position.Y - 0.5f,
             st.Position.Z + 0.5f);
 
         // Assign new position

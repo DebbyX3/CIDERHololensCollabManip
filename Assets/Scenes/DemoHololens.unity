@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
+  m_IndirectSpecularColor: {r: 0.4374891, g: 0.48531282, b: 0.565586, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1334,7 +1334,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &676763815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1448,13 +1448,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 768814478}
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.7401873, y: -0.1655253, z: 0.19734962, w: 0.6211098}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 100, y: -29.889008, z: -0.036987305}
 --- !u!1 &874715596
 GameObject:
   m_ObjectHideFlags: 0
@@ -3695,6 +3695,10 @@ PrefabInstance:
     - target: {fileID: 3414583603776763422, guid: 0425c84e5e5fb014c938ba5a644d1022, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3730229899797444680, guid: 0425c84e5e5fb014c938ba5a644d1022, type: 3}
+      propertyPath: fixedVerticalPosition
+      value: -0.6
       objectReference: {fileID: 0}
     - target: {fileID: 4133128133824219978, guid: 0425c84e5e5fb014c938ba5a644d1022, type: 3}
       propertyPath: m_Mesh

@@ -660,6 +660,19 @@ public class GameObjController : MonoBehaviour
         {
             SetActiveLocalMenu(true);
         }
+
+        // Make all the previous active object menus inactive
+        if (CaretakerScene.Instance.CurrentActiveGObj != null && CaretakerScene.Instance.CurrentActiveGObj != this)
+        {
+            CaretakerScene.Instance.CurrentActiveGObj.SetActiveLocalMenu(false);
+            CaretakerScene.Instance.CurrentActiveGObj.SetActiveGlobalMenu(false);
+            CaretakerScene.Instance.CurrentActiveGObj.SetActiveCommitPendingMenu(false);
+            CaretakerScene.Instance.CurrentActiveGObj.SetActiveDeletionPendingMenu(false);
+        }
+
+        // Make this object the current active object
+        if (CaretakerScene.Instance.CurrentActiveGObj != this)
+            CaretakerScene.Instance.CurrentActiveGObj = this;
     }
 
     private void CreateNearLocalFollowingMenu()
@@ -747,5 +760,13 @@ public class GameObjController : MonoBehaviour
     public bool ContainsOnlyFlag(ObjectLocation flag)
     {
         return ObjectLocation == flag;
+    }
+
+    public override string ToString()
+    {
+        if (PrefabName != null && MaterialName != null)
+            return MaterialName + " " + PrefabName;
+        else
+            return name.Remove(name.LastIndexOf("("));
     }
 }
