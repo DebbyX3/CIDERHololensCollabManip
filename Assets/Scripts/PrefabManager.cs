@@ -1,3 +1,4 @@
+using Microsoft.MixedReality.Toolkit;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -147,15 +148,16 @@ public class PrefabManager : MonoBehaviour
         return newObj;
     }
 
-    // If the transform is not provided, use a shifted positions from the user POV (camera)
+    // If the transform is not provided, use a shifted positions from the user gaze direction
     private GameObject CreateNewObject(string prefabName, string materialName)
     {
+        /*
         // When creating an obj from scratch, shift it from the user POV
         SerializableTransform st = Camera.main.transform;
 
         SerializableVector sv = new SerializableVector(
             st.Position.X + 0.5f,
-            st.Position.Y - 0.5f,
+            st.Position.Y - 1.0f,
             st.Position.Z + 0.5f);
 
         // Assign new position
@@ -163,6 +165,15 @@ public class PrefabManager : MonoBehaviour
 
         // Keep 0,0,0,1 quaternion as rotation
         st.Rotation = (SerializableVector)Quaternion.identity;
+        */
+
+        return CreateNewObject(prefabName, materialName, CoreServices.InputSystem.GazeProvider.GazeDirection);
+    }
+
+    private GameObject CreateNewObject(string prefabName, string materialName, Vector3 position)
+    {
+        // The Scale doesn't matter because isn't used
+        SerializableTransform st = new SerializableTransform(position, Quaternion.identity, Vector3.one);
 
         return CreateNewObject(prefabName, materialName, st);
     }

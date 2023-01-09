@@ -1,8 +1,9 @@
+using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
+using System.Collections;
 using TMPro;
 using UnityEngine;
-using MSUtilities = Microsoft.MixedReality.Toolkit.Utilities;
 
 public class UIManager : MonoBehaviour
 {
@@ -148,12 +149,6 @@ public class UIManager : MonoBehaviour
         TMP_Text objectText = nearLocalFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
         objectText.text += gObjContr.ToString();
 
-        //----------------------
-
-        //SolverHandler sh = nearLocalFollowingMenu.GetComponent<SolverHandler>();
-        //sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        //sh.TransformOverride = gObjContr.Transform;
-
         // Hide it
         nearLocalFollowingMenu.SetActive(false);
 
@@ -191,12 +186,6 @@ public class UIManager : MonoBehaviour
         TMP_Text objectText = nearGlobalFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
         objectText.text += gObjContr.ToString();
 
-        //----------------------
-
-        //SolverHandler sh = nearGlobalFollowingMenu.GetComponent<SolverHandler>();
-        //sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        //sh.TransformOverride = gObjContr.Transform;
-
         // Hide it
         nearGlobalFollowingMenu.SetActive(false);
 
@@ -230,11 +219,6 @@ public class UIManager : MonoBehaviour
         TMP_Text objectText = nearCommitPendingFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
         objectText.text += gObjContr.ToString();
 
-        //----------------------
-
-        //SolverHandler sh = nearCommitPendingFollowingMenu.GetComponent<SolverHandler>();
-        //sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        //sh.TransformOverride = gObjContr.Transform;
 
         // Hide it
         nearCommitPendingFollowingMenu.SetActive(false);
@@ -269,15 +253,31 @@ public class UIManager : MonoBehaviour
         TMP_Text objectText = nearDeletionPendingFollowingMenu.transform.Find("Backplate/Quad/ObjectText").GetComponent<TMP_Text>();
         objectText.text += gObjContr.ToString();
 
-        //----------------------
-
-        //SolverHandler sh = nearDeletionPendingFollowingMenu.GetComponent<SolverHandler>();
-        //sh.TrackedTargetType = MSUtilities.TrackedObjectType.CustomOverride;
-        //sh.TransformOverride = gObjContr.Transform;
-
         // Hide it
         nearDeletionPendingFollowingMenu.SetActive(false);
 
         return nearDeletionPendingFollowingMenu;
+    }
+
+    private void Start()
+    {
+        IEnumerator coroutine = LogCurrentGazeTarget();
+        StartCoroutine(coroutine);
+    }
+
+    IEnumerator LogCurrentGazeTarget()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1);
+
+            if (CoreServices.InputSystem.GazeProvider.GazeTarget)
+            {
+                Debug.Log("User gaze is currently over game object: " + CoreServices.InputSystem.GazeProvider.GazeTarget);
+                PrintMessages("User gaze is currently over game object: " + CoreServices.InputSystem.GazeProvider.GazeTarget);
+            }
+
+            Debug.Log("Gaze is looking in direction: " + CoreServices.InputSystem.GazeProvider.GazeDirection);
+        }
     }
 }

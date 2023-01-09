@@ -1975,7 +1975,12 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4382131584863932108, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
+    - {fileID: 8419928465828642685, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
+    - {fileID: 8419928466349755026, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
+    - {fileID: 4382131582899931707, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
+    - {fileID: 8419928465593781861, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
 --- !u!1 &1121379517 stripped
 GameObject:
@@ -2384,6 +2389,59 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1401878282}
   m_CullTransparentMesh: 1
+--- !u!1 &1634495358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1634495360}
+  - component: {fileID: 1634495359}
+  m_Layer: 0
+  m_Name: LightCapture
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1634495359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634495358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f1a6bb1cd532004188db0255c1a4a31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapResolution: 128
+  singleStampOnly: 0
+  stampFovMultiplier: 1.5
+  stampExpireDistance: 0
+  useDirectionalLight: 1
+  maxLightColorSaturation: 0.3
+  lightAngleAdjustPerSecond: 45
+  cameraOrientation: {fileID: 0}
+  probe: {fileID: 0}
+  directionalLight: {fileID: 0}
+--- !u!4 &1634495360
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634495358}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 17
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1665754986 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7668294550860457728, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
@@ -2562,7 +2620,7 @@ GameObject:
   - component: {fileID: 1998191916}
   - component: {fileID: 1998191915}
   m_Layer: 0
-  m_Name: CommitManager
+  m_Name: MessagesManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3544,6 +3602,9 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 8419928466349755026, guid: 1b29fd1c30c874949bad77da76eb81b7, type: 3}
     - {fileID: 4382131582899931707, guid: 1b29fd1c30c874949bad77da76eb81b7, type: 3}
+    - {fileID: 8419928465828642685, guid: 1b29fd1c30c874949bad77da76eb81b7, type: 3}
+    - {fileID: 4382131584863932108, guid: 1b29fd1c30c874949bad77da76eb81b7, type: 3}
+    - {fileID: 8419928465593781861, guid: 1b29fd1c30c874949bad77da76eb81b7, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 1b29fd1c30c874949bad77da76eb81b7, type: 3}
 --- !u!1001 &3730556653754545742
 PrefabInstance:
