@@ -173,9 +173,7 @@ public class PrefabManager : MonoBehaviour
     private GameObject CreateNewObject(string prefabName, string materialName, Vector3 position)
     {
         // The Scale doesn't matter because isn't used
-        SerializableTransform st = new SerializableTransform(position, Quaternion.identity, Vector3.one);
-
-        return CreateNewObject(prefabName, materialName, st);
+        return CreateNewObject(prefabName, materialName, new SerializableTransform(position, Quaternion.identity, Vector3.one));
     }
 
     private GameObject CreateNewObject(string prefabName, string materialName, SerializableTransform transform)

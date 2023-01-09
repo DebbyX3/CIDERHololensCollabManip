@@ -5,6 +5,7 @@ using System.IO;
 using System;
 using System.Text;
 using System.Runtime.Serialization.Formatters.Binary;
+using Microsoft.MixedReality.Toolkit;
 
 // It works!
 
@@ -17,10 +18,23 @@ public static class ObjectsFiles
 
         byte[] data = obj.Serialize();
 
+        // da usare per quando si prova su unity
         path = "./" + filename + ".json";
 
         UnityEngine.Windows.File.WriteAllBytes(path, data);
     }
+
+    // Record the user gaze
+    /*public static IEnumerator SaveData(GameObjController gObjContr)
+    {
+        string filename = "UserData-" + DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss");
+        string path = string.Format("{0}/UserData/{1}.bin", Application.persistentDataPath, filename);
+
+        // da usare per quando si prova su unity
+        path = "./" + filename + ".json";
+
+        UnityEngine.Windows.File.WriteAllBytes();
+    }*/
 
     public static Dictionary<Guid, Memento> ReadData(TextAsset binaryFile)
     {

@@ -765,7 +765,12 @@ public class GameObjController : MonoBehaviour
     public override string ToString()
     {
         if (PrefabName != null && MaterialName != null)
-            return MaterialName + " " + PrefabName;
+        {        
+            // Set material name by trimming everything before the dash
+            return MaterialName.Substring(MaterialName.IndexOf('-') + 1)  // +1 to exclude the dash
+                   + " "
+                   + PrefabName;
+        }
         else
             return name.Remove(name.LastIndexOf("("));
     }

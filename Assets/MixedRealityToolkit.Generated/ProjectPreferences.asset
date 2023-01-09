@@ -16,9 +16,7 @@ MonoBehaviour:
     keys:
     - _MixedRealityToolkit_Editor_IgnoreSettingsPrompts
     - MixedRealityToolkit_Editor_RunOptimalConfig
-    - _MixedRealityToolkit_Editor_LockProfiles
-    - MixedRealityToolkit_Editor_NullDataProviders
-    values: 01010100
+    values: 0001
   intPreferences:
     keys:
     - MixedRealityToolkit_Editor_AudioSpatializerCount
@@ -28,7 +26,5 @@ MonoBehaviour:
     keys: []
     values: []
   stringPreferences:
-    keys:
-    - BuildDeployWindow_AppLauncherModelLocation
-    values:
-    - 
+    keys: []
+    values: []
