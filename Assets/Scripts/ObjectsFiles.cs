@@ -19,22 +19,23 @@ public static class ObjectsFiles
         byte[] data = obj.Serialize();
 
         // da usare per quando si prova su unity
-        path = "./" + filename + ".json";
+        path = filename + ".json";
 
         UnityEngine.Windows.File.WriteAllBytes(path, data);
     }
 
-    // Record the user gaze
-    /*public static IEnumerator SaveData(GameObjController gObjContr)
+    public static void SaveData(StringBuilder stringBuilder)
     {
-        string filename = "UserData-" + DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss");
-        string path = string.Format("{0}/UserData/{1}.bin", Application.persistentDataPath, filename);
+        string filename = "Log-" + DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss");
+        string path = string.Format("{0}/Logs/{1}.bin", Application.persistentDataPath, filename);
+
+        byte[] data = Encoding.ASCII.GetBytes(stringBuilder.ToString());
 
         // da usare per quando si prova su unity
-        path = "./" + filename + ".json";
+        path = filename + ".json";
 
-        UnityEngine.Windows.File.WriteAllBytes();
-    }*/
+        UnityEngine.Windows.File.WriteAllBytes(path, data);
+    }
 
     public static Dictionary<Guid, Memento> ReadData(TextAsset binaryFile)
     {

@@ -1,8 +1,5 @@
-using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.UI;
 using Microsoft.MixedReality.Toolkit.Utilities.Solvers;
-using System;
-using System.Collections;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -30,8 +27,6 @@ public class UIManager : MonoBehaviour
     public GameObject SlateNotifications;
 
     private string LogString = "";
-
-    private StringBuilder GazeTargetString = new StringBuilder();
 
     private void Awake()
     {
@@ -262,47 +257,4 @@ public class UIManager : MonoBehaviour
 
         return nearDeletionPendingFollowingMenu;
     }
-
-    private void Start()
-    { 
-        StartCoroutine(LogCurrentGazeTarget());
-    }
-
-    private IEnumerator LogCurrentGazeTarget()
-    {
-        GameObject target;
-        Guid guid;
-        GameObjController gObjContr;
-
-        int elapsedSeconds = 0;
-
-        while (true)
-        {
-            yield return new WaitForSeconds(1);
-
-            elapsedSeconds++;
-
-            // default values
-            gObjContr = null;
-            target = null;
-            guid = Guid.Empty;
-
-            if (CoreServices.InputSystem.GazeProvider.GazeTarget)
-            {
-                target = CoreServices.InputSystem.GazeProvider.GazeTarget;
-                gObjContr = target.GetComponent<GameObjController>();
-
-                if (gObjContr != null)
-                    guid = gObjContr.Guid;
-            }
-
-            // If the gObjContr is null and the target is null, print "none".
-            // Otherwise, prints the objects' ToString()
-            GazeTargetString.Append(DateTime.Now.ToString("HH-mm-ss") + ";"); // append datetime or an integer that represents the progressive time? maybe both
-            GazeTargetString.Append(elapsedSeconds + ";");
-            GazeTargetString.Append(guid + ";");
-            GazeTargetString.AppendLine(gObjContr?.ToString() ?? (target?.ToString() ?? "none"));
-        }
-    }
-
 }

@@ -97,6 +97,7 @@ public class GameObjController : MonoBehaviour
         // Add manipulation event/s
         ObjectManipulator objManip = gameObject.GetComponent<ObjectManipulator>();
         objManip.OnManipulationStarted.AddListener(OnSelect);
+        objManip.OnManipulationEnded.AddListener(OnUnselect);
 
         // I can't attach it from the inspector, because the controlled is created at runtime! So I need to reference it using UIManager
         // NOTE: set SlateColor BEFORE calling SetNearLocalFollowingMenu!
@@ -673,6 +674,15 @@ public class GameObjController : MonoBehaviour
         // Make this object the current active object
         if (CaretakerScene.Instance.CurrentActiveGObj != this)
             CaretakerScene.Instance.CurrentActiveGObj = this;
+
+        // Make this object the current manipulated one
+        if (CaretakerScene.Instance.CurrentManipolatedGObj != this)
+            CaretakerScene.Instance.CurrentManipolatedGObj = this;
+    }
+
+    private void OnUnselect(ManipulationEventData data)
+    {
+        CaretakerScene.Instance.CurrentManipolatedGObj = null;
     }
 
     private void CreateNearLocalFollowingMenu()
