@@ -1304,7 +1304,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &676763815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2029,6 +2029,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StringsToDisplayFile: {fileID: 4900000, guid: d4234dfbafa68564e8abc190a5108876, type: 3}
+--- !u!114 &1025168234 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5347967211681601084, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
+  m_PrefabInstance: {fileID: 1025168226}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025168227}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4684083f6dff4a1d8a790bccc354fcf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1210558079
 GameObject:
   m_ObjectHideFlags: 0
@@ -2423,7 +2434,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1634495359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2437,7 +2448,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapResolution: 128
-  singleStampOnly: 0
+  singleStampOnly: 1
   stampFovMultiplier: 1.5
   stampExpireDistance: 0
   useDirectionalLight: 1
@@ -3701,11 +3712,11 @@ PrefabInstance:
     - target: {fileID: 3414583603776763422, guid: 0425c84e5e5fb014c938ba5a644d1022, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1025168227}
     - target: {fileID: 3414583603776763422, guid: 0425c84e5e5fb014c938ba5a644d1022, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1025168234}
     - target: {fileID: 3414583603776763422, guid: 0425c84e5e5fb014c938ba5a644d1022, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
       value: 

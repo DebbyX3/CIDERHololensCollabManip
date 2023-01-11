@@ -44,7 +44,7 @@ public class CaretakerScene : MonoBehaviour
 
     public Dictionary<Guid, Memento> DeletionPendingListRequests { get; } = new Dictionary<Guid, Memento>();
 
-    private Location SceneState = Location.LocalLayer;
+    public Location SceneState { get; private set; } = Location.LocalLayer;
 
     // Need different events for save and restore, because the save and restore are done in different moments:
     // Save is done always before the restore, and some objs may not be in both scenes

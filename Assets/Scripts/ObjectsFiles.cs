@@ -19,7 +19,9 @@ public static class ObjectsFiles
         byte[] data = obj.Serialize();
 
         // da usare per quando si prova su unity
-        path = filename + ".json";
+        //path = filename + ".bin";
+
+        UIManager.Instance.PrintMessages(path);
 
         UnityEngine.Windows.File.WriteAllBytes(path, data);
     }
@@ -27,12 +29,12 @@ public static class ObjectsFiles
     public static void SaveData(StringBuilder stringBuilder)
     {
         string filename = "Log-" + DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss");
-        string path = string.Format("{0}/Logs/{1}.bin", Application.persistentDataPath, filename);
+        string path = string.Format("{0}/Logs/{1}.txt", Application.persistentDataPath, filename);
 
         byte[] data = Encoding.ASCII.GetBytes(stringBuilder.ToString());
 
         // da usare per quando si prova su unity
-        path = filename + ".json";
+        //path = filename + ".txt";
 
         UnityEngine.Windows.File.WriteAllBytes(path, data);
     }

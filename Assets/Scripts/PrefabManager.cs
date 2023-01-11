@@ -148,7 +148,7 @@ public class PrefabManager : MonoBehaviour
         return newObj;
     }
 
-    // If the transform is not provided, use a shifted positions from the user gaze direction
+    // If the transform is not provided, use a shifted positions from the user head direction
     private GameObject CreateNewObject(string prefabName, string materialName)
     {
         /*
@@ -167,7 +167,7 @@ public class PrefabManager : MonoBehaviour
         st.Rotation = (SerializableVector)Quaternion.identity;
         */
 
-        return CreateNewObject(prefabName, materialName, CoreServices.InputSystem.GazeProvider.GazeDirection);
+        return CreateNewObject(prefabName, materialName, Camera.main.transform.forward);
     }
 
     private GameObject CreateNewObject(string prefabName, string materialName, Vector3 position)
