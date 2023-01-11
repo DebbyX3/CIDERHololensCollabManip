@@ -9,7 +9,7 @@ public class SaveData : MonoBehaviour
 {
     public static SaveData Instance { get; private set; }
 
-    private StringBuilder UserDataString = new StringBuilder();
+    private StringBuilder UserDataAndOperationsString = new StringBuilder();
 
     private void Awake()
     {
@@ -60,7 +60,7 @@ public class SaveData : MonoBehaviour
         Guid manipulatedObjectGuid;
         GameObjController manipulatedObjectGObjContr;
 
-        string currentString = "";
+        StringBuilder currentString = new StringBuilder();
 
         int elapsedSeconds = 0;
 
@@ -90,39 +90,94 @@ public class SaveData : MonoBehaviour
             if (manipulatedObjectGObjContr != null)
                 manipulatedObjectGuid = manipulatedObjectGObjContr.Guid;
 
-            // Datetime
-            UserDataString.Append(DateTime.Now.ToString("dd-MM-yyyy_HH:mm:ss") + ";");
-            // Progressive number
-            UserDataString.Append(elapsedSeconds + ";");
-            // Current layer
-            UserDataString.Append(CaretakerScene.Instance.SceneState + ";");
-            // Gaze direction
-            UserDataString.Append(CoreServices.InputSystem.GazeProvider.GazeDirection + ";");
-            // Gaze origin
-            UserDataString.Append(CoreServices.InputSystem.GazeProvider.GazeOrigin + ";");
-            // Gaze targeted object guid 
-            UserDataString.Append(gazeTargetGuid + ";");
-            // Gaze targeted object name
-            UserDataString.Append(gazeTargetedGObjContr?.ToString() ?? (gazeTarget?.ToString() ?? "none"));  // If the gObjContr is null and the target is null, print "none".
-                                                                                                               // Otherwise, prints the objects' ToString()
-            // Head position 
-            UserDataString.Append(Camera.main.transform.position + ";");
-            // Head direction
-            UserDataString.Append(Camera.main.transform.forward + ";");
-            // Head rotation 
-            UserDataString.Append(Camera.main.transform.rotation + ";");
-            // Current manipulated object guid
-            UserDataString.Append(manipulatedObjectGuid + ";");
-            // Current manipulated object name
-            UserDataString.AppendLine(manipulatedObjectGObjContr?.ToString() ?? "none");
-
-            ObjectsFiles.SaveData(UserDataString);
+            // Gaze targeted object name: If the gObjContr is null and the target is null, print "none".
+            // Otherwise, prints the objects' ToString()
+            currentString.Append(
+                DateTime.Now.ToString("dd-MM-yyyy_HH:mm:ss") + ";" +                        // Datetime
+                elapsedSeconds + ";" +                                                      // Progressive number
+                CaretakerScene.Instance.SceneState + ";" +                                  // Current layer
+                CoreServices.InputSystem.GazeProvider.GazeDirection + ";" +                 // Gaze direction
+                CoreServices.InputSystem.GazeProvider.GazeOrigin + ";" +                    // Gaze origin
+                gazeTargetGuid + ";" +                                                      // Gaze targeted object guid 
+                gazeTargetedGObjContr?.ToString() ?? (gazeTarget?.ToString() ?? "none") +   // Gaze targeted object name
+                Camera.main.transform.position + ";" +                                      // Head position 
+                Camera.main.transform.forward + ";" +                                       // Head direction
+                Camera.main.transform.rotation + ";" +                                      // Head rotation 
+                manipulatedObjectGuid + ";" +                                               // Current manipulated object guid
+                manipulatedObjectGObjContr?.ToString() ?? "none"                            // Current manipulated object name
+            );
+  
+            UserDataAndOperationsString.AppendLine(currentString.ToString());
         }
+    }
+
+    /*
+     At the beginning of each of these rows, there is a char thats marks the operation:
+     Star (*)       for forced commits
+     Percentage (%) for request commits
+     Excl mark(!)   for request commit accepted
+     Dollar ($)     for request commit rejected
+     Amphersand (&) for forced deletion
+     Quest mark (?) for request deletion
+     Plus (+)       for request deletion accepted
+     Equal (=)      for request deletion rejected
+
+     Using method Insert()
+     */
+    public void LogUserOperations(  GameObjController gObjContr,
+                                    CommitType commitType = CommitType.None,                                     
+                                    DeletionType deletionType = DeletionType.None,
+                                    AcceptType acceptType = AcceptType.None,
+                                    DeclineType declineType = DeclineType.None)
+    {
+        StringBuilder currentString = new StringBuilder(DateTime.Now.ToString("dd-MM-yyyy_HH:mm:ss") + ";");
+
+        // Plesae keep the order of the conditionals and the else ifs!
+        if (!acceptType.Equals(AcceptType.None))
+        {
+            if (acceptType.Equals(AcceptType.AcceptCommit))
+                currentString.Insert(0, "!");
+            else if (acceptType.Equals(AcceptType.AcceptDeletion))
+                currentString.Insert(0, "+");
+
+            currentString.Append(acceptType.ToString());
+        }
+        else if (!commitType.Equals(CommitType.None))
+        {
+            if (commitType.Equals(CommitType.ForcedCommit))
+                currentString.Insert(0, "*");
+            else if (commitType.Equals(CommitType.RequestCommit))
+                currentString.Insert(0, "%");
+
+            currentString.Append(commitType.ToString());
+        }
+        else if (!deletionType.Equals(DeletionType.None))
+        {
+            if (deletionType.Equals(DeletionType.ForcedGlobalDeletion))
+                currentString.Insert(0, "&");
+            else if (deletionType.Equals(DeletionType.RequestGlobalDeletion))
+                currentString.Insert(0, "?");
+
+            currentString.Append(deletionType.ToString());
+        }
+        else if (!declineType.Equals(DeclineType.None))
+        {
+            if (declineType.Equals(DeclineType.DeclineCommit))
+                currentString.Insert(0, "$");
+            else if (declineType.Equals(DeclineType.DeclineDeletion))
+                currentString.Insert(0, "=");
+
+            currentString.Append(declineType.ToString());
+        }
+
+        currentString.Append(";" + gObjContr.Guid + ";" + gObjContr.ToString());
+
+        UserDataAndOperationsString.AppendLine(currentString.ToString());
     }
 
     public void SaveUserLogData()
     {
-        ObjectsFiles.SaveData(UserDataString);
+        ObjectsFiles.SaveData(UserDataAndOperationsString);
     }
 
     public void SaveGlobalDict()

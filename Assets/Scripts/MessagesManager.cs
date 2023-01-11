@@ -28,6 +28,14 @@ public enum DeclineType : int
     DeclineDeletion
 }
 
+// To be used in the SaveData script
+public enum AcceptType : int
+{
+    None,
+    AcceptCommit,
+    AcceptDeletion,
+}
+
 /*
     MessagesManager MUST be executed AFTER NotificationManager, 
     in order to correctly initialize the NotificationID class appropriately
@@ -118,11 +126,13 @@ public class MessagesManager : MonoBehaviour
     public void SendForcedCommit(GameObjController gObjCont)
     {
         SendCommit(gObjCont, CommitType.ForcedCommit);
+        SaveData.Instance.LogUserOperations(gObjCont, commitType: CommitType.ForcedCommit);
     }
 
     public void SendRequestCommit(GameObjController gObjCont)
     {
         SendCommit(gObjCont, CommitType.RequestCommit);
+        SaveData.Instance.LogUserOperations(gObjCont, commitType: CommitType.RequestCommit);
     }
 
     private void SendCommit(GameObjController gObjCont, CommitType commitType)
@@ -168,6 +178,7 @@ public class MessagesManager : MonoBehaviour
     public void AcceptCommit(GameObjController gObjCont)
     {
         SendForcedCommit(gObjCont);
+        SaveData.Instance.LogUserOperations(gObjCont, acceptType: AcceptType.AcceptCommit);
     }
 
     // ------------ RECEIVE COMMIT ------------
@@ -268,11 +279,13 @@ public class MessagesManager : MonoBehaviour
     public void SendGlobalForcedDeleteMessage(GameObjController gObjCont)
     {
         SendGlobalDeletionMessage(gObjCont, DeletionType.ForcedGlobalDeletion);
+        SaveData.Instance.LogUserOperations(gObjCont, deletionType: DeletionType.ForcedGlobalDeletion);
     }
 
     public void SendGlobalRequestDeletionMessage(GameObjController gObjCont)
     {
         SendGlobalDeletionMessage(gObjCont, DeletionType.RequestGlobalDeletion);
+        SaveData.Instance.LogUserOperations(gObjCont, deletionType: DeletionType.RequestGlobalDeletion);
     }
 
     private void SendGlobalDeletionMessage(GameObjController gObjCont, DeletionType deletionType)
@@ -305,7 +318,6 @@ public class MessagesManager : MonoBehaviour
     {
         gObjCont.RemoveDeletionPending();
 
-        //todo: fix this because it creates a loop
         gObjCont.DeleteObject(ObjectLocation.Global, UserType.Receiver);
     }
 
@@ -317,6 +329,7 @@ public class MessagesManager : MonoBehaviour
     public void AcceptDeletion(GameObjController gObjCont)
     {
         SendGlobalForcedDeleteMessage(gObjCont);
+        SaveData.Instance.LogUserOperations(gObjCont, acceptType: AcceptType.AcceptDeletion);
     }
 
     // ------------ RECEIVE DELETION ------------
@@ -418,11 +431,13 @@ public class MessagesManager : MonoBehaviour
     public void SendDeclineCommit(GameObjController gObjCont)
     {
         SendDecline(gObjCont, DeclineType.DeclineCommit);
+        SaveData.Instance.LogUserOperations(gObjCont, declineType: DeclineType.DeclineCommit);
     }
 
     public void SendDeclineDeletion(GameObjController gObjCont)
     {
         SendDecline(gObjCont, DeclineType.DeclineDeletion);
+        SaveData.Instance.LogUserOperations(gObjCont, declineType: DeclineType.DeclineDeletion);
     }
 
     private void SendDecline(GameObjController gObjCont, DeclineType declineType)
