@@ -587,7 +587,12 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -257.2375
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8419928465593781861, guid: b44a1adf1cd129940a87651919944a18, type: 3}
+    - {fileID: 8419928466349755026, guid: b44a1adf1cd129940a87651919944a18, type: 3}
+    - {fileID: 4382131584863932108, guid: b44a1adf1cd129940a87651919944a18, type: 3}
+    - {fileID: 8419928465828642685, guid: b44a1adf1cd129940a87651919944a18, type: 3}
+    - {fileID: 4382131582899931707, guid: b44a1adf1cd129940a87651919944a18, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: b44a1adf1cd129940a87651919944a18, type: 3}
 --- !u!1 &150033285 stripped
 GameObject:
@@ -751,11 +756,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Prefabs:
+  - {fileID: 143676, guid: aa4e5795065e1fc43a1ab54ec0d68378, type: 3}
+  - {fileID: 1236559902405704, guid: c2e8591786976e54eb8eee2423efaca1, type: 3}
+  - {fileID: 9063128926208519524, guid: b97af57817e51304b9533eb6c615a1a7, type: 3}
+  - {fileID: 1192340606150556, guid: 9b5355fe90633c449a9940950690c727, type: 3}
+  - {fileID: 1929367146843536, guid: e40ae85054921214ea117b9b67f1575f, type: 3}
   - {fileID: 1809772019882630545, guid: 6d0ef20817399254f888d25311f505bc, type: 3}
   - {fileID: 6175574215640251783, guid: 921e4bb3e4c290643b465a4a6d9756f2, type: 3}
   - {fileID: 8228670744583830499, guid: 2bebf35a396984747a8561c8b8fe1ee7, type: 3}
   - {fileID: 177576094312270536, guid: ad9a9a0df7056cd42bc3a27a6c5a0fcc, type: 3}
   - {fileID: 7607658426802268550, guid: 01fc4f536869c0f4d9dcab07873afe7c, type: 3}
+  - {fileID: 8667673312399118122, guid: 5c22abe1949ba784b895d0e2891c4420, type: 3}
+  - {fileID: 6681132841128990391, guid: 2ef32976323f75a498112aed4e814442, type: 3}
+  - {fileID: 5828997711346961650, guid: f84d9e20d6ab1d546b61f478e597643b, type: 3}
   Images:
   - {fileID: 2800000, guid: 584d78a549becbd4eae424d4e3780477, type: 3}
   - {fileID: 2800000, guid: 95851fab2ff47b04598ef9f28a17244e, type: 3}
@@ -769,6 +782,28 @@ MonoBehaviour:
   - {fileID: 2800000, guid: c134e0adf3c95d84d97ee9ed3d48970c, type: 3}
   - {fileID: 2800000, guid: 4e0728ddd1656634aaf11cf5190b3c3f, type: 3}
   - {fileID: 2800000, guid: 50b2b77720ca9db44842dcb6d6f8930d, type: 3}
+  - {fileID: 2800000, guid: fdf7fe4d790227a4a8ddd3d7c3592bf7, type: 3}
+  - {fileID: 2800000, guid: 264e1e702f9ca3e49a803a4ee9a1a18c, type: 3}
+  - {fileID: 2800000, guid: 739737e390b541b40b7a4b64cdb310c3, type: 3}
+  - {fileID: 2800000, guid: 5452902bd27c7ee4fb441b5c31c765e8, type: 3}
+  - {fileID: 2800000, guid: 01c646d1890f15e43ab0481141870015, type: 3}
+  - {fileID: 2800000, guid: e9c0eddb9355b9c4da26431747e4e2b0, type: 3}
+  - {fileID: 2800000, guid: a966418af1d580641ac74dfc0f025767, type: 3}
+  - {fileID: 2800000, guid: c77cd5a0c07cdb54bbee5b0e9e0e2f93, type: 3}
+  - {fileID: 2800000, guid: 6b99d056303f731428a3c860c4c280b8, type: 3}
+  - {fileID: 2800000, guid: 679526c7050b7004d8d2bba5bc6f0c2d, type: 3}
+  - {fileID: 2800000, guid: c2690385c23f4d44983b0e60f5d000f1, type: 3}
+  - {fileID: 2800000, guid: 262abc83a17410b469fd76cd625b0962, type: 3}
+  - {fileID: 2800000, guid: ab60b4ee3ae697e48b67363fc8964b47, type: 3}
+  - {fileID: 2800000, guid: d652074584c5ec24b841409ab0b929c3, type: 3}
+  - {fileID: 2800000, guid: ec154540690cd9345bd0951931a21958, type: 3}
+  - {fileID: 2800000, guid: 8f13e3ea362663747ae56ec147f61b94, type: 3}
+  - {fileID: 2800000, guid: 94e153d7441e67b46ac1468630e7645a, type: 3}
+  - {fileID: 2800000, guid: 049f03ca5cdf7cf4b931d07126f204de, type: 3}
+  - {fileID: 2800000, guid: ebf7c79608f126c4db596a1f4edced5e, type: 3}
+  - {fileID: 2800000, guid: 808366765390d7f49be6c3e46810dfa7, type: 3}
+  - {fileID: 2800000, guid: c3194d898e6b07c4fae8cedddba243ec, type: 3}
+  - {fileID: 2800000, guid: 3e36236c0daaa7448ac2e5f4213e3df2, type: 3}
   Materials:
   - {fileID: 2100000, guid: 09211bc6e8a9d814bb8b1d89dc09ef84, type: 2}
   - {fileID: 2100000, guid: bc4388e6a67870f43a169b454afd4249, type: 2}
@@ -782,6 +817,28 @@ MonoBehaviour:
   - {fileID: 2100000, guid: bb0e534687cf11241a5580d17828dd91, type: 2}
   - {fileID: 2100000, guid: bb9a1f388086e754c8ed6bcc70375e8c, type: 2}
   - {fileID: 2100000, guid: f0c061da7935a0e4ea6bae67294c83c3, type: 2}
+  - {fileID: 2100000, guid: 1a1680dcd52a6344b91167ca24cc6c9f, type: 2}
+  - {fileID: 2100000, guid: ec34b5fb8f9448742a5645a0393c080c, type: 2}
+  - {fileID: 2100000, guid: 2a2bb0fa1bd26b042b3e6bfb9e579056, type: 2}
+  - {fileID: 2100000, guid: 24ed787331ac4de4d818bec0b84fcb09, type: 2}
+  - {fileID: 2100000, guid: b2bd534925dc0424e965b8e1567c5d4a, type: 2}
+  - {fileID: 2100000, guid: e2b06a12fc371ef49910e61010242ef8, type: 2}
+  - {fileID: 2100000, guid: 7c1baffcae7d2f04f9e577b4e39cf7ee, type: 2}
+  - {fileID: 2100000, guid: 842630d2d725d5d4baef4b6a00841cc1, type: 2}
+  - {fileID: 2100000, guid: 3572ff9ff7fb9ed49909763e99676b08, type: 2}
+  - {fileID: 2100000, guid: 960cbb421cb6c3f44af990afa6862b3c, type: 2}
+  - {fileID: 2100000, guid: d2daf17de16c1e847b5cc6d55972e1c3, type: 2}
+  - {fileID: 2100000, guid: 702547e73bfc43341aaab38ae5e31f43, type: 2}
+  - {fileID: 2100000, guid: 7c3db065847217c41a5c9d110dfb766b, type: 2}
+  - {fileID: 2100000, guid: a896b79c82cf8f849ae633c896ca5429, type: 2}
+  - {fileID: 2100000, guid: d15e293d3137d5445929c36710c2be11, type: 2}
+  - {fileID: 2100000, guid: 9345ea4d9b59d7844b9219069cf50023, type: 2}
+  - {fileID: 2100000, guid: 335e67262cd535144ab7d5d48529294a, type: 2}
+  - {fileID: 2100000, guid: 0ea5da88dbdc6ae4a837bce0a4690c76, type: 2}
+  - {fileID: 2100000, guid: 8749a4ce33060c84592ce67290e5fa99, type: 2}
+  - {fileID: 2100000, guid: 3062e57b7caf1e04e87087959ea2511a, type: 2}
+  - {fileID: 2100000, guid: d5ac2f8ae7aed884e94c66e4a17d6207, type: 2}
+  - {fileID: 2100000, guid: 7e35887b0f37354458e0260f7ed58e7e, type: 2}
   CommitPendingStateMaterial: {fileID: 2100000, guid: 8ebff964fe72b6f4f8fef544f839195d, type: 2}
   DeletionPendingStateMaterial: {fileID: 2100000, guid: ce1d4b4d3544d004ba805c7def429936, type: 2}
 --- !u!1 &478567734 stripped
@@ -1304,7 +1361,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &676763815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2009,7 +2066,12 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 8419928466349755026, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
+    - {fileID: 4382131582899931707, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
+    - {fileID: 8419928465593781861, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
+    - {fileID: 4382131584863932108, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
+    - {fileID: 8419928465828642685, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dc3077a9c25959c419a19943d3c42608, type: 3}
 --- !u!1 &1025168227 stripped
 GameObject:
@@ -2434,7 +2496,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1634495359
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -68,6 +68,7 @@ public class SaveData : MonoBehaviour
         {
             yield return new WaitForSeconds(2);
 
+            currentString.Clear();
             elapsedSeconds++;
 
             // default values
@@ -92,21 +93,21 @@ public class SaveData : MonoBehaviour
 
             // Gaze targeted object name: If the gObjContr is null and the target is null, print "none".
             // Otherwise, prints the objects' ToString()
-            currentString.Append(
-                DateTime.Now.ToString("dd-MM-yyyy_HH:mm:ss") + ";" +                        // Datetime
-                elapsedSeconds + ";" +                                                      // Progressive number
-                CaretakerScene.Instance.SceneState + ";" +                                  // Current layer
-                CoreServices.InputSystem.GazeProvider.GazeDirection + ";" +                 // Gaze direction
-                CoreServices.InputSystem.GazeProvider.GazeOrigin + ";" +                    // Gaze origin
-                gazeTargetGuid + ";" +                                                      // Gaze targeted object guid 
-                gazeTargetedGObjContr?.ToString() ?? (gazeTarget?.ToString() ?? "none") +   // Gaze targeted object name
-                Camera.main.transform.position + ";" +                                      // Head position 
-                Camera.main.transform.forward + ";" +                                       // Head direction
-                Camera.main.transform.rotation + ";" +                                      // Head rotation 
-                manipulatedObjectGuid + ";" +                                               // Current manipulated object guid
-                manipulatedObjectGObjContr?.ToString() ?? "none"                            // Current manipulated object name
-            );
-  
+            currentString.Append(DateTime.Now.ToString("dd-MM-yyyy_HH:mm:ss") + ";");                        // Datetime
+            currentString.Append(elapsedSeconds + ";");                                                      // Progressive number
+            currentString.Append(CaretakerScene.Instance.SceneState + ";");                                  // Current layer
+            currentString.Append(CoreServices.InputSystem.GazeProvider.GazeDirection + ";");                 // Gaze direction
+            currentString.Append(CoreServices.InputSystem.GazeProvider.GazeOrigin + ";");                    // Gaze origin
+            currentString.Append(gazeTargetGuid + ";");                                                      // Gaze targeted object guid 
+            currentString.Append(gazeTargetedGObjContr?.ToString() ?? (gazeTarget?.ToString() ?? "none"));   // Gaze targeted object name
+            currentString.Append(Camera.main.transform.position + ";");                                      // Head position 
+            currentString.Append(Camera.main.transform.forward + ";");                                       // Head direction
+            currentString.Append(Camera.main.transform.rotation + ";");                                      // Head rotation 
+            currentString.Append(manipulatedObjectGuid + ";");                                               // Current manipulated object guid
+            currentString.Append(manipulatedObjectGObjContr?.ToString() ?? "none");                          // Current manipulated object name
+
+            //Debug.Log(currentString);
+
             UserDataAndOperationsString.AppendLine(currentString.ToString());
         }
     }
