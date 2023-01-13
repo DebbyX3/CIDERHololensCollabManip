@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 8536606095331093956}
   - component: {fileID: -9030695013172715322}
   m_Layer: 0
-  m_Name: couch
+  m_Name: sofa_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_GameObject: {fileID: 1809772019882630545}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.104, z: 0.323}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_Children:
   - {fileID: 5987633058932586290}
   - {fileID: 7967673599509629447}
@@ -122,8 +122,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 1, y: 0.93106747, z: 2.1167047}
+  m_Center: {x: 0.089612246, y: 0.41359448, z: -0.006893277}
 --- !u!114 &5092872437425463305
 MonoBehaviour:
   m_ObjectHideFlags: 0

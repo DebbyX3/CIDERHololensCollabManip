@@ -25,7 +25,7 @@ public class SaveData : MonoBehaviour
         }
     }
 
-    private void Start()
+    public void StartLog()
     {
         StartCoroutine(LogUserData());
     }
@@ -66,7 +66,7 @@ public class SaveData : MonoBehaviour
 
         while (true)
         {
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(1);
 
             currentString.Clear();
             elapsedSeconds++;
@@ -179,10 +179,12 @@ public class SaveData : MonoBehaviour
     public void SaveUserLogData()
     {
         ObjectsFiles.SaveData(UserDataAndOperationsString);
+        UIManager.Instance.MessageSentSound.Play();
     }
 
     public void SaveGlobalDict()
     {
         ObjectsFiles.SaveData(CaretakerScene.Instance.GlobalListMementos);
+        UIManager.Instance.MessageSentSound.Play();
     }
 }

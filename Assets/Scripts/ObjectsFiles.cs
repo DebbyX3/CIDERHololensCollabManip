@@ -21,7 +21,7 @@ public static class ObjectsFiles
         // da usare per quando si prova su unity
         //path = filename + ".bin";
 
-        UIManager.Instance.PrintMessages(path);
+        UIManager.Instance.PrintMessages("Saved file in path: \n" + path);
 
         UnityEngine.Windows.File.WriteAllBytes(path, data);
     }
@@ -35,6 +35,8 @@ public static class ObjectsFiles
 
         // da usare per quando si prova su unity
         //path = filename + ".txt";
+
+        UIManager.Instance.PrintMessages("Saved file in path: \n" + path);
 
         UnityEngine.Windows.File.WriteAllBytes(path, data);
     }

@@ -167,7 +167,11 @@ public class PrefabManager : MonoBehaviour
         st.Rotation = (SerializableVector)Quaternion.identity;
         */
 
-        return CreateNewObject(prefabName, materialName, Camera.main.transform.forward);
+        // using the head direction
+        //SpawnPosition = objCamera.transform.forward * DistanceToCamera + objCamera.transform.position;
+        GameObject newObj = CreateNewObject(prefabName, materialName, (Camera.main.transform.forward * 2) + Camera.main.transform.position);
+
+        return newObj;
     }
 
     private GameObject CreateNewObject(string prefabName, string materialName, Vector3 position)

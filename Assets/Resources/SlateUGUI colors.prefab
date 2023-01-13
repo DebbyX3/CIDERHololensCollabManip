@@ -2754,6 +2754,14 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6131755083299501832, guid: 937ce507dd7ee334ba569554e24adbdd, type: 3}
+      propertyPath: maxDistance
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6131755083299501832, guid: 937ce507dd7ee334ba569554e24adbdd, type: 3}
+      propertyPath: minDistance
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6131755083299501832, guid: 937ce507dd7ee334ba569554e24adbdd, type: 3}
       propertyPath: fixedVerticalPosition
       value: 0
       objectReference: {fileID: 0}
@@ -2871,6 +2879,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7779420038862058148, guid: 937ce507dd7ee334ba569554e24adbdd, type: 3}
       propertyPath: assetVersion
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7779420039263858268, guid: 937ce507dd7ee334ba569554e24adbdd, type: 3}
+      propertyPath: autoFollowDistance
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7779420039263858270, guid: 937ce507dd7ee334ba569554e24adbdd, type: 3}
