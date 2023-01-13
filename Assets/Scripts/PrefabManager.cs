@@ -169,7 +169,11 @@ public class PrefabManager : MonoBehaviour
 
         // using the head direction
         //SpawnPosition = objCamera.transform.forward * DistanceToCamera + objCamera.transform.position;
-        GameObject newObj = CreateNewObject(prefabName, materialName, (Camera.main.transform.forward * 2) + Camera.main.transform.position);
+        Vector3 spawnPosition = (Camera.main.transform.forward * 1) + Camera.main.transform.position;
+        // Make the object spawn a little below
+        spawnPosition.y -= 1.0f;
+
+        GameObject newObj = CreateNewObject(prefabName, materialName, spawnPosition);
 
         return newObj;
     }

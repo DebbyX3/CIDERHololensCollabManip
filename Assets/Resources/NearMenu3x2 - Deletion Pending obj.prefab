@@ -723,11 +723,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2405023746373198490, guid: 9a7c24f281a2c3d45a9b8befe608bf77, type: 3}
       propertyPath: additionalOffset.x
-      value: 0
+      value: -0.2
       objectReference: {fileID: 0}
     - target: {fileID: 2405023746373198490, guid: 9a7c24f281a2c3d45a9b8befe608bf77, type: 3}
       propertyPath: additionalOffset.y
-      value: 0.2
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 2405023746373198490, guid: 9a7c24f281a2c3d45a9b8befe608bf77, type: 3}
       propertyPath: additionalOffset.z
