@@ -773,8 +773,10 @@ MonoBehaviour:
   - {fileID: 7170374348065476132, guid: be76f268ab30c5944aa856be889626aa, type: 3}
   - {fileID: 143676, guid: aa4e5795065e1fc43a1ab54ec0d68378, type: 3}
   - {fileID: 144350, guid: a1f4cd2b6c0029d479164f17b4288b6b, type: 3}
+  - {fileID: 129448, guid: fc5dce3121203054baa993d22a5fef37, type: 3}
   - {fileID: 1809772019882630545, guid: 6d0ef20817399254f888d25311f505bc, type: 3}
   - {fileID: 9063128926208519524, guid: b97af57817e51304b9533eb6c615a1a7, type: 3}
+  - {fileID: 127242, guid: 8ee2786144f9dca409da0a8c7d90302c, type: 3}
   - {fileID: 6175574215640251783, guid: 921e4bb3e4c290643b465a4a6d9756f2, type: 3}
   - {fileID: 1192340606150556, guid: 9b5355fe90633c449a9940950690c727, type: 3}
   - {fileID: 113604, guid: 6cf45aca3482ec84babdb78bbe58fba8, type: 3}
@@ -845,6 +847,11 @@ MonoBehaviour:
   - {fileID: 2800000, guid: aed1877411a25044b845accac82990d1, type: 3}
   - {fileID: 2800000, guid: 5cd8a8aed7bc94a42994f780c2f0ecf9, type: 3}
   - {fileID: 2800000, guid: 61ff3bf33dd3a3043bb4c627d81cc746, type: 3}
+  - {fileID: 2800000, guid: 1c9ca4503a4cc3c46891d1af5df62a90, type: 3}
+  - {fileID: 2800000, guid: c2c18eb4d512a0e45a63f7549c4a9340, type: 3}
+  - {fileID: 2800000, guid: 2f5c4a08fee709749a8a89377b30d483, type: 3}
+  - {fileID: 2800000, guid: 0f00a87d53a258d4fa3dc90646629d61, type: 3}
+  - {fileID: 2800000, guid: 08f642a1e0ecdb44495a0a2b052e60fb, type: 3}
   Materials:
   - {fileID: 2100000, guid: 09211bc6e8a9d814bb8b1d89dc09ef84, type: 2}
   - {fileID: 2100000, guid: bc4388e6a67870f43a169b454afd4249, type: 2}
@@ -901,6 +908,11 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 534f7d2f42f0e44449941cab97638d23, type: 2}
   - {fileID: 2100000, guid: b33fa1bdef779ae458a123e4800ad158, type: 2}
   - {fileID: 2100000, guid: dff4b5181c6f2834e835a53127b3dc3d, type: 2}
+  - {fileID: 2100000, guid: 1f085f9826cef7f4f87544b67874a041, type: 2}
+  - {fileID: 2100000, guid: b7678b021251507459d3ae352f741e21, type: 2}
+  - {fileID: 2100000, guid: 75008fa860cd33042906d4decd84c7da, type: 2}
+  - {fileID: 2100000, guid: 0f389c3b4cd89214eb0b0cb9a8c053af, type: 2}
+  - {fileID: 2100000, guid: 15c41d05911b8044180adfaafed3b099, type: 2}
 --- !u!1 &478567734 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5197155340113418429, guid: 0425c84e5e5fb014c938ba5a644d1022, type: 3}
@@ -1363,7 +1375,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &676763815
 MonoBehaviour:
   m_ObjectHideFlags: 0
