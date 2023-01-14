@@ -31,9 +31,6 @@ public class PrefabManager : MonoBehaviour
     public List<Texture2D> Images;
     public List<Material> Materials;
 
-    public Material CommitPendingStateMaterial;
-    public Material DeletionPendingStateMaterial;
-
     // Dictionary that keeps all the materials indexed by material name.
     // Please note that this 'list' is the best way I found to access all the materials without having to also provide
     // the prefab name in the PrefabCollection. Infact, sometimes I need to access the material to assign just by its material name. 
@@ -151,25 +148,11 @@ public class PrefabManager : MonoBehaviour
     // If the transform is not provided, use a shifted positions from the user head direction
     private GameObject CreateNewObject(string prefabName, string materialName)
     {
-        /*
-        // When creating an obj from scratch, shift it from the user POV
-        SerializableTransform st = Camera.main.transform;
-
-        SerializableVector sv = new SerializableVector(
-            st.Position.X + 0.5f,
-            st.Position.Y - 1.0f,
-            st.Position.Z + 0.5f);
-
-        // Assign new position
-        st.Position = sv;
-
-        // Keep 0,0,0,1 quaternion as rotation
-        st.Rotation = (SerializableVector)Quaternion.identity;
-        */
-
         // using the head direction
+
         //SpawnPosition = objCamera.transform.forward * DistanceToCamera + objCamera.transform.position;
         Vector3 spawnPosition = (Camera.main.transform.forward * 1) + Camera.main.transform.position;
+
         // Make the object spawn a little below
         spawnPosition.y -= 1.0f;
 
@@ -279,7 +262,8 @@ public class PrefabManager : MonoBehaviour
         gObjContr.SubscribeToCommitPendingList();
         CaretakerScene.Instance.SaveCommitPendingState(gObjContr);
 
-        ChangeMaterialCommitPendingState(gObj);
+        // Make outline
+        gObjContr.EnableMeshOutlineCommitPending(true);
 
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
@@ -356,6 +340,20 @@ public class PrefabManager : MonoBehaviour
         gObjContr.SubscribeToGlobalScene(); //always
         CaretakerScene.Instance.SaveGlobalState(gObjContr);
 
+        // todo togli
+        /*
+         PROVA DEB; DA TOGLIERE POI
+
+         
+
+        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gObjContr.Guid, gObjContr.transform, gObjContr.PrefabName, gObjContr.MaterialName, CommitType.RequestCommit));
+
+        //DeletionMessage msg = new DeletionMessage(new DeletionMessageInfo(gObjContr.Guid, DeletionType.RequestGlobalDeletion));
+        MessagesManager.Instance.OnCommitReceived(msg);
+        */
+
+        //---------------
+
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();
@@ -380,8 +378,8 @@ public class PrefabManager : MonoBehaviour
         // Update transform
         gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);
 
-        // Change material of the object
-        ChangeMaterialCommitPendingState(gObj);
+        // Make outline
+        gObjContr.EnableMeshOutlineCommitPending(true);
         gObjContr.SetMaterialName(materialName); // Do not move this into ChangeMaterial
 
         gObjContr.SubscribeToCommitPendingList(); //always
@@ -411,8 +409,8 @@ public class PrefabManager : MonoBehaviour
         // Update transform
         gObjContr.Transform.AssignDeserTransformToOriginalTransform(transform);
 
-        // Change material of the object
-        ChangeMaterialDeletionPendingState(gObj);
+        // Make outline
+        gObjContr.EnableMeshOutlineDeletionPending(true);
         gObjContr.SetMaterialName(materialName); // Do not move this into ChangeMaterial
 
         gObjContr.SubscribeToDeletionPendingList(); //always
@@ -445,8 +443,6 @@ public class PrefabManager : MonoBehaviour
 
         if (AllMaterialsDict.TryGetValue(materialName, out mat)) // If the material exists
             ChangeMaterial(gObj, mat);
-        else if (materialName.Equals(CommitPendingStateMaterial.name)) //todo probabilmente da sistemare?
-            ChangeMaterialCommitPendingState(gObj);
         else
             ChangeMaterial(gObj, PrefabCollection[0].GetAMaterial()); // if the material does not exists, then take whatever material
                                                                       // (can also be randomized it but i don't think it will be useful)
@@ -467,26 +463,6 @@ public class PrefabManager : MonoBehaviour
         ChangeOneMaterial(gObj, material);
     }
 
-    public void ChangeMaterialCommitPendingState(GameObject gObj)
-    {
-        ChangeMaterial(gObj, CommitPendingStateMaterial);
-    }
-
-    public void ChangeMaterialCommitPendingState(Guid guid)
-    {
-        ChangeMaterial(guid, CommitPendingStateMaterial);
-    }
-
-    public void ChangeMaterialDeletionPendingState(GameObject gObj)
-    {
-        ChangeMaterial(gObj, DeletionPendingStateMaterial);
-    }
-
-    public void ChangeMaterialDeletionPendingState(Guid guid)
-    {
-        ChangeMaterial(guid, DeletionPendingStateMaterial);
-    }
-
     private void ChangeOneMaterial(GameObject gObj, Material material)
     {
         MeshRenderer meshRenderer;
@@ -499,19 +475,7 @@ public class PrefabManager : MonoBehaviour
         // and they don't have a Mesh
         if (meshRenderer != null)
         {
-            // if the material is the Commit pending one, change every material
-            if (material.Equals(CommitPendingStateMaterial))
-            {
-                Material[] mat;
-
-                mat = meshRenderer.materials;
-
-                for (int i = 0; i < meshRenderer.materials.Length; i++)
-                    mat[i] = material; // Set the new material on the GameObject
-
-                meshRenderer.materials = mat;         
-            }
-            else // if it is a common material, just change the first submesh material
+            // just change the first submesh material
             {
                 meshRenderer.material = material;
             }

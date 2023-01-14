@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: 2001200110311740091}
   - component: {fileID: -648494958827105702}
   - component: {fileID: 7452631417303148794}
+  - component: {fileID: -3586819609520059486}
+  - component: {fileID: 828120859379530297}
   m_Layer: 0
   m_Name: coffee_table_1
   m_TagString: Untagged
@@ -161,6 +163,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Transform: {fileID: 0}
+  meshOutlineCommitPending: {fileID: 828120859379530297}
+  meshOutlineDeletionPending: {fileID: -3586819609520059486}
 --- !u!114 &2001200110311740091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,3 +237,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTetherWhenManipulating: 0
   IsBoundsHandles: 0
+--- !u!114 &-3586819609520059486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667673312399118122}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa162a1be707e7f4bb2c94f4fd6df84f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: f3b75e19b2225904c99f2e333826c363, type: 2}
+  outlineWidth: 0.01
+--- !u!114 &828120859379530297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8667673312399118122}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa162a1be707e7f4bb2c94f4fd6df84f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 2c35282cfdd47de419978071b6cee338, type: 2}
+  outlineWidth: 0.01

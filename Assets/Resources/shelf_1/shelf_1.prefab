@@ -19,6 +19,8 @@ GameObject:
   - component: {fileID: -2895207367674300810}
   - component: {fileID: 806884656211860532}
   - component: {fileID: 5938117622619792780}
+  - component: {fileID: -2711387774943766029}
+  - component: {fileID: 3909883991772394304}
   m_Layer: 0
   m_Name: shelf_1
   m_TagString: Untagged
@@ -161,6 +163,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Transform: {fileID: 0}
+  meshOutlineCommitPending: {fileID: 3909883991772394304}
+  meshOutlineDeletionPending: {fileID: -2711387774943766029}
 --- !u!114 &-2895207367674300810
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -232,3 +236,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTetherWhenManipulating: 0
   IsBoundsHandles: 0
+--- !u!114 &-2711387774943766029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6175574215640251783}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa162a1be707e7f4bb2c94f4fd6df84f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: f3b75e19b2225904c99f2e333826c363, type: 2}
+  outlineWidth: 0.01
+--- !u!114 &3909883991772394304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6175574215640251783}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa162a1be707e7f4bb2c94f4fd6df84f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 2c35282cfdd47de419978071b6cee338, type: 2}
+  outlineWidth: 0.01

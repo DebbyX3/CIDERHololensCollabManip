@@ -142,8 +142,6 @@ public class MessagesManager : MonoBehaviour
         // Play sound on commit
         UIManager.Instance.MessageSentSound.Play();
 
-        // Todo maybe display a dialog/confirmation box? forse uno che va via da solo dopo tot tempo?
-
         switch (commitType)
         {
             case CommitType.ForcedCommit:
@@ -172,7 +170,6 @@ public class MessagesManager : MonoBehaviour
     private void OnRequestCommitSent(GameObjController gObjCont)
     {
         PrefabManager.Instance.PutExistingObjectInCommitPending(gObjCont.Guid, gObjCont.Transform, gObjCont.MaterialName);
-        // todo da fare qualcosa che boh
     }
 
     public void AcceptCommit(GameObjController gObjCont)
@@ -446,8 +443,6 @@ public class MessagesManager : MonoBehaviour
 
         // Play sound
         UIManager.Instance.MessageSentSound.Play();
-
-        // todo maybe display a dialog/confirmation box?
     }
 
     // ------------ RECEIVE DECLINE  ------------

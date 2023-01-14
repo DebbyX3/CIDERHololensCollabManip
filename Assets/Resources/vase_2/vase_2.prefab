@@ -18,6 +18,8 @@ GameObject:
   - component: {fileID: 885348982201037033}
   - component: {fileID: 1401246907861959525}
   - component: {fileID: 3526869090669710751}
+  - component: {fileID: -1286032649920684621}
+  - component: {fileID: 2095706975337493780}
   m_Layer: 0
   m_Name: vase_2
   m_TagString: Untagged
@@ -146,6 +148,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Transform: {fileID: 0}
+  meshOutlineCommitPending: {fileID: 2095706975337493780}
+  meshOutlineDeletionPending: {fileID: -1286032649920684621}
 --- !u!114 &885348982201037033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,3 +221,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTetherWhenManipulating: 0
   IsBoundsHandles: 0
+--- !u!114 &-1286032649920684621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031492502663476}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa162a1be707e7f4bb2c94f4fd6df84f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: f3b75e19b2225904c99f2e333826c363, type: 2}
+  outlineWidth: 0.01
+--- !u!114 &2095706975337493780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1031492502663476}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa162a1be707e7f4bb2c94f4fd6df84f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 2c35282cfdd47de419978071b6cee338, type: 2}
+  outlineWidth: 0.01

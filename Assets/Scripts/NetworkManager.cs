@@ -62,7 +62,7 @@ public class NetworkManager : MonoBehaviour
 
     public void Receive(Socket handler, bool connectionEstablished) 
     {
-        bool keepReading = true; // todo not sure, in SocketServer era attributo della classe, non so bene come mai, da rivedere!
+        bool keepReading = true;
         byte[] bytes; // Data buffer for incoming data.
         int bytesRec = 0;
 

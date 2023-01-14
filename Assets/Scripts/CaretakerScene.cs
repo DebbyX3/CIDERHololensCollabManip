@@ -183,107 +183,109 @@ public class CaretakerScene : MonoBehaviour
 
     //*****************
 
-    public void SaveGlobalState(GameObjController gObj)
+    public void SaveGlobalState(GameObjController gObjContr)
     {
-        if (!CommitPendingListRequests.ContainsKey(gObj.Guid) && !DeletionPendingListRequests.ContainsKey(gObj.Guid))
-            GlobalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        if (!CommitPendingListRequests.ContainsKey(gObjContr.Guid) && !DeletionPendingListRequests.ContainsKey(gObjContr.Guid))
+            GlobalListMementos[gObjContr.Guid] = gObjContr.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public void SaveLocalState(GameObjController gObj)
+    public void SaveLocalState(GameObjController gObjContr)
     {
-        LocalListMementos[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        LocalListMementos[gObjContr.Guid] = gObjContr.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public void SaveCommitPendingState(GameObjController gObj)
+    public void SaveCommitPendingState(GameObjController gObjContr)
     {
-        CommitPendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        CommitPendingListRequests[gObjContr.Guid] = gObjContr.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public void SaveDeletionPendingState(GameObjController gObj)
+    public void SaveDeletionPendingState(GameObjController gObjContr)
     {
-        DeletionPendingListRequests[gObj.Guid] = gObj.Save(); // Add or update! No need to check if item already exists in list
+        DeletionPendingListRequests[gObjContr.Guid] = gObjContr.Save(); // Add or update! No need to check if item already exists in list
     }
 
-    public void RestoreGlobalState(GameObjController gObj)
+    public void RestoreGlobalState(GameObjController gObjContr)
     {
         Memento value;
 
-        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Global))
+        if (gObjContr.ObjectLocation.HasFlag(ObjectLocation.Global))
         {
-            if (GlobalListMementos.TryGetValue(gObj.Guid, out value)) // if the obj is in the global list, restore it
+            if (GlobalListMementos.TryGetValue(gObjContr.Guid, out value)) // if the obj is in the global list, restore it
             {
                 // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call  
-                gObj.gameObject.SetActive(true);
-                gObj.Restore(value);
+                gObjContr.gameObject.SetActive(true);
+                gObjContr.Restore(value);
             }
             else
             {
-                Debug.Log("Key " + gObj.Guid + " not found in dictionary GlobalListMementos");
-                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary GlobalListMementos");
+                Debug.Log("Key " + gObjContr.Guid + " not found in dictionary GlobalListMementos");
+                UIManager.Instance.PrintMessages("Key " + gObjContr.Guid + " not found in dictionary GlobalListMementos");
             }
         }
     }
 
-    public void RestoreLocalState(GameObjController gObj)
+    public void RestoreLocalState(GameObjController gObjContr)
     {
         Memento value;
 
-        if (gObj.ObjectLocation.HasFlag(ObjectLocation.Local))
+        if (gObjContr.ObjectLocation.HasFlag(ObjectLocation.Local))
         {
-            if (LocalListMementos.TryGetValue(gObj.Guid, out value)) // if the obj is in the local list, restore it
+            if (LocalListMementos.TryGetValue(gObjContr.Guid, out value)) // if the obj is in the local list, restore it
             {
                 // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
-                gObj.gameObject.SetActive(true);
-                gObj.Restore(value);
+                gObjContr.gameObject.SetActive(true);
+                gObjContr.Restore(value);
             }
             else
             {
-                Debug.Log("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
-                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary LocalListMementos");
+                Debug.Log("Key " + gObjContr.Guid + " not found in dictionary LocalListMementos");
+                UIManager.Instance.PrintMessages("Key " + gObjContr.Guid + " not found in dictionary LocalListMementos");
             }
         }
     }
 
-    public void RestoreCommitPendingState(GameObjController gObj)
+    public void RestoreCommitPendingState(GameObjController gObjContr)
     {
         Memento value;
 
-        if (gObj.ObjectLocation.HasFlag(ObjectLocation.CommitPending))
+        if (gObjContr.ObjectLocation.HasFlag(ObjectLocation.CommitPending))
         {
-            if (CommitPendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the commit pending list, restore it
+            if (CommitPendingListRequests.TryGetValue(gObjContr.Guid, out value)) // if the obj is in the commit pending list, restore it
             {
                 // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
-                gObj.gameObject.SetActive(true);
-                gObj.Restore(value);
+                gObjContr.gameObject.SetActive(true);
+                gObjContr.Restore(value);
 
-                PrefabManager.Instance.ChangeMaterialCommitPendingState(gObj.gameObject);
+                gObjContr.EnableMeshOutlineCommitPending(true);
+                //PrefabManager.Instance.ChangeMaterialCommitPendingState(gObjContr.gameObject);
             }
             else
             {
-                Debug.Log("Key " + gObj.Guid + " not found in dictionary CommitPendingListRequests");
-                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary CommitPendingListRequests");
+                Debug.Log("Key " + gObjContr.Guid + " not found in dictionary CommitPendingListRequests");
+                UIManager.Instance.PrintMessages("Key " + gObjContr.Guid + " not found in dictionary CommitPendingListRequests");
             }
         }
     }
-    
-    public void RestoreDeletionPendingState(GameObjController gObj)
+
+    public void RestoreDeletionPendingState(GameObjController gObjContr)
     {
         Memento value;
 
-        if (gObj.ObjectLocation.HasFlag(ObjectLocation.DeletionPending))
+        if (gObjContr.ObjectLocation.HasFlag(ObjectLocation.DeletionPending))
         {
-            if (DeletionPendingListRequests.TryGetValue(gObj.Guid, out value)) // if the obj is in the Deletion pending list, restore it
+            if (DeletionPendingListRequests.TryGetValue(gObjContr.Guid, out value)) // if the obj is in the Deletion pending list, restore it
             {
                 // show obj since every obj is hidden because of previous HideObject(GameObjController gObj) call           
-                gObj.gameObject.SetActive(true);
-                gObj.Restore(value);
+                gObjContr.gameObject.SetActive(true);
+                gObjContr.Restore(value);
 
-                PrefabManager.Instance.ChangeMaterialDeletionPendingState(gObj.gameObject);
+                gObjContr.EnableMeshOutlineDeletionPending(true);
+                //PrefabManager.Instance.ChangeMaterialDeletionPendingState(gObjContr.gameObject);
             }
             else
             {
-                Debug.Log("Key " + gObj.Guid + " not found in dictionary DeletionPendingListRequests");
-                UIManager.Instance.PrintMessages("Key " + gObj.Guid + " not found in dictionary DeletionPendingListRequests");
+                Debug.Log("Key " + gObjContr.Guid + " not found in dictionary DeletionPendingListRequests");
+                UIManager.Instance.PrintMessages("Key " + gObjContr.Guid + " not found in dictionary DeletionPendingListRequests");
             }
         }
     }
@@ -308,7 +310,7 @@ public class CaretakerScene : MonoBehaviour
                                                         // specified key, the dict remains unchanged.
                                                         // No exception is thrown.
     }
-    
+
     public void RemoveFromDeletionPendingList(Guid guid)
     {
         DeletionPendingListRequests.Remove(guid);       // If the dict does not contain an element with the
@@ -329,7 +331,7 @@ public class CaretakerScene : MonoBehaviour
         {
             gobjController = gobj.GetComponent<GameObjController>();
 
-            if(gobjController.ObjectLocation.HasFlag(ObjectLocation.Global))
+            if (gobjController.ObjectLocation.HasFlag(ObjectLocation.Global))
                 gobjController.SubscribeToGlobalScene();
         }
     }
@@ -358,8 +360,8 @@ public class CaretakerScene : MonoBehaviour
             if (gobjController.ObjectLocation.HasFlag(ObjectLocation.CommitPending))
                 gobjController.SubscribeToCommitPendingList();
         }
-    }    
-    
+    }
+
     public void ResubscribeRemainingObjsToDeletionPendingEvents()
     {
         GameObjController gobjController;

@@ -149,7 +149,6 @@ public class SerializableTransform : IEquatable<SerializableTransform>
 [Serializable]
 public static class TransformSerializer 
 {
-    // todo da mettere in un'altra classe probabilmente
     // https://answers.unity.com/questions/1296012/best-way-to-set-game-object-transforms.html
     // Assign deserializedTransform to originalTransform
     // Extension method

@@ -45,6 +45,9 @@ public class GameObjController : MonoBehaviour
     // (and Unity does not allow constructors)
     public Transform Transform;
 
+    public MSUtilities.MeshOutline meshOutlineCommitPending;
+    public MSUtilities.MeshOutline meshOutlineDeletionPending;
+
     public ObjectLocation ObjectLocation { get; private set; } = ObjectLocation.None;
 
     // Indicates if the pending obj was received or sent
@@ -117,7 +120,6 @@ public class GameObjController : MonoBehaviour
         CreateNearDeletionPendingFollowingMenu();
     }
 
-    // TODO ha senso mettere questi metodi quando basta mettere il set pubblico dei campi in alto?? boh
     public void SetPrefabName(string prefabName)
     {
         PrefabName = prefabName;
@@ -356,25 +358,6 @@ public class GameObjController : MonoBehaviour
         SetActiveGlobalMenu(false);
     }
 
-    // todo forse sto metodo non serve
-    public void OnForcedDeletionReceived()
-    {
-        bool wasLocalScene = false;
-
-        // Want to modify object in the global scene, so check and switch to it.
-        // Then re-switch to the local one if that's the case
-        if (CaretakerScene.Instance.IsLocalScene())
-        {
-            CaretakerScene.Instance.ChangeSceneToGlobal();
-            wasLocalScene = true;
-        }
-
-        SetActiveManipulation(false);
-
-        if (wasLocalScene)
-            CaretakerScene.Instance.ChangeSceneToLocal();
-    }
-
     public void OnRequestDeletionReceived()
     {
         bool wasLocalScene = false;
@@ -457,6 +440,10 @@ public class GameObjController : MonoBehaviour
         // Assign material
         MaterialName = memento.GetMaterialName();
         PrefabManager.Instance.ChangeMaterial(gameObject, MaterialName);
+
+        // Disable possible outlines
+        EnableMeshOutlineCommitPending(false);
+        EnableMeshOutlineDeletionPending(false);
     }
 
     // ---------------------- END MEMENTO METHODS ----------------------
@@ -750,6 +737,16 @@ public class GameObjController : MonoBehaviour
     {
         LocalForcedCommitButton.SetActive(active);
         LocalRequestCommitButton.SetActive(active);
+    }
+
+    public void EnableMeshOutlineCommitPending(bool enable)
+    {
+        meshOutlineCommitPending.enabled = enable;
+    }
+
+    public void EnableMeshOutlineDeletionPending(bool enable)
+    {
+        meshOutlineDeletionPending.enabled = enable;
     }
 
     // ------------------ FLAGS ------------------
