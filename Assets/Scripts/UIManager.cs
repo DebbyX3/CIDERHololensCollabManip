@@ -102,7 +102,7 @@ public class UIManager : MonoBehaviour
         out GameObject localForcedCommitButton, out GameObject localRequestCommitButton)
     {
         // The parent of the menu is the gameobject - important: set true as argument
-        GameObject nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Local obj"), gObjContr.Transform, true);
+        GameObject nearLocalFollowingMenu = Instantiate(Resources.Load<GameObject>("Menus and buttons/NearMenu3x2 - Local obj"), gObjContr.Transform, true);
         GameObject buttonCollection = nearLocalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // Button 1 - Forced Commit
@@ -158,7 +158,7 @@ public class UIManager : MonoBehaviour
     public GameObject SetNearGlobalFollowingMenu(GameObjController gObjContr)
     {
         // The parent of the menu is the gameobject - important: set true as argument
-        GameObject nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x1 - Global obj"), gObjContr.Transform, true);
+        GameObject nearGlobalFollowingMenu = Instantiate(Resources.Load<GameObject>("Menus and buttons/NearMenu3x1 - Global obj"), gObjContr.Transform, true);
         GameObject buttonCollection = nearGlobalFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
         // Button 1 - Copy object in local scene
@@ -195,7 +195,7 @@ public class UIManager : MonoBehaviour
     public GameObject SetNearCommitPendingFollowingMenu(GameObjController gObjContr)
     {
         // The parent of the menu is the gameobject - important: set true as argument
-        GameObject nearCommitPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Commit Pending obj"), gObjContr.Transform, true);
+        GameObject nearCommitPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("Menus and buttons/NearMenu3x2 - Commit Pending obj"), gObjContr.Transform, true);
 
         GameObject buttonCollection = nearCommitPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
 
@@ -229,7 +229,7 @@ public class UIManager : MonoBehaviour
     public GameObject SetNearDeletionPendingFollowingMenu(GameObjController gObjContr)
     {
         // The parent of the menu is the gameobject - important: set true as argument
-        GameObject nearDeletionPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("NearMenu3x2 - Deletion Pending obj"), gObjContr.Transform, true);
+        GameObject nearDeletionPendingFollowingMenu = Instantiate(Resources.Load<GameObject>("Menus and buttons/NearMenu3x2 - Deletion Pending obj"), gObjContr.Transform, true);
 
         GameObject buttonCollection = nearDeletionPendingFollowingMenu.transform.Find("ButtonCollection").gameObject;
 

@@ -35,7 +35,7 @@ public class SlateColorsManager : MonoBehaviour
     private void AddButton(string prefabName, string imageName, Texture2D image, Guid guid = new Guid())
     {
         // The parent of the button is the gameobject UGUIButtons - important: set false as argument
-        GameObject button = Instantiate(Resources.Load<GameObject>("SlateButton"), UGUIButtons.transform, false);
+        GameObject button = Instantiate(Resources.Load<GameObject>("Menus and buttons/SlateButton"), UGUIButtons.transform, false);
 
         // Get Button component and add listeners to the onClick event
         Button buttonComponent = button.GetComponent<Button>();

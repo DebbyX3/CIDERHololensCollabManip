@@ -27,7 +27,7 @@ public class SlatePrefabsManager : MonoBehaviour
     public void AddButton(string prefabName, Texture2D image)
     {
         // The parent of the button is the gameobject UGUIButtons - important: set false as argument
-        GameObject button = Instantiate(Resources.Load<GameObject>("SlateButton"), UGUIButtons.transform, false);
+        GameObject button = Instantiate(Resources.Load<GameObject>("Menus and buttons/SlateButton"), UGUIButtons.transform, false);
 
         // Get Button component and add listeners to the onClick event
         Button buttonComponent = button.GetComponent<Button>();

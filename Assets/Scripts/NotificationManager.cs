@@ -111,7 +111,7 @@ public class NotificationManager : MonoBehaviour
             gameObject.SetActive(true);
 
         // The parent of the button is the gameobject UGUIButtons - important: set false as argument
-        GameObject buttonNotification = Instantiate(Resources.Load<GameObject>("SlateNotificationButton"), UGUIButtons.transform, false);
+        GameObject buttonNotification = Instantiate(Resources.Load<GameObject>("Menus and buttons/SlateNotificationButton"), UGUIButtons.transform, false);
 
         // Get TextMeshPro object
         TMP_Text title = buttonNotification.transform.Find("Title").GetComponent<TMP_Text>();
