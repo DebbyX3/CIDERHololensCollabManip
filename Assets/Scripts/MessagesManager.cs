@@ -371,9 +371,6 @@ public class MessagesManager : MonoBehaviour
         gObjCont.RemoveDeletionPending();
         gObjCont.DeleteObject(ObjectLocation.Global, UserType.Receiver);
 
-        //forse è da chiamare?
-        //gObjCont.OnForcedDeletionReceived();
-
         // Notify the user that a new thing has arrived
 
         // Play notification sound

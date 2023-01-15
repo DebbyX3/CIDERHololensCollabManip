@@ -340,19 +340,7 @@ public class PrefabManager : MonoBehaviour
         gObjContr.SubscribeToGlobalScene(); //always
         CaretakerScene.Instance.SaveGlobalState(gObjContr);
 
-        // todo togli
-        /*
-         PROVA DEB; DA TOGLIERE POI
-
-         
-
-        GameObjMessage msg = new GameObjMessage(new GameObjMessageInfo(gObjContr.Guid, gObjContr.transform, gObjContr.PrefabName, gObjContr.MaterialName, CommitType.RequestCommit));
-
-        //DeletionMessage msg = new DeletionMessage(new DeletionMessageInfo(gObjContr.Guid, DeletionType.RequestGlobalDeletion));
-        MessagesManager.Instance.OnCommitReceived(msg);
-        */
-
-        //---------------
+        gObjContr.HideObject(false);
 
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)
@@ -384,6 +372,8 @@ public class PrefabManager : MonoBehaviour
 
         gObjContr.SubscribeToCommitPendingList(); //always
         CaretakerScene.Instance.SaveCommitPendingState(gObjContr);
+
+        gObjContr.HideObject(false);
 
         // If the previous scene was the local one, reswitch to the local
         if (wasLocalScene)

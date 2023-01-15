@@ -257,7 +257,6 @@ public class CaretakerScene : MonoBehaviour
                 gObjContr.Restore(value);
 
                 gObjContr.EnableMeshOutlineCommitPending(true);
-                //PrefabManager.Instance.ChangeMaterialCommitPendingState(gObjContr.gameObject);
             }
             else
             {
@@ -280,7 +279,6 @@ public class CaretakerScene : MonoBehaviour
                 gObjContr.Restore(value);
 
                 gObjContr.EnableMeshOutlineDeletionPending(true);
-                //PrefabManager.Instance.ChangeMaterialDeletionPendingState(gObjContr.gameObject);
             }
             else
             {

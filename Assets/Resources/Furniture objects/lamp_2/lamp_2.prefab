@@ -149,8 +149,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Transform: {fileID: 0}
-  meshOutlineCommitPending: {fileID: -2789214839571623618}
-  meshOutlineDeletionPending: {fileID: 3208218356544414015}
+  meshOutlineCommitPending: {fileID: 3208218356544414015}
+  meshOutlineDeletionPending: {fileID: -2789214839571623618}
 --- !u!114 &8568148203251762479
 MonoBehaviour:
   m_ObjectHideFlags: 0

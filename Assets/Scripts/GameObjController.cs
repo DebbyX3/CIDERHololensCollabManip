@@ -200,6 +200,7 @@ public class GameObjController : MonoBehaviour
                     if (userType.Equals(UserType.Receiver))
                     {
                         CopyObjectInLocal();
+                        SetActiveCommitButtons(true);
                         hide = false;
 
                         break;
@@ -225,6 +226,8 @@ public class GameObjController : MonoBehaviour
 
         if (hide)
             HideObject();
+
+        EnableMeshOutlineDeletionPending(false);
     }
 
     // Duplicate obj with a slight movement of 0.1f on axis X and Y
@@ -259,6 +262,7 @@ public class GameObjController : MonoBehaviour
         }
 
         SetActiveManipulation(false);
+        EnableMeshOutlineCommitPending(false);
 
         if (wasLocalScene)
             CaretakerScene.Instance.ChangeSceneToLocal();
@@ -287,6 +291,7 @@ public class GameObjController : MonoBehaviour
     public void AcceptCommit()
     {
         MessagesManager.Instance.AcceptCommit(this);
+        EnableMeshOutlineCommitPending(false);
     }
 
     // todo: maybe move this function in PrefabManager? nah?
@@ -384,6 +389,7 @@ public class GameObjController : MonoBehaviour
     {
         MessagesManager.Instance.AcceptDeletion(this);
         SetActiveCommitButtons(true);
+        EnableMeshOutlineDeletionPending(false);
     }
 
     // todo: maybe move this function in PrefabManager? nah?
@@ -409,7 +415,7 @@ public class GameObjController : MonoBehaviour
             CaretakerScene.Instance.ChangeSceneToLocal();
 
         if (userType.Equals(UserType.Sender))
-            MessagesManager.Instance.SendDeclineCommit(this); // Send decline commit message
+            MessagesManager.Instance.SendDeclineDeletion(this); // Send decline deletion message
     }
 
     public void RemoveDeletionPending()
@@ -603,9 +609,9 @@ public class GameObjController : MonoBehaviour
     }
 
     // Always hide the object on scene change!
-    public void HideObject()
+    public void HideObject(bool hide = true)
     {
-        gameObject.SetActive(false);
+        gameObject.SetActive(!hide);
     }
 
     // ---------------------- END UN/SUB METHODS ----------------------
