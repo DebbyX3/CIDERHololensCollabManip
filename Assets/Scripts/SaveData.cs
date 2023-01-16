@@ -100,6 +100,7 @@ public class SaveData : MonoBehaviour
             currentString.Append(CoreServices.InputSystem.GazeProvider.GazeOrigin + ";");                    // Gaze origin
             currentString.Append(gazeTargetGuid + ";");                                                      // Gaze targeted object guid 
             currentString.Append(gazeTargetedGObjContr?.ToString() ?? (gazeTarget?.ToString() ?? "none"));   // Gaze targeted object name
+            currentString.Append(";");
             currentString.Append(Camera.main.transform.position + ";");                                      // Head position 
             currentString.Append(Camera.main.transform.forward + ";");                                       // Head direction
             currentString.Append(Camera.main.transform.rotation + ";");                                      // Head rotation 
