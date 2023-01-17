@@ -442,4 +442,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Allow .obj in 3d models folders
-!/Assets/Resources/Furniture \objects/*.obj
+*.obj
+!/Assets/Resources/Furniture \objects/**/*.obj
