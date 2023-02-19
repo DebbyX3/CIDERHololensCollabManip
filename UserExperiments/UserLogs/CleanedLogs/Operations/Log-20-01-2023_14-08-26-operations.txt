@@ -1,0 +1,7 @@
+*20-01-2023_13:59:42;ForcedCommit;99dfb685-fd0a-4781-b4fe-3fbe79d70691;DarkWood coffee_table_1
+*20-01-2023_14:02:10;ForcedCommit;a50d18cd-b17c-4472-bb22-697e1d04c62b;lightBlue sofa_1
+*20-01-2023_14:02:13;ForcedCommit;a50d18cd-b17c-4472-bb22-697e1d04c62b;lightBlue sofa_1
+*20-01-2023_14:03:52;ForcedCommit;75dcfe38-b74f-4150-b169-a19c750f133d;RusticWood shelf_2
+*20-01-2023_14:03:59;ForcedCommit;75dcfe38-b74f-4150-b169-a19c750f133d;RusticWood shelf_2
+*20-01-2023_14:05:20;ForcedCommit;ef9d7614-b8f4-49cf-8e2c-71e7e7d41e5a;StarryNight painting_2
++20-01-2023_14:06:20;AcceptDeletion;fb2595c1-69e0-4dbb-a66d-d385f3ea0a2c;Garden painting_2

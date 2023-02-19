@@ -35,14 +35,14 @@ public class CaretakerScene : MonoBehaviour
     */
 
     // keeps mementos of global scene
-    public Dictionary<Guid, Memento> GlobalListMementos { get; set; } = new Dictionary<Guid, Memento>();
+    public Dictionary<Guid, Memento> GlobalListMementos { get; } = new Dictionary<Guid, Memento>();
 
     // keeps mementos of local scene
-    public Dictionary<Guid, Memento> LocalListMementos { get; } = new Dictionary<Guid, Memento>();
+    private Dictionary<Guid, Memento> LocalListMementos { get; } = new Dictionary<Guid, Memento>();
 
-    public Dictionary<Guid, Memento> CommitPendingListRequests { get; } = new Dictionary<Guid, Memento>();
+    private Dictionary<Guid, Memento> CommitPendingListRequests { get; } = new Dictionary<Guid, Memento>();
 
-    public Dictionary<Guid, Memento> DeletionPendingListRequests { get; } = new Dictionary<Guid, Memento>();
+    private Dictionary<Guid, Memento> DeletionPendingListRequests { get; } = new Dictionary<Guid, Memento>();
 
     public Location SceneState { get; private set; } = Location.LocalLayer;
 

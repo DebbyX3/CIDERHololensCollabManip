@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="CaretakerScene" Collapsed="true">
+    <Position X="17.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAFCAEiAAKABIAEBSAIcgAAKBACIaBCIREAQQCjBAkA=</HashCode>
+      <FileName>Assets\Scripts\CaretakerScene.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DeclineMessage" Collapsed="true">
+    <Position X="5.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAQ=</HashCode>
+      <FileName>Assets\Scripts\DeclineMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DeletionMessage" Collapsed="true">
+    <Position X="7.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAQ=</HashCode>
+      <FileName>Assets\Scripts\DeletionMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameObjController" Collapsed="true">
+    <Position X="10.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>tABpCpBQIBUEmgNkyhNiQAQCDMQAhACBIAAhaRVSIUA=</HashCode>
+      <FileName>Assets\Scripts\GameObjController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameObjMessage" Collapsed="true">
+    <Position X="1" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAQ=</HashCode>
+      <FileName>Assets\Scripts\GameObjMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GUIDKeeper" Collapsed="true">
+    <Position X="12" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAABAAAAAAQAAAAAAAAAQAAAAAAAI=</HashCode>
+      <FileName>Assets\Scripts\GUIDKeeper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Memento" Collapsed="true">
+    <Position X="17.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAEAABAAAQAAEAABAAAEAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Scripts\Memento.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Message" Collapsed="true">
+    <Position X="4.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAEAAAAAAAAAAAAACRAAAAAAAACAEAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Message.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MessagesManager" Collapsed="true">
+    <Position X="19" Y="2.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>EAAAChUAAgMAAQAAUAAwAAAAQJBQAAAAQBgIIQAAAEA=</HashCode>
+      <FileName>Assets\Scripts\MessagesManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NetworkManager" Collapsed="true">
+    <Position X="2" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAEABAAAAAAAAAEAAAAAAAAAAAAAQQIAAAQAAAAA=</HashCode>
+      <FileName>Assets\Scripts\NetworkManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NotificationButtonController" Collapsed="true">
+    <Position X="22.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAEAAAAABAAAAAAAAAAEAABAAAIAIEAAAACABAAAAEA=</HashCode>
+      <FileName>Assets\Scripts\NotificationButtonController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NotificationType" Collapsed="true">
+    <Position X="13.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEhAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Assets\Scripts\NotificationManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NotificationID" Collapsed="true">
+    <Position X="10.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAIMAEAAAAAAAAAAAAAACAACAEQAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\NotificationManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NotificationManager" Collapsed="true">
+    <Position X="12" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAgAAAACBAAIAAAEAAAIAAAAIABAAAgAAAAAABAAA=</HashCode>
+      <FileName>Assets\Scripts\NotificationManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ObjectsFiles" Collapsed="true">
+    <Position X="15.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAABAAAAAAAAAAAQACBAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\ObjectsFiles.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PrefabManager" Collapsed="true">
+    <Position X="10.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAINEAAIAABKAAAAAXAAQgIBAgAAAEA=</HashCode>
+      <FileName>Assets\Scripts\PrefabManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PrefabSpecs" Collapsed="true">
+    <Position X="12" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>wEQAAEIIAAAACAAACAgASAAAgAAAABAAQAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\PrefabSpecs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SaveData" Collapsed="true">
+    <Position X="17.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAMAAIAAAAAAAAAEAAAAAAAAAAAAAQAAAAAAFAEA=</HashCode>
+      <FileName>Assets\Scripts\SaveData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SlateColorsManager" Collapsed="true">
+    <Position X="10.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAABAAAACAAAAAAAAUAAAAAAAAAAAAIAACEA=</HashCode>
+      <FileName>Assets\Scripts\SlateColorsManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SlatePrefabsManager" Collapsed="true">
+    <Position X="12" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACBAAACCAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Assets\Scripts\SlatePrefabsManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SocketClient" Collapsed="true">
+    <Position X="3" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQIAAAAAAAAgAAAAAAAgIAAAAQAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\SocketClient.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SocketClientMain" Collapsed="true">
+    <Position X="3" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\SocketClientMain.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SocketServer" Collapsed="true">
+    <Position X="0.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAgAAAEAAAQwAAAIAiIAAAAAAACAAA=</HashCode>
+      <FileName>Assets\Scripts\SocketServer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SocketServerMain" Collapsed="true">
+    <Position X="0.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAACAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\SocketServerMain.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="StateMessage" Collapsed="true">
+    <Position X="3.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\StateMessage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SerializableTransform" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="20.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAkgAIAIAAAAAAAAIAAAEAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\TransformSerializer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="TransformSerializer" Collapsed="true">
+    <Position X="17.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\TransformSerializer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UIManager" Collapsed="true">
+    <Position X="19" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARAAAAEAARQABCAAAAAIAAACAAwQACwQAEARAIAIEA=</HashCode>
+      <FileName>Assets\Scripts\UIManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="DeclineMessageInfo" Collapsed="true">
+    <Position X="12" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\DeclineMessage.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="DeletionMessageInfo" Collapsed="true">
+    <Position X="13.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\DeletionMessage.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="GameObjMessageInfo" Collapsed="true">
+    <Position X="15.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAACAAAEAAAAAQAAAAAAAIAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Scripts\GameObjMessage.cs</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="SerializableVector" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="17.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAAAEgAAAAAAAAAAAAIAAAAAAAAAIZAE=</HashCode>
+      <FileName>Assets\Scripts\TransformSerializer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Struct>
+  <Enum Name="Location" Collapsed="true">
+    <Position X="17.25" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\CaretakerScene.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ObjectLocation" Collapsed="true">
+    <Position X="10.25" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAgABAAAAAAAAAAAkBAAA=</HashCode>
+      <FileName>Assets\Scripts\GameObjController.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="MessageType" Collapsed="true">
+    <Position X="19" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAAAAAAAAAAACAIAAAAAAIQABAAAAAAAA=</HashCode>
+      <FileName>Assets\Scripts\Message.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="UserType" Collapsed="true">
+    <Position X="17.25" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAEIAAA=</HashCode>
+      <FileName>Assets\Scripts\MessagesManager.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="CommitType" Collapsed="true">
+    <Position X="12" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAAAACAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Scripts\MessagesManager.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DeletionType" Collapsed="true">
+    <Position X="15.5" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Scripts\MessagesManager.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DeclineType" Collapsed="true">
+    <Position X="13.75" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAEAAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Scripts\MessagesManager.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="AcceptType" Collapsed="true">
+    <Position X="10.25" Y="9" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Assets\Scripts\MessagesManager.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

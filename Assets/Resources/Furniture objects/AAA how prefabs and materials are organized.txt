@@ -18,15 +18,14 @@ Example:
 couch
 |
 |---- couch.prefab
-|---- couch.fbx (optional?)
+|---- couch.fbx (optional)
 |---- images
 |	|
-|	|---- couch-red.png (img for couch-red material)
-|	|---- couch-various.png (img for couch-red material)
+|	|---- couch-red.png
+|	|---- couch-blue.png
 |
 |---- materials
 |	|
-|	|---- couch-red.mat (material associated to couch-red image)
-|	|---- various-material.mat (material needed by other pieces of the material, that i don't have to modify or touch [hopefully])
-
-
+|	|---- couch-red.mat
+|	|---- couch-blue.png
+|	|---- various-material.mat (material/s needed by other pieces of the prefab)
