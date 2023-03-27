@@ -27,15 +27,16 @@ public class Memento
         return Guid;
     }
 
-    public string GetPrefabName() {
-        return PrefabName;
-    }
-
     public ObjectLocation GetObjectLocation()
     {
         return ObjectLocation;
+    }*/
+
+    // only used to read existing file
+    public string GetPrefabName() {
+        return PrefabName;
     }
-    */
+    
 
     // The Originator (gobjcontroller) uses this method when restoring its transform
     public SerializableTransform GetTransform() {

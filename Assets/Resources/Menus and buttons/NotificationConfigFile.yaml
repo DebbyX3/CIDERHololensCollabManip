@@ -5,6 +5,7 @@
 # NotificationID: unique name of a notification type
 # NotificationTitle: title of the notification
 # NotificationDesc: description of the notification
+# NotificationObjSpecs: text to be displayed before the name of the object
 
 # You can add a new notification to the list by adding a new element using "-" and the same attributes as the others elements.
 

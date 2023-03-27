@@ -24,6 +24,9 @@ public class CaretakerScene : MonoBehaviour
 {
     public static CaretakerScene Instance { get; private set; }
 
+    // binary file of an existing global scene to load
+    public TextAsset globalSceneToLoad;
+
     /*
     Note: I've considered keeping the 2 Global and Local lists as just one list because having 2 lists that 
     specify the behavior and meaning of the object location is not the best, also because I have the ObjectLocation
@@ -86,6 +89,18 @@ public class CaretakerScene : MonoBehaviour
 
         SaveLocalStateEvent.Invoke();
         SaveGlobalStateEvent.Invoke();
+
+        LoadGlobalScene();
+    }
+
+    private void LoadGlobalScene()
+    {
+        Dictionary<Guid, Memento> loadedGlobalList = ObjectsFiles.ReadData(globalSceneToLoad);
+
+        foreach (KeyValuePair<Guid, Memento> entry in loadedGlobalList)
+        {
+            PrefabManager.Instance.CreateNewObjectInGlobal(entry.Key, entry.Value.GetPrefabName(), entry.Value.GetMaterialName(), entry.Value.GetTransform());
+        }
     }
 
     private void SaveGlobalAndPendingRestoreLocal()
