@@ -1,0 +1,7 @@
+!17-01-2023_15:44:24;AcceptCommit;9fb43be5-dfc6-4859-916b-123b262567e4;DarkWood desk_1
+%17-01-2023_15:44:50;RequestCommit;e43576a5-3ad4-404a-897c-dc315a28dde1;white office_chair_1
+%17-01-2023_15:45:40;RequestCommit;a6b7e136-2360-4817-8fd2-f7a728655d45;chrome lamp_2
+!17-01-2023_15:46:46;AcceptCommit;02497ceb-c64d-4fe0-b698-037f4e6c334c;LightWood shelf_1
+!17-01-2023_15:47:33;AcceptCommit;e43576a5-3ad4-404a-897c-dc315a28dde1;white office_chair_1
+%17-01-2023_15:48:54;RequestCommit;b5d5aacf-ea74-410f-b636-2c65afe7c969;pattern vase_3
+!17-01-2023_15:50:12;AcceptCommit;2034e4d6-c251-4e4d-944e-1c57c774861a;lightBlue sofa_1
