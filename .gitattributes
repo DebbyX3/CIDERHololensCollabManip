@@ -61,3 +61,6 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+# Exclude Jupyter Notebook files from linguist (https://github.com/github-linguist/linguist/blob/master/docs/overrides.md)
+*.ipynb linguist-vendored
