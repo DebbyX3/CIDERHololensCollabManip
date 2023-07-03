@@ -42,7 +42,8 @@ public class NotificationButtonController : MonoBehaviour
             BackPlate = transform.Find("BackPlate");
         }
 
-        SetButtonStatus(false);
+        SetButtonStatus(true);
+        // TODO: rimetti false!!!!
     }
 
     public void SetButtonStatus(bool active)

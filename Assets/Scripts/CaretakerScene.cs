@@ -38,6 +38,7 @@ public class CaretakerScene : MonoBehaviour
     */
 
     // keeps mementos of global scene
+    [HideInInspector]
     public Dictionary<Guid, Memento> GlobalListMementos { get; } = new Dictionary<Guid, Memento>();
 
     // keeps mementos of local scene
@@ -51,16 +52,33 @@ public class CaretakerScene : MonoBehaviour
 
     // Need different events for save and restore, because the save and restore are done in different moments:
     // Save is done always before the restore, and some objs may not be in both scenes
+    [HideInInspector]
     public UnityEvent SaveGlobalStateEvent = new UnityEvent();
+
+    [HideInInspector]
     public UnityEvent SaveLocalStateEvent = new UnityEvent();
+
+    [HideInInspector]
     public UnityEvent SaveCommitPendingListEvent = new UnityEvent();
+
+    [HideInInspector]
     public UnityEvent SaveDeletionPendingListEvent = new UnityEvent();
 
+
+    [HideInInspector]
     public UnityEvent RestoreGlobalStateEvent = new UnityEvent();
+
+    [HideInInspector]
     public UnityEvent RestoreLocalStateEvent = new UnityEvent();
+
+    [HideInInspector]
     public UnityEvent RestoreCommitPendingListEvent = new UnityEvent();
+
+    [HideInInspector]
     public UnityEvent RestoreDeletionPendingListEvent = new UnityEvent();
 
+
+    [HideInInspector]
     public UnityEvent HideObjectEvent = new UnityEvent();
 
     // Stores the current active gameobject - where 'active' means the last object touched/manipolated

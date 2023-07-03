@@ -25,13 +25,13 @@
 
 - 
   NotificationID: COMMIT_REQUEST_RECEIVED
-  NotificationTitle: "Commit request received! - Transparent yellow object color"
+  NotificationTitle: "Commit request received! - Yellow outline on object"
   NotificationDesc: "The other user is asking you to Accept or Decline a change of an object in the shared global scene. \nTap me to go to the global scene and accept/decline the change"
   NotificationObjSpecs: "Issued object: "
 
 - 
   NotificationID: DELETION_REQUEST_RECEIVED
-  NotificationTitle: "Global deletion request received! - Transparent red object color"
+  NotificationTitle: "Global deletion request received! - Red outline on object"
   NotificationDesc: "The other user is asking you to Accept or Decline the deletion of an object in the shared global scene. \nTap me to go to the global scene and accept/decline the deletion"
   NotificationObjSpecs: "Issued object: "
 
