@@ -9,7 +9,7 @@ This is an implementation of the system described in our paper of the same name:
 
 External view              |  Internal view
 :-------------------------:|:-------------------------:
-<img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/feace467-6180-41a2-801e-af2dd50ce179" height="250"> | <img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/5a37cb46-2d80-4421-930a-bda7664cbfcb" height="250">
+<img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/feace467-6180-41a2-801e-af2dd50ce179" height="220"> | <img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/5a37cb46-2d80-4421-930a-bda7664cbfcb" height="220">
 
 ### Video
 Watch a video here: https://mega.nz/embed/nEdCFKKb#09WMKL2anHoGuXrepv4myk-sNmdohAE_T4D9urovbZk
@@ -41,7 +41,7 @@ It achieves them by letting users:
 
 Living Room                |  Office
 :-------------------------:|:-------------------------:
-<img src="https://i.imgur.com/LxLhOHTl.jpg" height="250"> | <img src="https://i.imgur.com/prwqf6nl.jpg" height="250">
-<img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/912714f5-6f62-43ef-bf22-54a8ad3783d9" height="250"> | <img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/fdb2d860-3200-4470-b93a-d01927037a66" height="250">
+<img src="https://i.imgur.com/LxLhOHTl.jpg" height="220"> | <img src="https://i.imgur.com/prwqf6nl.jpg" height="220">
+<img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/912714f5-6f62-43ef-bf22-54a8ad3783d9" height="220"> | <img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/fdb2d860-3200-4470-b93a-d01927037a66" height="220">
 
 
