@@ -9,7 +9,7 @@ It is an implementation of the system described in our paper of the same name: h
 
 External view              |  Internal view
 :-------------------------:|:-------------------------:
-<img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/feace467-6180-41a2-801e-af2dd50ce179" height="300"> | <img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/5a37cb46-2d80-4421-930a-bda7664cbfcb" height="300">
+<img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/feace467-6180-41a2-801e-af2dd50ce179" height="200"> | <img src="https://github.com/DebbyX3/CIDERHololensCollabManip/assets/26549164/5a37cb46-2d80-4421-930a-bda7664cbfcb" height="200">
 
 ### Video
 Watch a video here: https://mega.nz/embed/nEdCFKKb#09WMKL2anHoGuXrepv4myk-sNmdohAE_T4D9urovbZk
