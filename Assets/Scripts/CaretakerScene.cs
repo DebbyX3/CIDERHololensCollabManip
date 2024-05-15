@@ -108,7 +108,8 @@ public class CaretakerScene : MonoBehaviour
         SaveLocalStateEvent.Invoke();
         SaveGlobalStateEvent.Invoke();
 
-        LoadGlobalScene();
+        // Decomment this only if you want to load a specific saved scene
+        //LoadGlobalScene();
     }
 
     private void LoadGlobalScene()
