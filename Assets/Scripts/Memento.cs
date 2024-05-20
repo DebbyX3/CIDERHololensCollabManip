@@ -21,12 +21,13 @@ public class Memento
         ObjectLocation = objectLocation;
     }
 
-    // Not used because the originator does not have to modify the GUID, the prefabname or the location
-    /*
+    // only used to read pending commit list
     public Guid GetGuid() {
         return Guid;
     }
 
+    // Not used because the originator does not have to modify the GUID, the prefabname or the location
+    /*
     public ObjectLocation GetObjectLocation()
     {
         return ObjectLocation;

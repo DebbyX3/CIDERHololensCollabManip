@@ -77,7 +77,7 @@ public class SlateColorsManager : MonoBehaviour
     //-------------------- PUBLIC --------------------
 
     public void PopulateSlate(string prefabName, Guid guid = new Guid())
-    {        
+    {
         PrefabSpecs = PrefabSpecs.FindByPrefabName(prefabName, PrefabManager.Instance.PrefabCollection);
 
         foreach (KeyValuePair<string, Texture2D> images in PrefabSpecs.Images)

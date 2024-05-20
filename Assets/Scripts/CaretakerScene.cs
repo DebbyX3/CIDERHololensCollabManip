@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -44,7 +45,7 @@ public class CaretakerScene : MonoBehaviour
     // keeps mementos of local scene
     private Dictionary<Guid, Memento> LocalListMementos { get; } = new Dictionary<Guid, Memento>();
 
-    private Dictionary<Guid, Memento> CommitPendingListRequests { get; } = new Dictionary<Guid, Memento>();
+    private Dictionary<Guid, Memento> CommitPendingListRequests = new Dictionary<Guid, Memento>();
 
     private Dictionary<Guid, Memento> DeletionPendingListRequests { get; } = new Dictionary<Guid, Memento>();
 
@@ -182,16 +183,16 @@ public class CaretakerScene : MonoBehaviour
 
     public void ChangeScene()
     {
-        //salva lo stato degli oggetti nelle loro liste corrette chiamando gli invoke
+        // Save object states in their correct lists by calling the invokes
 
-        //la funzione di salvataggio legge in che scena l'utente è e salva nella lista corrispondente (tipo se sono in local, salvo in local)
+        // The save function reads in which scene the user is and saves in the corresponding list (e.g. if I'm in local, I save in local)
 
         if (SceneState.Equals(Location.GlobalLayer))
             SaveGlobalAndPendingRestoreLocal();
         else if (SceneState.Equals(Location.LocalLayer))
             SaveLocalRestoreGlobalAndPending();
 
-        //la funzione di flip fa il cambio da global a local e viceversa
+        // The flip function changes from global to local and vice versa
         FlipSceneState();
     }
 
@@ -405,5 +406,12 @@ public class CaretakerScene : MonoBehaviour
             if (gobjController.ObjectLocation.HasFlag(ObjectLocation.DeletionPending))
                 gobjController.SubscribeToDeletionPendingList();
         }
+    }
+
+    // Return a read only reference to the commit pending list - I just want to read it
+    public ref readonly Dictionary<Guid, Memento> GetCommitPendingListRequests()
+    {
+        CommitPendingListRequests.Add(new Guid(), new Memento(new Guid(), "lamp_1", "lamp_1-green", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.zero), ObjectLocation.CommitPending));
+        return ref CommitPendingListRequests;
     }
 }
