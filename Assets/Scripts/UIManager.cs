@@ -26,6 +26,10 @@ public class UIManager : MonoBehaviour
     public GameObject SlateColor;
     public GameObject SlatePrefab;
     public GameObject SlateNotifications;
+    public GameObject SlateBulkCommit;
+
+    [HideInInspector]
+    public SlateBulkCommitsManager SlateBulkCommitsManager { get; private set; }
 
     private string LogString = "";
 
@@ -41,6 +45,8 @@ public class UIManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        SlateBulkCommitsManager = SlateBulkCommit.GetComponent<SlateBulkCommitsManager>();
     }
 
     private void Update()

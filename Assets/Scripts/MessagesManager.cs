@@ -1,3 +1,4 @@
+using System.Xml.Linq;
 using UnityEngine;
 
 public enum UserType
@@ -240,6 +241,7 @@ public class MessagesManager : MonoBehaviour
     private void OnRequestCommitReceived(GameObjMessageInfo gObjMsgInfo)
     {
         GameObject gObj;
+        bool isNew = false;
 
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
@@ -267,6 +269,18 @@ public class MessagesManager : MonoBehaviour
             gObjMsgInfo.PrefabName,
             gObjMsgInfo.MaterialName,
             prefabSpecs.GetImageByName(gObjMsgInfo.MaterialName));
+
+        // If the object does NOT already exists in the Bulk Commit Slate, add it 
+        // Otherwise, if it already exists in the Bulk Commit Slate, do nothing
+        if (CaretakerScene.Instance.GetCommitPendingListRequests().ContainsKey(gObjMsgInfo.GameObjectGuid))
+        {
+            // Add received commit to the Bulk Commit Slate
+            UIManager.Instance.SlateBulkCommitsManager.AddButton(
+                prefabSpecs.GetImageByName(gObjMsgInfo.MaterialName),
+                gObjMsgInfo.MaterialName,
+                gObjMsgInfo.PrefabName,
+                gObjMsgInfo.GameObjectGuid);
+        }        
     }
 
     // -------------------------- DELETION --------------------------

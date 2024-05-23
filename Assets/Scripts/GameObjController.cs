@@ -356,7 +356,8 @@ public class GameObjController : MonoBehaviour
 
     public void PrepareGlobalRequestDeletion()
     {
-        SetCommitPendingObjectUserType(UserType.Sender);
+        //SetCommitPendingObjectUserType(UserType.Sender); // wrong line??
+        SetDeletionPendingObjectUserType(UserType.Sender);
         MessagesManager.Instance.SendGlobalRequestDeletionMessage(this);
 
         SetActiveCommitButtons(false);

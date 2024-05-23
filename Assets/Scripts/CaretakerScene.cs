@@ -411,7 +411,6 @@ public class CaretakerScene : MonoBehaviour
     // Return a read only reference to the commit pending list - I just want to read it
     public ref readonly Dictionary<Guid, Memento> GetCommitPendingListRequests()
     {
-        CommitPendingListRequests.Add(new Guid(), new Memento(new Guid(), "lamp_1", "lamp_1-green", new SerializableTransform(Vector3.one, Quaternion.identity, Vector3.zero), ObjectLocation.CommitPending));
         return ref CommitPendingListRequests;
     }
 }
