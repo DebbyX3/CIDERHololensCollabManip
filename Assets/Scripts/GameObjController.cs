@@ -291,6 +291,8 @@ public class GameObjController : MonoBehaviour
     public void AcceptCommit()
     {
         MessagesManager.Instance.AcceptCommit(this);
+        UIManager.Instance.SlateBulkCommitsManager.RemovePendingCommitFromSlate(Guid);
+
         EnableMeshOutlineCommitPending(false);
     }
 
@@ -335,6 +337,8 @@ public class GameObjController : MonoBehaviour
 
         if (userType.Equals(UserType.Sender))
             MessagesManager.Instance.SendDeclineCommit(this); // Send decline commit message
+
+        UIManager.Instance.SlateBulkCommitsManager.RemovePendingCommitFromSlate(Guid);
     }
 
     public void RemoveCommitPending()

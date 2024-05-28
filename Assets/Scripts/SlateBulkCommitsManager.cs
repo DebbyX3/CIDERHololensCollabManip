@@ -41,67 +41,28 @@ public class SlateBulkCommitsManager : MonoBehaviour
             Destroy(child.gameObject);
     }
 
-    /*private void AddButton(Texture2D image, string imageName, string objectName, Guid ObjGuid)
-    {
-        UIManager.Instance.PrintMessages(
-            image.ToString() + "\n" +
-            imageName + "\n" +
-            objectName + "\n" +
-            ObjGuid.ToString()
-            );
-
-        // The parent of the button is the gameobject UGUIButtons - important: set false as argument
-        GameObject button = Instantiate(Resources.Load<GameObject>("Menus and buttons/SlateBulkCommitButton"), UGUIButtons.transform, false);
-
-        // Get RawImage gameObject and component
-        GameObject rawImage = button.transform.Find("RawImage").gameObject;
-        RawImage rawImageComponent = rawImage.GetComponent<RawImage>();
-
-        // Assign the image to the rawImage component to display the image in the button
-        rawImageComponent.texture = image;
-
-        // Get Text gameObject and TextMeshPro
-        GameObject text = button.transform.Find("ObjSpecs").gameObject;
-        TMP_Text objReceivedTextTMP = text.GetComponent<TMP_Text>();
-
-        // Set color name by trimming everything before the dash and making the first letter uppercase
-        string colorNameTrimmed = imageName.Substring(imageName.IndexOf('-') + 1); // +1 to exclude the dash
-
-        // Print received object's name and color
-        objReceivedTextTMP.text = objReceivedTextTMP.text +
-                                    char.ToUpper(colorNameTrimmed[0]) + colorNameTrimmed.Substring(1) + " " +
-                                    objectName;
-
-        // Set Object GUID to the button, so I can use it later when I fire the accept/reject event
-        button.GetComponent<BulkCommitButtonObjGUID>().SetObjGuid(ObjGuid);
-    }*/
-
-    //-------------------- PUBLIC --------------------
-
-    /*public void PopulateSlate()
-    {
-        foreach (KeyValuePair<Guid, Memento> element in CaretakerScene.Instance.GetCommitPendingListRequests())
+    public void RemovePendingCommitFromSlate(Guid objGuid)
+    { 
+        foreach (Transform child in UGUIButtons.transform)
         {
-            // Get the object controller from the GUID
-            GameObjController gObjContr = GUIDKeeper.GetGObjFromGuid(element.Value.GetGuid()).GetComponent<GameObjController>();
+            // Get the object GUID from the button
+            Guid elementObjGuid = child.GetComponent<BulkCommitButtonObjGUID>().ObjGuid;
 
-            // Check if the object is recieved
-            if (gObjContr.CommitPendingObjectUserType.Equals(UserType.Receiver))
+            if (elementObjGuid.Equals(objGuid))
             {
-                PrefabSpecs = PrefabSpecs.FindByPrefabName(element.Value.GetPrefabName(), PrefabManager.Instance.PrefabCollection);
-
-                AddButton(PrefabSpecs.GetImageByName(element.Value.GetMaterialName()), element.Value.GetMaterialName(), element.Value.GetPrefabName(), element.Value.GetGuid());
-            }            
+                Destroy(child.gameObject);
+                break;
+            }
         }
-    }*/
+    }
 
-    public void AddButton(Texture2D image, string imageName, string objectName, Guid ObjGuid)
+    public void AddButton(Texture2D image, string imageName, string objectName, Guid objGuid)
     {
         UIManager.Instance.PrintMessages(
            image.ToString() + "\n" +
            imageName + "\n" +
            objectName + "\n" +
-           ObjGuid.ToString()
+           objGuid.ToString()
            );
 
         bool wasAlreadyActive = false;
@@ -134,13 +95,18 @@ public class SlateBulkCommitsManager : MonoBehaviour
                                     objectName;
 
         // Set Object GUID to the button, so I can use it later when I fire the accept/reject event
-        button.GetComponent<BulkCommitButtonObjGUID>().SetObjGuid(ObjGuid);
+        button.GetComponent<BulkCommitButtonObjGUID>().SetObjGuid(objGuid);
 
         if (!wasAlreadyActive)               // If the slate was NOT already visible before, deactivate it
             gameObject.SetActive(false);
     }
 
-    public IEnumerator AcceptSelected()
+    public void AcceptSelected()
+    {
+        StartCoroutine(AcceptSelectedWait());
+    }
+
+    private IEnumerator AcceptSelectedWait()
     {
         List<Transform> childernToDelete = new List<Transform>();
 
@@ -172,7 +138,12 @@ public class SlateBulkCommitsManager : MonoBehaviour
         DeleteButtons(childernToDelete);
     }
 
-    public IEnumerator RejectSelected()
+    public void RejectSelected()
+    {
+        StartCoroutine(RejectSelectedWait());
+    }
+
+    private IEnumerator RejectSelectedWait()
     {
         List<Transform> childernToDelete = new List<Transform>();
 
@@ -204,7 +175,12 @@ public class SlateBulkCommitsManager : MonoBehaviour
         DeleteButtons(childernToDelete);
     }
 
-    public IEnumerator AcceptAll()
+    public void AcceptAll()
+    {
+        StartCoroutine(AcceptSelectedWait());
+    }
+
+    private IEnumerator AcceptAllWait()
     {
         foreach (Transform child in UGUIButtons.transform)
         {
@@ -228,7 +204,12 @@ public class SlateBulkCommitsManager : MonoBehaviour
         DeleteAllButtons();
     }
 
-    public IEnumerator RejectAll()
+    public void RejectAll()
+    {
+        StartCoroutine(RejectAllWait());
+    }
+
+    private IEnumerator RejectAllWait()
     {
         foreach (Transform child in UGUIButtons.transform)
         {
