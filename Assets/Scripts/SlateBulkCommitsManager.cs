@@ -7,6 +7,7 @@ using UnityEditor;
 using Microsoft.MixedReality.Toolkit.UI;
 using System.Security.AccessControl;
 using System.Collections;
+using UnityEngine.InputSystem.HID;
 
 // Script is attached to SlateUGUI bulk commits
 /*
@@ -43,6 +44,12 @@ public class SlateBulkCommitsManager : MonoBehaviour
 
     public void RemovePendingCommitFromSlate(Guid objGuid)
     { 
+        Debug.Log("chiamato su guid: " + objGuid);
+        // Get the object controller from the GUID
+        GameObjController gObjContr = GUIDKeeper.GetGObjFromGuid(objGuid).GetComponent<GameObjController>();
+
+        Debug.Log("chiamato su oggetto nome: " + gObjContr);
+
         foreach (Transform child in UGUIButtons.transform)
         {
             // Get the object GUID from the button
@@ -50,8 +57,11 @@ public class SlateBulkCommitsManager : MonoBehaviour
 
             if (elementObjGuid.Equals(objGuid))
             {
-                Destroy(child.gameObject);
-                break;
+                child.gameObject.SetActive(false);
+
+                // NO! DO NOT DESTROY! COROUTINE DOES NOT WORK IF YOU DESTROY THE OBJECT
+                // I tried to find a workaround but no success so far
+                //Destroy(child.gameObject);
             }
         }
     }
@@ -104,14 +114,21 @@ public class SlateBulkCommitsManager : MonoBehaviour
     public void AcceptSelected()
     {
         StartCoroutine(AcceptSelectedWait());
+      
     }
 
     private IEnumerator AcceptSelectedWait()
     {
-        List<Transform> childernToDelete = new List<Transform>();
+        var wait = new WaitForSeconds(1);
 
-        foreach (Transform child in UGUIButtons.transform)
+        Debug.Log("numero di figli nella lista (anche senza il checkbox abilitato:)" + UGUIButtons.transform.childCount);
+
+        for (int i = 0; i < UGUIButtons.transform.childCount; i++)
         {
+            Debug.Log("numero figlio:" + i);
+
+            Transform child = UGUIButtons.transform.GetChild(i);
+
             // Get CheckBox button GameObject and component
             GameObject checkbox = child.transform.Find("PressableButtonHoloLens2UIToggleCheckBox").gameObject;
             Interactable checkboxInteractable = checkbox.GetComponent<Interactable>();
@@ -124,18 +141,18 @@ public class SlateBulkCommitsManager : MonoBehaviour
                 // Get the object controller from the GUID
                 GameObjController gObjContr = GUIDKeeper.GetGObjFromGuid(objGuid).GetComponent<GameObjController>();
 
+                Debug.Log("nome dell'oggetto (dentro if):" + gObjContr);
+
                 // Accept the commit
                 gObjContr.AcceptCommit();
-
-                // Add the child to the list of children to delete
-                childernToDelete.Add(child);
-
-                yield return new WaitForSeconds(1);
             }
+            yield return wait;
         }
 
-        // Delete the buttons that corresponds to accepted commits
-        DeleteButtons(childernToDelete);
+        /*foreach (Transform child in UGUIButtons.transform)
+        {
+            
+        }*/
     }
 
     public void RejectSelected()

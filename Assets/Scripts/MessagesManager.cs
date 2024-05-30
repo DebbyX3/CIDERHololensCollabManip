@@ -241,7 +241,6 @@ public class MessagesManager : MonoBehaviour
     private void OnRequestCommitReceived(GameObjMessageInfo gObjMsgInfo)
     {
         GameObject gObj;
-        bool isNew = false;
 
         if (GUIDKeeper.ContainsGuid(gObjMsgInfo.GameObjectGuid))
         {
